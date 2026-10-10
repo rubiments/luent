@@ -75,7 +75,7 @@ Luent transpiles JSX tags into `jsx()` calls with straightforward mental mapping
 - JSX flow slots (the final argument of a JSX flow expression) are also normalized to JSX array factories
 - JSX fragments are transformed into arrays
 
-This JSX template ...
+Example:
 ```jsx
 <>
   <h1>Home</h1>
