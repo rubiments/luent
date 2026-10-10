@@ -15,8 +15,8 @@ Core features:
 - type-explicit reactivity
 
 Experimental features:
-- compile-time mutation-safety checking
-- [NoriScript](https://github.com/ruby-cube/luent/blob/main/packages/noriscript#noriscript), a language extension of TypeScript + JSX with improved readability and type safety of signal/getter-based reactivity
+- [WIP] compile-time mutation-safety checking
+- [WIP] [NoriScript](https://github.com/ruby-cube/luent/blob/main/packages/noriscript#noriscript), a language extension of TypeScript + JSX with improved readability and type safety of signal/getter-based reactivity
 
 <br>
 
@@ -148,7 +148,7 @@ Once the API stabilizes, development will increasingly focus on runtime efficien
 - HMR refinement
 - Playground
 
-### Planned: Runtime and performance
+### Planned: Runtime performance
 - Performance optimizations
 - Smaller bundle sizes
 - Compiler-assisted tree-shaking
@@ -165,7 +165,7 @@ Luent builds upon ideas pioneered by frameworks that have shaped modern web deve
 
 Particular acknowledgement to the people and projects I've especially admired:
 
-- Vue 3, the framework I fell in love with and that sparked my fascination with frontend frameworks. Its accessor-based reactivity and seeds of fine-grained reactivity heavily influenced Luent's reactivity system.
+- Vue 3, the framework I fell in love with and that sparked my fascination with frontend frameworks. Its getter-based reactivity and seeds of fine-grained reactivity heavily influenced Luent's reactivity system.
 - Solid.js, which provided insight particularly in how to approach component props and derivations in a signals-based framework
 - Ryan Carniato, whose articles and streams have been an encouraging source of clarity and affirmation
 - Evan You and the Vue team, whose dedication to developer experience has greatly informed how I approach designing Luent
