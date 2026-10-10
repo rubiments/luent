@@ -1,5 +1,4 @@
-import { css, For, ionic, Style, type FromTag } from "luent"
-
+import { css, For, ionic, type FromTag } from "luent";
 export function EmojiCollection(setup: FromTag<{
   limit: number;
   getEmoji: () => string
@@ -22,7 +21,7 @@ export function EmojiCollection(setup: FromTag<{
       +
     </button>
 
-    {Style(css`
+    <o-style>{css`
       .emoji-collection {
         display: flex;  
         flex-wrap: wrap;
@@ -30,7 +29,7 @@ export function EmojiCollection(setup: FromTag<{
         gap: .5rem;
         list-style: none;
       }
-    `)}
+    `}</o-style>
   </>
 }
 
@@ -40,7 +39,7 @@ function EmojiChip(setup: FromTag<{ Slot: () => string }>) {
   return <>
     <li class='emoji-chip'><Slot/></li>
 
-    {Style(css`
+    <o-style>{css`
       .emoji-chip {
         width: 2rem;
         height: 2rem;
@@ -52,6 +51,6 @@ function EmojiChip(setup: FromTag<{ Slot: () => string }>) {
         font-size: 1.1rem;
         box-shadow: 0 0 8px rgba(212, 175, 55, .3);
       }
-    `)}
+    `}</o-style>
   </>
 }

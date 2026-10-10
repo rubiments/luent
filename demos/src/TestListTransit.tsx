@@ -1,4 +1,4 @@
-import { For, FromTag, Style, css, $$, ion, ionic, Ion, Ionic, awaiting, render, queueTask } from "luent";
+import { For, FromTag, css, $$, ion, ionic, Ion, Ionic, awaiting, render, queueTask } from "luent";
 import './TestListTransit.css'
 
 // Modified Demo from Svelte
@@ -55,31 +55,31 @@ export function TestListTransit() {
           <TodoList todos={() => $todos().filter((t) => t.done)} remove={remove} />
         </div>
       </div>
-      {Style(css`
-         .board {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-column-gap: 1em;
-            max-width: 36em;
-            margin: 0 auto;
-         }
+      <o-style>{css`
+        .board {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-column-gap: 1em;
+          max-width: 36em;
+          margin: 0 auto;
+        }
 
-         .board > input {
-            font-size: 1.4em;
-            grid-column: 1/3;
-            padding: 0.5em;
-            margin: 0 0 1rem 0;
-         }
+        .board > input {
+          font-size: 1.4em;
+          grid-column: 1/3;
+          padding: 0.5em;
+          margin: 0 0 1rem 0;
+        }
 
-         h2 {
-            font-size: 2em;
-            font-weight: 200;
-         }
+        h2 {
+          font-size: 2em;
+          font-weight: 200;
+        }
 
-         .transition-position {
-            transition: transform 150ms ease-in-out;
-         }
-      `)}
+        .transition-position {
+          transition: transform 150ms ease-in-out;
+        }
+      `}</o-style>
     </>
   )
 }
@@ -148,7 +148,7 @@ function TodoList(input: FromTag<{
           </li>
         )}
       </ul>
-      {Style(css`
+      <o-style>{css`
             label {
                width: 100%;
                height: 100%;
@@ -167,7 +167,7 @@ function TodoList(input: FromTag<{
             .transition-item {
                transition: transform 250ms ease-in-out;
             }
-         `)}
+         `}</o-style>
     </>
   )
 }

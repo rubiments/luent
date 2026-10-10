@@ -94,6 +94,7 @@ export default defineConfig({
           text: 'Demos',
           items: [
             { text: 'Habit Tracker', link: '/demos/habit-tracker' },
+            { text: 'Palettable', link: '/demos/palettable' },
             { text: 'Drawing Canvas', link: '/demos/doodle-canvas' },
             { text: 'EmojiQuest', link: '/demos/emoji-quest' },
             // { text: 'Folder Tree', link: '/terminology' },

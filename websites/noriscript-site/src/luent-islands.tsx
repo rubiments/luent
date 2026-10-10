@@ -8,6 +8,7 @@ export * from "@luently/websites-shared";
 import { Code, extractParams, MountIslands, parseNSXBlock, WriteIslands } from "@luently/websites-shared";
 import { twMerge } from "tailwind-merge";
 import { highlightCode } from "./highlighter";
+import { PalettableDemo } from "./demos/PalettableDemo";
 
 
 
@@ -15,17 +16,16 @@ export const Islands: WriteIslands = {
   'code-glimpses': () => writeIsland(CodeGlimpses),
   'habit-tracker-demo': () => writeIsland(HabitTrackerDemo),
   'emoji-quest-demo': () => writeIsland(EmojiQuestDemo),
-  'doodle-canvas-demo': () => writeIsland(DoodleCanvasDemo)
+  'doodle-canvas-demo': () => writeIsland(DoodleCanvasDemo),
+  'palettable-demo': () => writeIsland(PalettableDemo)
 }
 
 
 export const islands: MountIslands = {
   'code-glimpses': ({ node }) => {
-    console.log('#### mounting node', node)
     mountIsland(CodeGlimpses, node)
   },
   'habit-tracker-demo': ({ node }) => {
-    console.log('mounting habit-tracker-demo')
     mountIsland(HabitTrackerDemo, node)
   },
   'emoji-quest-demo': ({ node }) => {
@@ -33,6 +33,9 @@ export const islands: MountIslands = {
   },
   'doodle-canvas-demo': ({ node }) => {
     mountIsland(DoodleCanvasDemo, node)
+  },
+  'palettable-demo': ({ node }) => {
+    mountIsland(PalettableDemo, node)
   },
 
   'ns-code': ({ inner, node }: { inner: string, node: HTMLElement }) => {

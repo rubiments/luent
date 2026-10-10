@@ -1,4 +1,4 @@
-import { component, template, mountIsland, For, listen, NodeRef, Style, css, $$ } from "luent";
+import { component, template, mountIsland, For, listen, NodeRef, css, $$ } from "luent";
 import { moveUniqueItems, useRandomColorGenerator } from "@luently/utils";
 import './style.css'
 import { ion, EACH, ionic } from "@luently/quarky";
@@ -158,11 +158,11 @@ export function TestListSelection() {
           </div>
         </div>
       </div>
-      {Style(css`
+      <o-style>{css`
         body {
           overflow-y: scroll
         }
-      `)}
+      `}</o-style>
     </>
   )
 }

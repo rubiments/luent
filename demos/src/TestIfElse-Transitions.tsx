@@ -1,4 +1,4 @@
-import { component, template, If, Else, ElseIf, NodeRef, mountIsland, Style, css } from "luent";
+import { component, template, If, Else, ElseIf, NodeRef, mountIsland, css } from "luent";
 import { ion } from "@luently/quarky";
 import "./style.css"
 // import { Transition } from "../../../packages/luent/src/transitions/Transition";
@@ -50,7 +50,7 @@ export function TestIfElse() {
           </o:transition>
         </div>
       </div>
-      {Style(css`
+      <o-style>{css`
         .container {
           overflow: hidden;
         }
@@ -76,7 +76,7 @@ export function TestIfElse() {
         //   transition: opacity 2500ms ease-in;
         // }
         
-      `)}
+      `}</o-style>
     </>
   )
 }

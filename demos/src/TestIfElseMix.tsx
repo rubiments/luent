@@ -1,4 +1,4 @@
-import { component, template, If, Else, ElseIf, NodeRef, mountIsland, ViewType, Style, css } from "luent";
+import { If, Else, ElseIf, NodeRef, mountIsland, ViewType, css } from "luent";
 import { ion, ooo, awaitRender, queueTask, toValue, observe } from "@luently/quarky";
 import "./style.css"
 
@@ -48,11 +48,11 @@ export function TestIfElseMix(setup: { activation: [ViewType, ViewType] }) {
             )}
          </div>
       </div>
-      {Style(css`
+      <o-style>{css`
          .container {
             overflow: hidden;
          }
-      `)}
+      `}</o-style>
       </>
    )
 }

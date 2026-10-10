@@ -1,4 +1,4 @@
-import { Bindings, css, MICROCLASS_MERGE, provideRoot, Style } from 'luent'
+import { Bindings, css, MICROCLASS_MERGE, provideRoot } from 'luent';
 import { Code, CodeTour, TourSection } from '@luently/websites-shared'
 import { highlightCode } from './highlighter'
 import { twMerge } from 'tailwind-merge'
@@ -111,7 +111,7 @@ export function CodeGlimpses() {
 
       </CodeTour>
 
-      {Style(css`
+      <o-style>{css`
         // .tour-row {
         //   grid-template-columns: minmax(240px, 1fr) minmax(0, 1fr) !important;
         // }
@@ -140,7 +140,7 @@ export function CodeGlimpses() {
         .tour-copy p:last-child {
           margin-bottom: 0;
         }
-      `)}
+      `}</o-style>
     </>
   )
 }

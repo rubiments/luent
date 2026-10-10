@@ -1,5 +1,4 @@
-import { css, ion, Style } from "luent";
-
+import { css, ion } from "luent";
 export function Counter() {
   const $count = ion(0, {
     increment() { $count.value++ }
@@ -13,7 +12,7 @@ export function Counter() {
       count is {$count}
     </button>
     
-    {Style(css`
+    <o-style>{css`
       .count-btn {
         margin-top: .3rem;
         padding: .8rem 2.1rem;
@@ -28,6 +27,6 @@ export function Counter() {
       .count-btn:hover {
         background: var(--btn-hover)
       }  
-    `)}
+    `}</o-style>
   </>
 }

@@ -1,7 +1,6 @@
 import { Code, DemoContainer, Palettable } from '@luently/websites-shared'
 import { highlightCode } from "../highlighter"
-import { css, Else, ElseIf, FromTag, If, RenderTag, Style, ion, MutableIon} from 'luent'
-
+import { css, Else, ElseIf, FromTag, If, RenderTag, ion, MutableIon } from 'luent';
 export function PalettableDemo() {
   const $tab = ion('main' as 'main' | 'alt', {
     toggle() {
@@ -119,7 +118,7 @@ function CodeSectionTab(setup: FromTag<{
       class={['code-section-tab', { 'active-code-section-tab': () => $sectionTab() === name }]}
       on:click={() => $sectionTab.value = name}
     ><h5><Slot/></h5></button>
-    {Style(css`
+    <o-style>{css`
       .code-section-tab {
         color: var(--vp-c-text-1);
       }
@@ -131,6 +130,6 @@ function CodeSectionTab(setup: FromTag<{
       .active-code-section-tab {
         color: var(--vp-c-brand-1);
       }
-    `)}
+    `}</o-style>
   </>
 }

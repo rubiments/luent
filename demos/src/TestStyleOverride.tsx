@@ -1,4 +1,4 @@
-import { component, mountIsland, css, Style, template } from "luent";
+import { component, mountIsland, css, template } from "luent";
 import "./TestStyleOverride-classes.css"
 import { AnyObject } from "@luently/types";
 
@@ -27,10 +27,10 @@ function Child() {
         <div class='bg-amber-400 override1 override0 bg-blue-600 bg-amber-900'>
             hello world
         </div>
-        {Style(css`
+        <o-style>{css`
            ${getTailwindClassDeclaration('bg-blue-600', ['override0', 'override1'])}
            ${getTailwindClassDeclaration('bg-amber-900', ['override1'])}
-        `)}
+        `}</o-style>
       </>
     )
 }

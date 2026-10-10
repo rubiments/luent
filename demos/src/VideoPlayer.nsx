@@ -127,7 +127,7 @@ export function VideoPlayer() {
                </div>
             )}
          </div>
-         {Style(css`
+         <o-style>
             html {
               font-size: 18px;
               background-color: black;
@@ -167,7 +167,7 @@ export function VideoPlayer() {
               display: inline-block;
               margin-left: 5px;
             }
-         `)}
+         </o-style>
       </>
    )
 

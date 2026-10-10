@@ -7,6 +7,7 @@ import { writeShadowRoot } from "../component/shadow";
 import { writeToPortal } from "./portals";
 import { RenderTag } from "../component/bindings-types";
 import { Context } from "../context/Context";
+import { Style } from "../component/Style";
 
 
 export function writeJSXNode(
@@ -26,6 +27,11 @@ export function writeJSXNode(
     case 'shadow-root':
       return writeShadowRoot(config)
     // TODO:
+
+    case 'o-style':
+      if (!Slot) return;
+      return Style(Slot()[0]);
+
     case 'o-link':
       return writeToPortal('head',
         writeElement('link', undefined, <ElementConfig>config)

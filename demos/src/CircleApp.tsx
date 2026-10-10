@@ -1,4 +1,4 @@
-import { For, If, Style, css, $$ } from "luent"
+import { For, If, css, $$ } from "luent";
 import { ion, Ionic, ionic } from "@luently/quarky"
 
 // Modified Demo from Vue.js
@@ -100,7 +100,7 @@ export function CircleApp() {
         </div>
       }
       )}
-      {Style(css`
+      <o-style>{css`
             body {
                margin: 0;
                overflow: hidden;
@@ -153,7 +153,7 @@ export function CircleApp() {
                padding: 0 50px;
                color: #bbb;
             }
-      `)}
+      `}</o-style>
     </>
   )
 }

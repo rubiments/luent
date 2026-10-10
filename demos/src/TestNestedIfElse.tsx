@@ -1,4 +1,4 @@
-import { component, template, If, Else, ElseIf, NodeRef, mountIsland, Style, css } from "luent";
+import { component, template, If, Else, ElseIf, NodeRef, mountIsland, css } from "luent";
 import { ion, ooo, awaitRender, queueTask, toValue, observe } from "@luently/quarky";
 import "./style.css"
 
@@ -35,11 +35,11 @@ export function TestNestedIfElse() {
             )}
          </div>
       </div>
-      {Style(css`
+      <o-style>{css`
          .container {
             overflow: hidden;
          }
-      `)}
+      `}</o-style>
       </>
    )
 }

@@ -185,7 +185,7 @@ function DraggableKit<T>(config: {
         </div>
       )}
 
-      {Style(css`
+      <o-style>{css`
         .dropzones {
           position: absolute;
           display: flex;
@@ -213,7 +213,7 @@ function DraggableKit<T>(config: {
         .drop-target {
           opacity: 1;
         }
-      `)}
+      `}</o-style>
     </>
   }
 

@@ -649,11 +649,11 @@ function Card(setup: FromTag<{
       <Slot/>
     </div>
 
-    {Style(css`
+    <o-style>{css`
       .card {
         border: 1px solid ${borderColor};
       }
-    `)}
+    `}</o-style>
   </>
 }
 ```

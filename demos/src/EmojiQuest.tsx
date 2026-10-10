@@ -1,4 +1,4 @@
-import { $$, component, css, Else, For, FromTag, If, RenderTag, Style, TagClass } from "luent";
+import { $$, component, css, Else, For, FromTag, If, RenderTag, TagClass } from "luent";
 import { ion, Ion, Ionic, ionic } from "@luently/quarky";
 
 
@@ -43,7 +43,7 @@ function Panel(setup: FromTag<{
         </div>
         <div display-if={opened} class='panel-body'><Slot/></div>
       </div>
-      {Style(css`
+      <o-style>{css`
             .panel {
                width: 24vw;
                user-select: none;
@@ -70,7 +70,7 @@ function Panel(setup: FromTag<{
                border-radius: 0px 0px 1rem 1rem;
                overflow: hidden;
             }
-         `)}
+         `}</o-style>
     </>
   )
 }
@@ -121,7 +121,7 @@ function Powerset(setup: FromTag<{
         )}
       </div>
 
-      {Style(css`
+      <o-style>{css`
         body {
            background-color: black;
            font-family: 'Courier New';
@@ -228,7 +228,7 @@ function Powerset(setup: FromTag<{
            background-color: #1a0e2e;
            color: #d4af37;
         }
-      `)}
+      `}</o-style>
     </>
   )
 }

@@ -1,6 +1,5 @@
 import { $CodeTab, CodeToggle } from "@luently/websites-shared"
-import { css, Style, observe } from "luent"
-
+import { css, observe } from "luent";
 export function LanguageToggle() {
   const $tab = $CodeTab()
   const body = document.querySelector('body')!
@@ -25,7 +24,7 @@ export function LanguageToggle() {
       main='tsx'
       alt='nsx'
     />
-    {Style(css`
+    <o-style>{css`
       // .VPSidebarItem .toggle {
       //   display: flex;
       //   position: relative;
@@ -63,6 +62,6 @@ export function LanguageToggle() {
       //   z-index: -1;
       //   // line-height: 1.25rem;
       // }
-      `)}
+      `}</o-style>
   </>
 }

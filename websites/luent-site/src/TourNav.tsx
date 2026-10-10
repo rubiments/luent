@@ -1,5 +1,4 @@
-import { atUnmount, css, For, FromTag, ion, Style } from "luent";
-
+import { atUnmount, css, For, FromTag, ion } from "luent";
 export function pad(value: number) {
   return String(value).padStart(2, '0')
 }
@@ -77,7 +76,7 @@ export function TourNav(setup: FromTag<{
         })}
       </ul>
     </nav >
-    {Style(css`
+    <o-style>{css`
       .tour-nav {
         position: sticky;
         top: calc(15rem - 150px);
@@ -161,6 +160,6 @@ export function TourNav(setup: FromTag<{
         }
       }
 
-    `)}
+    `}</o-style>
   </>
 }

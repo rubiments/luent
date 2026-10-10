@@ -6,10 +6,11 @@ export function TestNamedSlots() {
   return <>
     <div class='p-10 border border-emerald-800'>
       <Comp
-        Title={() =>
+        Title={<>
           <h1>Stormy Night</h1>
-        }
-        Description={() =>
+          <p>Tagline...</p>
+        </>}
+        Description={
           <p>Lorem ipsum de fulctus</p>
         }
       />

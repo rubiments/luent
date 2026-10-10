@@ -1,4 +1,4 @@
-import { component, template, For, FromTag, Style, css, $$, } from "luent"
+import { component, template, For, FromTag, css, $$ } from "luent";
 import { as, ion, ionic, EACH, Ion, Ionic } from "@luently/quarky"
 
 // Demo from Vue.js
@@ -63,7 +63,7 @@ export function SVGPolygonApp() {
       </form>
 
       <pre id="raw">{() => JSON.stringify(stats, undefined, 2)}</pre>
-      {Style(css`
+      <o-style>{css`
             polygon {
                fill: #42b983;
                opacity: 0.75;
@@ -90,7 +90,7 @@ export function SVGPolygonApp() {
                top: 0;
                left: 300px;
             }
-         `)}
+         `}</o-style>
     </>
   )
 }

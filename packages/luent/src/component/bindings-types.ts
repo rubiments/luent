@@ -152,7 +152,7 @@ type PlainInput<D> = {
 }
 
 
-export type RenderTag<T = undefined> = T extends undefined ? () => RawJSXNode : (setup: FromTag<T>) => RawJSXNode
+export type RenderTag<T = undefined> = RawJSXNode | (T extends undefined ? () => RawJSXNode : (setup: FromTag<T>) => RawJSXNode)
 
 type IncludesIon<T> = Exclude<T, Primitive> extends never ? false : IsIon<Exclude<T, Primitive>>
 

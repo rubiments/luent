@@ -1,6 +1,4 @@
-import { component, NodeRef, Style, css } from "luent";
-
-
+import { component, NodeRef, css } from "luent";
 export function TestCanvas() {
   const $canvas = NodeRef("canvas")
 
@@ -89,7 +87,7 @@ export function TestCanvas() {
         ></canvas>
       </div>
 
-      {Style(css`
+      <o-style>{css`
         .canvas-app {
           display: grid;
           gap: 10px;
@@ -108,7 +106,7 @@ export function TestCanvas() {
           background: #fff;
           cursor: crosshair;
         }
-      `)}
+      `}</o-style>
     </>
   )
 }

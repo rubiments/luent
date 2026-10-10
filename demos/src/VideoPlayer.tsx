@@ -1,4 +1,4 @@
-import { Else, If, NodeRef, css, Ion, ion, queueTask, track as observe, Finitron, ionic, Style } from "luent";
+import { Else, If, NodeRef, css, Ion, ion, queueTask, track as observe, Finitron, ionic } from "luent";
 import "./reset.css"
 
 
@@ -127,7 +127,7 @@ export function VideoPlayer() {
           </div>
         )}
       </div>
-      {Style(css`
+      <o-style>{css`
             html {
               font-size: 18px;
               background-color: black;
@@ -167,7 +167,7 @@ export function VideoPlayer() {
               display: inline-block;
               margin-left: 5px;
             }
-         `)}
+         `}</o-style>
     </>
   )
 

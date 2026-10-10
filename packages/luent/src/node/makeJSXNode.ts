@@ -15,6 +15,7 @@ import { provideTransition } from "../transitions/Transition";
 import { fromContext } from "../context/provide";
 import { ContextKey } from "../context/ContextKey";
 import { createNSElement, getXMLNamespace, newXMLNamespace, withXMLNamespace } from "../element/NSElement";
+import { Style } from "../component/Style";
 
 export type TagType = RenderTag | string
 
@@ -195,6 +196,10 @@ export function makeJSXNode(
 
     case 'shadow-root':
       return createShadowRoot(config)
+
+    case 'o-style':
+      if (!Slot) return;
+      return Style(Slot()[0]);
 
     case 'o-link':
       return Portal('head', () =>

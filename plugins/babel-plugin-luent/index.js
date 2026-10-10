@@ -470,9 +470,18 @@ function transformJSXAttributes(jsxElementPath) {
    const attributes = jsxElementPath.get('openingElement.attributes');
    for (const attribute of attributes) {
       const node = attribute.node
-      const namespaceName = node.name && node.name.namespace && node.name.namespace.name
+      const key = node.name.name
       const value = node.value;
       if (!t.isJSXExpressionContainer(value)) continue;
+      const firstLetter = key[0]
+      if (firstLetter && firstLetter.toUpperCase() === firstLetter) {
+        if (t.isJSXElement(value.expression)) {
+          node.value = normalizeSlotToRenderFunction([attribute.get('value.expression')])
+        }
+        else if (t.isJSXFragment(value.expression)) {
+          node.value = normalizeSlotToRenderFunction(attribute.get('value.expression.children'))
+        }
+      }
       // if (t.isObjectExpression(value.expression)) {
       //    transformObjectProperties(attribute.get('value.expression.properties'))
       // }

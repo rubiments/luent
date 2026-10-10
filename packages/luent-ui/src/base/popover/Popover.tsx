@@ -1,4 +1,4 @@
-import { Ion, Ionic, toIon, $fromContext, Context, ContextKey, css, fromContext, If, listen, NodeRef, RawJSXNode, RenderTag, Style, template, Xray, FromTag } from "luent"
+import { Ion, Ionic, toIon, $fromContext, Context, ContextKey, css, fromContext, If, listen, NodeRef, RawJSXNode, RenderTag, template, Xray, FromTag } from "luent";
 import { maybeFlip, Popover, positionPopover, positionTail } from "./Popover.kit";
 
 // TODO:
@@ -40,7 +40,7 @@ function PopoverRoot(setup: FromTag<{
           </div>
         </o:context>
       )}
-      {Style(css`
+      <o-style>{css`
         .popover {
            position: absolute;
            position-anchor: var(--popover-anchor);
@@ -87,7 +87,7 @@ function PopoverRoot(setup: FromTag<{
         .popover.right {
            left: calc(anchor(right) + ${gap}rem);
         }
-      `)}
+      `}</o-style>
     </>
   )
 
@@ -140,7 +140,7 @@ function PopoverTail(setup: FromTag<{
           auto-bind={xray.shape}
         ></Node>
       </div>
-      {Style(css`
+      <o-style>{css`
         .tail-root {
            position: absolute;
         }
@@ -184,7 +184,7 @@ function PopoverTail(setup: FromTag<{
            left: ${$offset()};
            // top: -50%;
         }    
-         `)}
+         `}</o-style>
     </>
   )
 }

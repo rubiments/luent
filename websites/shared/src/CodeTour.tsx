@@ -1,4 +1,4 @@
-import { css, FromTag, Ion, RenderTag, Style } from 'luent'
+import { css, FromTag, Ion, RenderTag } from 'luent';
 import { Code } from './Code';
 
 export function CodeTour(setup: FromTag<{
@@ -12,7 +12,7 @@ export function CodeTour(setup: FromTag<{
         <Slot />
       </section>
 
-      {Style(css`
+      <o-style>{css`
         .home-tour {
           display: grid;
           gap: clamp(4.9rem, 8.85vw, 8.1rem);
@@ -35,7 +35,7 @@ export function CodeTour(setup: FromTag<{
             border-top: 0;
           }
         }
-      `)}
+      `}</o-style>
     </>
   )
 }
@@ -72,7 +72,7 @@ export function TourSection(setup: FromTag<{
         </div>
       </article>
 
-      {Style(css`
+      <o-style>{css`
 
         .tour-row {
           display: grid;
@@ -145,7 +145,7 @@ export function TourSection(setup: FromTag<{
             order: 2;
           }
         }
-    `)}
+    `}</o-style>
     </>
   )
 }

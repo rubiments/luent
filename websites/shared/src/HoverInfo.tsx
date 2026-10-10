@@ -1,4 +1,4 @@
-import { FromTag, NodeRef, RenderTag, Style, css } from "luent"
+import { FromTag, NodeRef, RenderTag, css } from "luent";
 import { TooltipContent, TooltipRoot, IonicTooltip, Alignment, Placement } from "@luently/luent-ui"
 
 export { TooltipKit } from "@luently/luent-ui"
@@ -39,14 +39,14 @@ export function HoverInfo(setup: FromTag<{
         </TooltipContent>
       </TooltipRoot>
       
-      {Style(css`
+      <o-style>{css`
         .hover-info {
           border: 1px solid var(--vp-c-divider);
           background-color: var(--vp-c-bg); 
           font-family: var(--vp-font-family-mono); 
           font-weight: 600;
         }
-      `)}
+      `}</o-style>
     </>
 
     // </o--body>

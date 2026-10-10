@@ -1,4 +1,4 @@
-import { component, template, If, Else, ElseIf, NodeRef, mountIsland, ViewType, Style, css } from "luent";
+import { component, template, If, Else, ElseIf, NodeRef, mountIsland, ViewType, css } from "luent";
 import { Ion, ion, awaitRender, queueTask, toValue, observe } from "@luently/quarky";
 import "./style.css"
 
@@ -49,11 +49,11 @@ export function TestIfElseRemountView() {
             </o:preserve>
          </div>
       </div>
-      {Style(css`
+      <o-style>{css`
          .container {
             overflow: hidden;
          }
-      `)}
+      `}</o-style>
       </>
    )
 }

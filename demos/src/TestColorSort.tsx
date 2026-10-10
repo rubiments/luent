@@ -36,7 +36,7 @@ export function TestColorSort() {
       })}
     </div>
 
-    {Style(css`
+    <o-style>{css`
       * {
         margin: 0;
         padding: 0;
@@ -97,7 +97,7 @@ export function TestColorSort() {
       .slide-in {
         animation: 500ms cubic-bezier(0.55, 0, 0.1, 1) slide-in forwards;
       }
-    `)}
+    `}</o-style>
   </>
 }
 
@@ -190,7 +190,7 @@ function ColorPalette(setup: FromTag<{
       </div>
     </div>
 
-    {Style(css`
+    <o-style>{css`
       .container {
         display: flex;
         flex-direction: column;
@@ -215,7 +215,7 @@ function ColorPalette(setup: FromTag<{
         height: 44px;
         border-radius: 10px;
       }
-    `)}
+    `}</o-style>
   </>
 }
 
@@ -228,7 +228,7 @@ const Gap = (setup: Bindings<'button'>) =>
       <Arrow />
     </button>
 
-    {Style(css`
+    <o-style>{css`
       .gap {
         position: relative;
         margin: 0px;
@@ -249,7 +249,7 @@ const Gap = (setup: Bindings<'button'>) =>
       .gap:enabled:has(+ .endgap:hover) {
         opacity: 1;
       }
-    `)}
+    `}</o-style>
   </>
 
 
@@ -260,7 +260,7 @@ const Endgap = (setup: Bindings<'button'>) =>
       auto-bind={setup}
     ></button>
 
-    {Style(css`
+    <o-style>{css`
       .endgap:hover + .gap:enabled {
         opacity: 1;
       }
@@ -268,7 +268,7 @@ const Endgap = (setup: Bindings<'button'>) =>
       .endgap {
         width: 90px;
       }
-    `)}
+    `}</o-style>
   </>
 
 
@@ -279,7 +279,7 @@ const Arrow = () =>
       <div class='chevron-down chevron-tac'></div>
     </div>
 
-    {Style(css`
+    <o-style>{css`
       .chevron-arrow {
         position: absolute;
         left: 50%;
@@ -307,7 +307,7 @@ const Arrow = () =>
         transform-origin: left center;
         transform: rotate(-45deg);
       }
-    `)}
+    `}</o-style>
   </>
 
 
@@ -486,7 +486,7 @@ function DropZones(setup: FromTag<{
       </div>
     )}
 
-    {Style(css`
+    <o-style>{css`
       .dropzones {
         position: absolute;
         display: flex;
@@ -505,7 +505,7 @@ function DropZones(setup: FromTag<{
       .drop-target {
         opacity: 1;
       }
-    `)}
+    `}</o-style>
   </>
 }
 

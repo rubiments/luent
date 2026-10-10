@@ -11,8 +11,10 @@ export function TestMarkdownApp() {
 
   return <>
     <div class='editor'>
-      <textarea class='input' slot-type='mu:text'>{$markdown}</textarea>
-      <div class='output'>{{ html: $html }}</div>
+      <textarea class='input' mu:value={$markdown}/>
+      <div class='output'>
+        {{ html: $html }}
+      </div>
     </div>
     <o-link href='/src/MarkdownApp.css' rel='stylesheet' />
   </>

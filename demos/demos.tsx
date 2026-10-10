@@ -57,6 +57,8 @@ import { TestTaskObserver } from "./src/TestTaskObserver"
 import { TestNestedAwait } from "./src/TestNestedAwait"
 import { TestAsyncMultiply } from "./src/TestAsyncMultiply"
 import { TestEmitEvents } from "./src/TestEmitEvents"
+import { TestOStyle } from "./src/TestOStyle"
+import { TestContentEditable } from "./src/TestContentEditable"
 // import { DayView } from "./src/TimelineApp/Timeline"
 
 export function runDemo() {
@@ -64,7 +66,7 @@ export function runDemo() {
       provideRoot(MICROCLASS_MERGE, twMerge);
 
       return <>
-        <TestAsyncTabs></TestAsyncTabs>
+        <TestNamedSlots></TestNamedSlots>
         {/* <HabitTracker habit="water" goal={8}></HabitTracker> */}
         {/* <BottomlessBlokkis></BottomlessBlokkis> */}
         {/* <DayView/> */}
