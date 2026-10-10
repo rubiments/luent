@@ -466,14 +466,16 @@ function transformJSXElement(path) {
 }
 
 function transformJSXAttributes(jsxElementPath) {
-   // path.openingElement.attributes[0].value
    const attributes = jsxElementPath.get('openingElement.attributes');
    for (const attribute of attributes) {
       const node = attribute.node
-      const key = node.name.name
+      const identifier = node.name;
+      const namespaceName = identifier && identifier.namespace && identifier.namespace.name
+      const key = namespaceName ? identifier.name.name : identifier.name
       const value = node.value;
       if (!t.isJSXExpressionContainer(value)) continue;
       const firstLetter = key[0]
+      // TODO: FromTag types should require render function if attribute name is not Pascal-cased
       if (firstLetter && firstLetter.toUpperCase() === firstLetter) {
         if (t.isJSXElement(value.expression)) {
           node.value = normalizeSlotToRenderFunction([attribute.get('value.expression')])
