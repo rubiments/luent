@@ -1,5 +1,5 @@
 # Contributing to Luent
-[coming soon]
+[under construction]
 
 <p align="right"><a href="#readme-top">[top]</a></p>
 
