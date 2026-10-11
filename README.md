@@ -14,9 +14,9 @@ Core features:
 - state management through familiar native structures
 - type-explicit reactivity
 
-Experimental features:
-- [WIP] compile-time mutation-safety checking
-- [WIP] [NoriScript](https://github.com/ruby-cube/luent/blob/main/packages/noriscript#noriscript), a language extension of TypeScript + JSX with improved readability and type safety of signal/getter-based reactivity
+Experimental features (in progress):
+- compile-time mutation-safety checking
+- [NoriScript](https://github.com/ruby-cube/luent/blob/main/packages/noriscript#noriscript), a language extension of TypeScript + JSX with improved readability and type safety of signal/getter-based reactivity
 
 <br>
 
@@ -59,7 +59,7 @@ function Counter() {
 <br>
 
 ## Motivation
-Modern frameworks bring powerful innovations to web development, but often introduce cognitive overhead through syntax, abstractions, and patterns that run counter to native web technologies and developer intuition.
+Modern frameworks have brought powerful innovations to web development, but have also introduced cognitive overhead through syntax, abstractions, and patterns that run counter to native web technologies and developer intuition.
 
 This project explores ways to improve the clarity and consistency of complex, evolving codebases for human developers and coding agents alike.
 
