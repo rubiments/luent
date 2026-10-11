@@ -239,18 +239,16 @@ FunctionalComponents.tsx =
 }>) {
   const { limit = 9 } = setup;
 
-  const emojis = ionic(['🍀', '🍄', '✨'])
+  const emojis = ionic(['🍀', '🍄', '✨'], {
+    addRandom() { this.push(getEmoji()) }
+  })
 
   return <>
-    <ul class='collection'>
-      {For(emojis, $emoji =>
-        <Chip>{$emoji}</Chip>
-      )}
-    </ul>
+    <EmojiGrid emojis={emojis} />
     <button
       disabled={() => emojis.length === limit}
-      on:click={() => emojis.push(getEmoji())}
-    >add emoji</button>
+      on:click={() => emojis.addRandom()}
+    >+</button>
 
     <o-style>{css\`
       .collection {
@@ -270,18 +268,16 @@ FunctionalComponents.nsx =
 }>) {
   const { limit = 9 } = setup;
 
-  const emojis = ionic(['🍀', '🍄', '✨'])
+  const emojis = ionic(['🍀', '🍄', '✨'], {
+    addRandom() { this.push(getEmoji()) }
+  })
 
   <:>
-    <ul class='collection'>
-      {For(emojis, emoji@ :>
-        <Chip>{emoji@}</Chip>
-      )}
-    </ul>
+    <EmojiGrid {emojis} />
     <button
       disabled={(emojis.length === limit)@}
-      on:click={() => emojis.push(getEmoji())}
-    >add emoji</button>
+      on:click={() => emojis.addRandom()}
+    >+</button>
 
     <o-style>
       .collection {
@@ -569,8 +565,8 @@ FlowExpressions.nsx =
 FlowExpressions.tsx =
   `<section>
   {If($online, <>
-      <span class="status">Online</span>
-      <button on:click={sendMessage}>Send message</button>
+    <span class="status">Online</span>
+    <button on:click={sendMessage}>Send message</button>
   </>)}
   {Else(
     <span class="status">Offline</span>
@@ -638,7 +634,7 @@ function MutationSafety() {
 
 MutationSafety.filename = 'EmojiQuest'
 MutationSafety.nsx =
-  `function EmojiQuest({ powers }) {
+  `function EmojiQuest({ powers }: Setup) {
   const powerset = ionic(['🍀', '🍄', '✨'], {
     addRandomPower() {
       this.push(chooseRandom(powers))
@@ -668,7 +664,7 @@ function Powerset(setup: FromTag<{
 } `
 
 MutationSafety.tsx =
-  `function EmojiQuest({ powers }) {
+  `function EmojiQuest({ powers }: Setup) {
   const powerset = ionic(['🍀', '🍄', '✨'], {
     addRandomPower() {
       this.push(chooseRandom(powers))
@@ -688,10 +684,10 @@ function Powerset(setup: FromTag<{
   return <>
     <div class='powerset-panel'>
       <Powers powers={powers}>
-        <button
-          disabled={() => powers.length === limit}
-          on:click={() => powers.addRandomPower()}
-        >+</button>
+      <button
+        disabled={() => powers.length === limit}
+        on:click={() => powers.addRandomPower()}
+      >+</button>
     </div>
     <o-link href='/powerset.css' rel='stylesheet' />
   </>

@@ -82,7 +82,7 @@ export function Code(setup: FromTag<{
         atMount(() => {
           const stickyButton = $stickyBtn()
           const stickyContainer = $container()
-          const nav = $nav() as unknown as HTMLElement
+          const nav = $nav()
           if (!stickyButton || !stickyContainer || !nav) return;
 
           function updateStickyPlacement() {
@@ -124,7 +124,7 @@ export function Code(setup: FromTag<{
 
           function syncStickyVisibility() {
             awaitLayout(() => {
-              const navRect = nav.getBoundingClientRect()
+              const navRect = nav!.getBoundingClientRect()
               const containerRect = stickyContainer!.getBoundingClientRect()
               const topOffset = stickyTopOffset()
               const shouldShow = navRect.bottom <= topOffset
@@ -278,7 +278,7 @@ function CodeBlock(setup: FromTag<{ tab: CodeTab, highlight: (code: string, lang
       return markHover(highlighted, tab.hover)
     }
   })
-  const $container = NodeRef('div') as unknown as NodeRef<HTMLDivElement>
+  const $container = NodeRef('div')
 
   const delay = useDelay()
 

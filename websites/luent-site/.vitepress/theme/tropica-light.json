@@ -1,12 +1,12 @@
 {
-  "name": "dusky",
-  "type": "dark",
+  "name": "tropica-light",
+  "type": "light",
   "colors": {
-    "editor.background": "#15161b",
-    "editor.foreground": "#d8d9e0",
-    "editorCursor.foreground": "#5cc5ce",
-    "editor.selectionBackground": "rgba(18,181,208, 0.22)",
-    "editorLineNumber.foreground": "#5e6273"
+    "editor.background": "#f8f8f8",
+    "editor.foreground": "#1c1d22",
+    "editorCursor.foreground": "#1e8a94",
+    "editor.selectionBackground": "rgba(18,181,208,0.18)",
+    "editorLineNumber.foreground": "#b1b4bd"
   },
   "tokenColors": [
     {
@@ -15,7 +15,7 @@
         "punctuation.definition.comment"
       ],
       "settings": {
-        "foreground": "#6c7080",
+        "foreground": "#6c6f7d",
         "fontStyle": "italic"
       }
     },
@@ -27,7 +27,7 @@
         "storage.modifier"
       ],
       "settings": {
-        "foreground": "#7fb0b8"
+        "foreground": "#387b85"
       }
     },
     {
@@ -37,7 +37,7 @@
         "entity.name.class"
       ],
       "settings": {
-        "foreground": "#5cc5ce"
+        "foreground": "#147c86"
       }
     },
     {
@@ -47,7 +47,7 @@
         "meta.function-call"
       ],
       "settings": {
-        "foreground": "#5cc5ce"
+        "foreground": "#147c86"
       }
     },
     {
@@ -57,7 +57,7 @@
         "support.variable"
       ],
       "settings": {
-        "foreground": "#d8d9e0"
+        "foreground": "#1c1d22"
       }
     },
     {
@@ -66,7 +66,7 @@
         "string.quoted"
       ],
       "settings": {
-        "foreground": "#e6c77a"
+        "foreground": "#a4620a"
       }
     },
     {
@@ -74,7 +74,7 @@
         "entity.name.tag"
       ],
       "settings": {
-        "foreground": "#e6c77a"
+        "foreground": "#a4620a"
       }
     },
     {
@@ -82,7 +82,7 @@
         "entity.other.attribute-name"
       ],
       "settings": {
-        "foreground": "#7ed4e4"
+        "foreground": "#1b7a89"
       }
     },
     {
@@ -90,7 +90,7 @@
         "constant.numeric"
       ],
       "settings": {
-        "foreground": "#f2a65a"
+        "foreground": "#b95311"
       }
     },
     {
@@ -99,7 +99,7 @@
         "constant.character"
       ],
       "settings": {
-        "foreground": "#f0b86c"
+        "foreground": "#a3640f"
       }
     },
     {
@@ -107,7 +107,7 @@
         "keyword.operator"
       ],
       "settings": {
-        "foreground": "#7fb0b8"
+        "foreground": "#387b85"
       }
     },
     {
@@ -117,7 +117,7 @@
         "meta.delimiter"
       ],
       "settings": {
-        "foreground": "#8d91a1"
+        "foreground": "#6c707e"
       }
     }
   ]

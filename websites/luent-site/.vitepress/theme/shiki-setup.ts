@@ -1,6 +1,6 @@
 import nsxGetInjectionGrammar from '../../../../plugins/vscode-noriscript/grammar/nsx-get.injection.tmLanguage.json'
-import dusky from './dusky.json'
-import goldenHour from './golden-hour.json'
+import tropicaDark from './tropica-dark.json'
+import tropicaLight from './tropica-light.json'
 import { ThemeRegistrationResolved } from 'shiki/types'
 
 const tokenColors = [
@@ -62,18 +62,18 @@ export const nsxGrammar = {
 }
 
 export const shikiThemeNames = {
-  light: 'golden-hour',
-  dark: 'dusky'
+  light: 'tropica-light',
+  dark: 'tropica-dark'
 } as const
 
-export const shikiThemes = [goldenHour, dusky]
+export const shikiThemes = [tropicaLight, tropicaDark]
 
 export const shikiLanguages = ['ts', 'tsx', nsxGrammar] as const
 
 export const markdownShikiConfig = {
   theme: {
-    light: goldenHour as unknown as ThemeRegistrationResolved,
-    dark: dusky as unknown as ThemeRegistrationResolved,
+    light: tropicaLight as unknown as ThemeRegistrationResolved,
+    dark: tropicaDark as unknown as ThemeRegistrationResolved,
   },
   languages: [...shikiLanguages]
 }

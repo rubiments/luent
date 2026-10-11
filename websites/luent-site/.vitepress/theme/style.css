@@ -80,7 +80,7 @@
 
   --vp-font-family-mono: 'SFMono-Regular', 'SF Mono', ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', 'JetBrains Mono', 'Cascadia Mono', 'IBM Plex Mono', 'Courier New', monospace;
 
-  --vp-sidebar-bg-color: rgb(239, 240, 243);
+  --vp-sidebar-bg-color: rgb(239, 242, 243);
 
   .vp-skip-link {
     display: none !important;
@@ -300,7 +300,7 @@ body:not(.lang-mode-tsx) .vp-doc [class*='language-tsx'], body:not(.lang-mode-ts
   --luent-teal: #48bac4;
   --luent-teal-ink: #1e8a94;
   --luent-panel: #f4f5f4;
-  --luent-code-bg: #f6f6f7;
+  --luent-code-bg: #f8f8f8;
   --luent-code-ink: #e8e9e6;
 
   --vp-font-family-base: 'Instrument Sans', system-ui, sans-serif;
