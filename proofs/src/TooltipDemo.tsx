@@ -1,4 +1,5 @@
 import { Button } from "../Button"
+// FIX: missing styled Button
 import { Tooltip, TOOLTIP_CONFIG, TooltipKit } from "@luently/luent-ui"
 
 // Basic:
