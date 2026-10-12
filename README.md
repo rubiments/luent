@@ -16,7 +16,7 @@ Core features:
 
 Experimental features (in progress):
 - compile-time mutation-safety checking
-- [NoriScript](https://github.com/ruby-cube/luent/blob/main/packages/noriscript#noriscript), a language extension of TypeScript + JSX with improved readability and type safety of signal/getter-based reactivity
+- [NoriScript](https://github.com/rubiments/luent/blob/main/packages/noriscript#noriscript)(.ns/.nsx), a language extension of TypeScript + JSX with improved readability and type safety of signal/getter-based reactivity
 
 <br>
 
@@ -173,5 +173,5 @@ Particular acknowledgement to the people and projects I've especially admired:
 
 <p align="right"><a href="#readme-top">[top]</a></p>
 
-[MIT license](https://github.com/ruby-cube/luent/blob/main/LICENSE) • Built with ♥
+[MIT license](https://github.com/rubiments/luent/blob/main/LICENSE) • Built with ♥
 

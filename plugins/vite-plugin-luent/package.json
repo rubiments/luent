@@ -25,12 +25,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruby-cube/luent.git",
+    "url": "git+https://github.com/rubiments/luent.git",
     "directory": "plugins/vite-plugin-luent"
   },
-  "homepage": "https://github.com/ruby-cube/luent/tree/main/plugins/vite-plugin-luent#README",
+  "homepage": "https://github.com/rubiments/luent/tree/main/plugins/vite-plugin-luent#README",
   "bugs": {
-    "url": "https://github.com/ruby-cube/luent/issues"
+    "url": "https://github.com/rubiments/luent/issues"
   },
   "keywords": [
     "vite",

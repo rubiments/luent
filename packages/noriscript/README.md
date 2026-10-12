@@ -1,6 +1,6 @@
 <div align="center">
 <picture>
-  <img width="200" src="https://github.com/ruby-cube/luent/blob/cave/packages/noriscript/assets/noriscript-logo-512px-padded.png" alt="noriscript-logo"/>
+  <img width="200" src="https://github.com/rubiments/luent/blob/cave/packages/noriscript/assets/noriscript-logo-512px-padded.png" alt="noriscript-logo"/>
 </picture>
 <!-- <p><a href='https://noriscript.org/accessor-syntax'>learn</a> &nbsp;-&nbsp; <a href='https://noriscript.org/examples'>demos</a> &nbsp;-&nbsp; <a href='#motivation'>motivation</a> &nbsp;-&nbsp; <a href='#design-principles'>principles</a></p> -->
 </div>
@@ -99,4 +99,4 @@ Because NoriScript makes use of an `@` postfix in its syntax, some developers ma
 <p align="right"><a href="#readme-top">[top]</a></p>
 
 ## License
-[MIT license](https://github.com/ruby-cube/luent/blob/main/LICENSE)
+[MIT license](https://github.com/rubiments/luent/blob/main/LICENSE)

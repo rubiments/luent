@@ -57,8 +57,8 @@ export default defineConfig({
       { text: 'Preview', link: '/#code-glimpses' },
       // { text: 'Learn', link: '/guide/accessor-syntax' },
       { text: 'Demos', link: '/demos/habit-tracker' },
-      { text: 'Motivation', link: 'https://github.com/ruby-cube/luent/tree/main/packages/noriscript#motivation' },
-      { text: 'Design Principles', link: 'https://github.com/ruby-cube/luent/tree/main/packages/noriscript#design-principles' },
+      { text: 'Motivation', link: 'https://github.com/rubiments/luent/tree/main/packages/noriscript#motivation' },
+      { text: 'Design Principles', link: 'https://github.com/rubiments/luent/tree/main/packages/noriscript#design-principles' },
       { text: 'pre-alpha', link: '/' },
     ],
     footer: {
@@ -110,7 +110,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/ruby-cube/luent/tree/main/packages/noriscript' }
+      { icon: 'github', link: 'https://github.com/rubiments/luent/tree/main/packages/noriscript' }
     ]
   }
 })

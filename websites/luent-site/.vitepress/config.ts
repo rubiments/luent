@@ -63,8 +63,8 @@ export default defineConfig({
       // { text: 'learn', link: '/guide/rendering-views' },
       { text: 'demos', link: '/demos/habit-tracker' },
       { text: 'reference', link: '/api/overview' },
-      { text: 'motivation', link: 'https://github.com/ruby-cube/luent/tree/main#motivation' },
-      // { text: 'preview noriscript', link: 'https://github.com/ruby-cube/luent/tree/main/#design-principles' },
+      { text: 'motivation', link: 'https://github.com/rubiments/luent/tree/main#motivation' },
+      // { text: 'preview noriscript', link: 'https://github.com/rubiments/luent/tree/main/#design-principles' },
       { text: 'v0.0.1', link: '/' },
     ],
 
@@ -185,7 +185,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/ruby-cube/luent/' }
+      { icon: 'github', link: 'https://github.com/rubiments/luent/' }
     ],
 
     outline: {

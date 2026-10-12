@@ -238,10 +238,10 @@ function initDrag(event){
 Flasked listeners are listeners that are hooked into the Flask event system, where the mess of listener cleanup is handled under the hood. Flasked listeners can be obtained through several ways:
 
 - [the Flasked Listener API](#flasked-listeners-api), which can be used to turn existing listeners into flasked listeners as well as to create new flasked listeners
-- [the Pecherie library](https://github.com/ruby-cube/rue/tree/main/packages/pecherie#readme-top), which creates flasked listeners for application events and process hooks
-- [the Archer library](https://github.com/ruby-cube/rue/tree/main/packages/archer#readme-top), which provides a flasked listener for targeted messages
-- [the Thread library](https://github.com/ruby-cube/rue/tree/main/packages/thread#readme-top), which provides flasked schedulers and flasked user event listeners from Web API
-- [the Watch library](https://github.com/ruby-cube/rue/tree/main/packages/watch#readme-top), which provides flasked versions of Vue’s watch, watchEffect, and computed
+- [the Pecherie library](https://github.com/rubiments/rue/tree/main/packages/pecherie#readme-top), which creates flasked listeners for application events and process hooks
+- [the Archer library](https://github.com/rubiments/rue/tree/main/packages/archer#readme-top), which provides a flasked listener for targeted messages
+- [the Thread library](https://github.com/rubiments/rue/tree/main/packages/thread#readme-top), which provides flasked schedulers and flasked user event listeners from Web API
+- [the Watch library](https://github.com/rubiments/rue/tree/main/packages/watch#readme-top), which provides flasked versions of Vue’s watch, watchEffect, and computed
 
 Note that in browser and Node.js API, the word “listener” refers to the callback passed into the `addListener` function. This to me is a misnomer and it pains me to follow this convention. For clarity, here is how terms are used within the Flask system:
 
@@ -326,7 +326,7 @@ To create a morphable listener, use `$listen` from the Flasked Listeners API.
 
 ### Schedulers
 
-Schedulers are one-time listeners that cannot morph into a sustained listeners. These are typically functions that queue a task to the main thread such as: `queueTask`, `beforeRepaint` (flasked `requestAnimationFrame`), and `onTimeout` (flasked `setTimeout`). See [Thread](https://github.com/ruby-cube/rue/tree/main/packages/thread#readme-top) for more on existing schedulers.
+Schedulers are one-time listeners that cannot morph into a sustained listeners. These are typically functions that queue a task to the main thread such as: `queueTask`, `beforeRepaint` (flasked `requestAnimationFrame`), and `onTimeout` (flasked `setTimeout`). See [Thread](https://github.com/rubiments/rue/tree/main/packages/thread#readme-top) for more on existing schedulers.
 
 To create a scheduler, use `$schedule` from [the Flasked Listeners API](#flasked-listeners-api).
 
@@ -340,7 +340,7 @@ Conversely, subscriptions are sustained listeners that cannot morph into a one-t
 
 ### Synchronous vs Asynchronous Handling
 
-Handlers are called synchronously at the time of event emission. This allows for “before event” hooks as well as the possibility of handlers communicating back to the source of the event (see [reply](https://github.com/ruby-cube/rue/tree/main/packages/pecherie#hook-configuration)). 
+Handlers are called synchronously at the time of event emission. This allows for “before event” hooks as well as the possibility of handlers communicating back to the source of the event (see [reply](https://github.com/rubiments/rue/tree/main/packages/pecherie#hook-configuration)). 
 
 If asynchronous handling is needed, the developer can call an async scheduler or one-time listener from within the handler. In the example below, the synchonous handler calls the `queuePS` scheduler (an alias for `queueMicrotask`) for asynchronous handling.
 
@@ -350,7 +350,7 @@ onPopulated(() => queuePS(() => {
 }))
 ```
 
-Alternatively, when using [Pêcherie](https://github.com/ruby-cube/rue/tree/main/packages/pecherie#readme-top) hooks, omit the callback function and options parameter to queue a microtask after an event is emitted via a promise:
+Alternatively, when using [Pêcherie](https://github.com/rubiments/rue/tree/main/packages/pecherie#readme-top) hooks, omit the callback function and options parameter to queue a microtask after an event is emitted via a promise:
 
 ```ts
 onPopulated()
@@ -380,7 +380,7 @@ There are three distinct types of flasks:
 
 Covert flasks are the vessels for automatic batch cleanup. Any entity that is instantiated through some sort of setup or constructor function and which exposes a lifecycle end hook (e.g. `onUnmounted`, `onDestroyed`, etc) can serve as a covert flask. The lifecycle hook must be made into a [flasked listener](#flasked-listeners-api) (or at least return an object that implements the `PendingOp` interface). Note that these requirements exclude Vue Options API components.
 
-Covert flasks must be registered at initiation of the flask event system via `initFlask()`. Below is an example of registering Vue components as covert flasks (using functions provided by [the Paravue library](https://github.com/ruby-cube/rue/tree/main/packages/paravue#readme-top):
+Covert flasks must be registered at initiation of the flask event system via `initFlask()`. Below is an example of registering Vue components as covert flasks (using functions provided by [the Paravue library](https://github.com/rubiments/rue/tree/main/packages/paravue#readme-top):
 
 ```tsx
 // main.ts
@@ -943,7 +943,7 @@ const useTable = enflask((flask) => {
 
 ## Flasked Listeners API
 
-The functions provided by [Pêcherie](https://github.com/ruby-cube/rue/tree/main/packages/pecherie#readme-top), [Archer](https://github.com/ruby-cube/rue/tree/main/packages/archer#readme-top), [Thread](https://github.com/ruby-cube/rue/tree/main/packages/thread#readme-top), and [Paravue](https://github.com/ruby-cube/rue/tree/main/packages/paravue#readme-top) should cover most use cases. However, if you would like to flask an existing listener or scheduler, Flask provides the `$listen`, `$schedule`, and `$subscribe` functions to acheive this.
+The functions provided by [Pêcherie](https://github.com/rubiments/rue/tree/main/packages/pecherie#readme-top), [Archer](https://github.com/rubiments/rue/tree/main/packages/archer#readme-top), [Thread](https://github.com/rubiments/rue/tree/main/packages/thread#readme-top), and [Paravue](https://github.com/rubiments/rue/tree/main/packages/paravue#readme-top) should cover most use cases. However, if you would like to flask an existing listener or scheduler, Flask provides the `$listen`, `$schedule`, and `$subscribe` functions to acheive this.
 
 [$listen(handler, options, config)](#listenhandler-options-config)
 
@@ -1137,4 +1137,4 @@ Event-driven code is notoriously difficult to debug. Additional support for easi
 
 <p align="right"><a href="#readme-top">[top]</a></p>
 
-© 2023 - present [Ruby Y Wang](https://github.com/ruby-cube)
+© 2023 - present [Ruby Y Wang](https://github.com/rubiments)

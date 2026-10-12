@@ -5,10 +5,10 @@
    "description": "An expressive framework for building web applications with clarity and flow",
    "repository": {
       "type": "git",
-      "url": "git+https://github.com/ruby-cube/luent.git",
+      "url": "git+https://github.com/rubiments/luent.git",
       "directory": "packages/luent"
    },
-   "homepage": "https://github.com/ruby-cube/luent",
+   "homepage": "https://github.com/rubiments/luent",
    "type": "module",
    "exports": {
       ".": {
