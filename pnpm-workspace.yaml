@@ -1,10 +1,11 @@
 packages:
   - packages/*
   - plugins/*
+  - demos/*
   - websites/*
   - apps/*
-  - demos
-  - demos/*
+  - proofs
+  - proofs/*
   - e2e
   - e2e/*
 

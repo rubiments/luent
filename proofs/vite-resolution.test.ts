@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { createServer } from 'vite'
 import path from 'node:path'
 
-describe('demos resolution', () => {
+describe('proofs resolution', () => {
   it('resolves luent and jsx runtime to workspace source', async () => {
-    const root = path.resolve(process.cwd(), 'demos')
+    const root = path.resolve(process.cwd(), 'proofs')
     const rawConfigModule = await import('./vite.config.js')
     const rawConfig = rawConfigModule.default
     const config = typeof rawConfig === 'function' ? await rawConfig() : rawConfig
