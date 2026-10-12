@@ -26,6 +26,19 @@ export default {
   //   })
   // },
   enhanceApp({ router }) {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', (event) => {
+        const target = event.target
+        if (!(target instanceof Element)) return
+
+        const link = target.closest('.VPNavScreen a[href]')
+        if (!link) return
+
+        event.preventDefault()
+        event.stopImmediatePropagation()
+      }, true)
+    }
+
     let previousPage = router.route.path
     const prevBeforeRouteChange = router.onBeforeRouteChange
 

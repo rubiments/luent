@@ -36,10 +36,16 @@ export default defineConfig({
     ...sharedViteConfig,
     resolve: {
       ...sharedViteConfig.resolve,
-      alias: {
-        'vitepress/dist/client/theme-default/components/VPNavScreenMenuLink.vue': resolve(__dirname, './theme/overrides/VPNavScreenMenuLink.vue'),
-        'vitepress/dist/client/theme-default/components/VPNavScreenMenuGroupLink.vue': resolve(__dirname, './theme/overrides/VPNavScreenMenuGroupLink.vue')
-      }
+      alias: [
+        {
+          find: /vitepress\/dist\/client\/theme-default\/components\/VPNavScreenMenuLink\.vue$/,
+          replacement: resolve(__dirname, './theme/overrides/VPNavScreenMenuLink.vue')
+        },
+        {
+          find: /vitepress\/dist\/client\/theme-default\/components\/VPNavScreenMenuGroupLink\.vue$/,
+          replacement: resolve(__dirname, './theme/overrides/VPNavScreenMenuGroupLink.vue')
+        }
+      ]
     },
     server: {
       fs: {
