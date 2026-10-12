@@ -4,6 +4,8 @@ import { TransformLuentIslands, injectPortals, extractPortals, Islands, isCustom
 import { createSharedViteConfig } from '../../shared/vite.shared.js'
 import { markdownShikiConfig } from './theme/shiki-setup.js'
 
+const sharedViteConfig = createSharedViteConfig()
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: 'docs',
@@ -31,7 +33,14 @@ export default defineConfig({
   },
 
   vite: {
-    ...createSharedViteConfig(),
+    ...sharedViteConfig,
+    resolve: {
+      ...sharedViteConfig.resolve,
+      alias: {
+        'vitepress/dist/client/theme-default/components/VPNavScreenMenuLink.vue': resolve(__dirname, './theme/overrides/VPNavScreenMenuLink.vue'),
+        'vitepress/dist/client/theme-default/components/VPNavScreenMenuGroupLink.vue': resolve(__dirname, './theme/overrides/VPNavScreenMenuGroupLink.vue')
+      }
+    },
     server: {
       fs: {
         strict: false
