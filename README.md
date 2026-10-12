@@ -32,17 +32,6 @@ npm create luent
 ## Example
 <!-- Take a tour of Luent's syntax and APIs with these [code glimpses]() and [demos](). -->
 ```tsx
-// nsx
-function Counter() {
-  get count = ion(0);
-  <:>
-    <button on:click={(){ count++ }}>
-      {count@}
-    </button>
-  </:>
-}
-```
-```tsx
 // tsx
 function Counter() {
   const $count = ion(0);
@@ -55,6 +44,18 @@ function Counter() {
 ```
 > Note: The $ prefix is a naming convention for state accessor functions and/or wrapper objects, not a reactivity marker. Reactivity exists independently of this convention.
 
+```tsx
+// nsx
+function Counter() {
+  get count = ion(0);
+  <:>
+    <button on:click={(){ count++ }}>
+      {count@}
+    </button>
+  </:>
+}
+```
+> NoriScript (.ns/.nsx) is currently preview-only, not ready for use.
 
 <br>
 

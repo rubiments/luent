@@ -500,7 +500,7 @@ ReusableLogic.ns =
     if (position.x < 0 && position.y >= 0) return 'II'
     if (position.x < 0 && position.y < 0) return 'III'
     return 'IV'
-})
+  })
 
   return { distance@, quadrant@ }
 }
@@ -524,7 +524,7 @@ ReusableLogic.ts =
     if (position.x < 0 && position.y >= 0) return 'II'
     if (position.x < 0 && position.y < 0) return 'III'
     return 'IV'
-})
+  })
 
   return { $distance, $quadrant }
 }
