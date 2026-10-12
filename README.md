@@ -31,6 +31,7 @@ npm create luent
 
 ## Example
 <!-- Take a tour of Luent's syntax and APIs with these [code glimpses]() and [demos](). -->
+### TypeScript + JSX
 ```tsx
 // tsx
 function Counter() {
@@ -44,6 +45,7 @@ function Counter() {
 ```
 > Note: The $ prefix is a naming convention for state accessor functions and/or wrapper objects, not a reactivity marker. Reactivity exists independently of this convention.
 
+### NoriScript
 ```tsx
 // nsx
 function Counter() {
