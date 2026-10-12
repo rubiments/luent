@@ -1,4 +1,4 @@
-import { component, template, FromTag, If, Else, For, fromGround, ContextKey, provideGround, $$ } from "luent";
+import { If, Else, For, fromGround, ContextKey, provideGround, $$ } from "luent";
 import { as, ionic, EACH, ion, Ionic, Nested, } from "@luently/quarky";
 import "./style.css"
 import "./TestTreeApp.css"
@@ -51,16 +51,15 @@ class TreeItem {
 type IonicTreeItem = Ionic<TreeItem, Nested<{ children: Ionic<IonicTreeItem[]> | undefined }>>
 
 function ionicTreeItem(item: TreeItemData | TreeItem) {
-   function TreeChildren(children?: TreeItemData[]): TreeItem[] | undefined {
-      return children?.map(item => new TreeItem(item.name, TreeChildren(item.children)))
+   if (item instanceof TreeItem) {
+      return ionic(item, {
+         children: { '-as': ionicChildren }
+      })
    }
-
-   return ionic(item, {
-      '-wrap': item => item instanceof TreeItem ? item : new TreeItem(item.name, TreeChildren(item.children)),
+   return ionic(new TreeItem(item.name, TreeChildren(item.children)), {
       children: { '-as': ionicChildren }
    })
 }
-
 
 function ionicChildren(children: TreeItem[] | undefined): Ionic<IonicTreeItem[]> | undefined {
    if (!children) return undefined;
@@ -69,7 +68,9 @@ function ionicChildren(children: TreeItem[] | undefined): Ionic<IonicTreeItem[]>
    })
 }
 
-
+function TreeChildren(children?: TreeItemData[]): TreeItem[] | undefined {
+   return children?.map(item => new TreeItem(item.name, TreeChildren(item.children)))
+}
 
 
 // # Tree App
@@ -83,9 +84,9 @@ export function TreeApp() {
 
       <>
          <ul style={{ width: '900px', 'background-color': '#f6f6f6' }}>
-            <TreeItemView mu:item={root}></TreeItemView>
+            <TreeItemView item={root}></TreeItemView>
          </ul>
-         <o-link href='/src/demos/tree-view.css' rel='stylesheet' />
+         <o-link href='/src/proofs/tree-view.css' rel='stylesheet' />
       </>
 
    )
@@ -95,9 +96,9 @@ export function TreeApp() {
 // # TreeItem
 
 function TreeItemView(input: {
-   'mu:item': IonicTreeItem
+   item: IonicTreeItem
 }) {
-   const { mu, item } = input
+   const { item } = input
 
    const $isFolder = ion(() => !!item.children?.length)
    const $isOpen = ion($isFolder(), {
@@ -110,10 +111,11 @@ function TreeItemView(input: {
       console.log('change type')
       if (!$isFolder()) {
          item.children = ionicChildren([])
-         mu.item.addChild(ionicTreeItem({ name: 'stuff' }))
+         item.addChild(ionicTreeItem({ name: 'stuff' }))
          $isOpen.value = true
       }
    }
+
 
    return (
 
@@ -133,7 +135,7 @@ function TreeItemView(input: {
                {For(item.children!, m => m, item => (
                   <TreeItemView item={item}></TreeItemView>
                ))}
-               <li class='add' on:click={e => mu.item.addChild(ionicTreeItem({ name: 'stuff' }))}>+</li>
+               <li class='add' on:click={e => item.addChild(ionicTreeItem({ name: 'stuff' }))}>+</li>
             </ul>
          )}
       </li>

@@ -87,7 +87,7 @@
   "include": [
     "packages",
     "apps",
-    "demos",
+    "proofs",
     "**/src/*",
     "e2e",
     "plugins",
