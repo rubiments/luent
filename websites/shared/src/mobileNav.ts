@@ -4,14 +4,14 @@ export function fixMobileNav($currentPath: () => string) {
   document.addEventListener('click', (event) => {
     const target = event.target
     if (!(target instanceof Element)) return;
-    const link = target.closest('.VPLink')
+    const link = target.closest('.VPLink, .VPNavBarTitle a')
     if (!link || !('href' in link)) return;
     const href = link.href
     if (typeof href !== 'string' || !href.startsWith(window.location.origin)) return;
     if (samePage(href)) {
-      const backdrop = document.querySelector('.VPBackdrop')
-      if (backdrop && backdrop instanceof HTMLElement) {
-        backdrop.click()
+      const closeMenu = document.querySelector('.VPBackdrop, .VPNavBarHamburger')
+      if (closeMenu && closeMenu instanceof HTMLElement) {
+        closeMenu.click()
       }
       return;
     }
