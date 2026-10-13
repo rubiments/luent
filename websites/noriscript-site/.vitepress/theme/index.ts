@@ -5,8 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import HeroCode from './HeroCode.vue'
 import './style.css'
 import '../../../shared/src/style-rules'
-import { islands, mountIslands, smoothScrollHomepage } from '../../src/luent-islands.js'
-import { installVitePressScrollRestoration } from '../../../shared/src/vitepress-scroll-restoration'
+import { fixMobileNav, islands, mountIslands, smoothScrollHomepage, installVitePressScrollRestoration } from '../../src/luent-islands'
 
 
 export default {
@@ -21,6 +20,7 @@ export default {
     })
   },
   enhanceApp({ router }) {
+
     let previousPage = router.route.path
     const prevBeforeRouteChange = router.onBeforeRouteChange
 
@@ -37,6 +37,8 @@ export default {
         smoothScrollHomepage(document.documentElement, page, previousPage)
       }
     })
+
+    fixMobileNav(() => previousPage)
   }
 } satisfies Theme
 

@@ -616,7 +616,6 @@ export function createAsyncIon<T>(setup: AsyncIonSetup<T>) {
         resolve = null;
         reject = null;
       }
-      console.log('setting async::', value, fetch)
       $state.value = value
       $pending.value = false
       $loaded.value = true
