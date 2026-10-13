@@ -899,3 +899,8 @@ body {
     display: none !important;
   }
 }
+
+.VPLocalNav .menu-text {
+  opacity: 0;
+  transition: opacity 250ms ease-in;
+}

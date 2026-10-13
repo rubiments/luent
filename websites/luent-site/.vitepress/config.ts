@@ -63,18 +63,18 @@ export default defineConfig({
       { text: 'tour', link: '/#code-glimpses' },
       // { text: 'learn', link: '/guide/rendering-views' },
       { text: 'demos', link: '/demos/habit-tracker' },
-      { text: 'reference', link: '/api/overview' },
+      { text: 'reference', link: '/reference/overview' },
       { text: 'motivation', link: 'https://github.com/rubiments/luent/tree/main#motivation' },
       // { text: 'preview noriscript', link: 'https://github.com/rubiments/luent/tree/main/#design-principles' },
       { text: 'v0.0.1', link: '/' },
     ],
 
     sidebar: {
-      '/api/': [{
+      '/reference/': [{
         text: 'API reference',
         items: [{
           text: 'Overview',
-          link: '/api/overview'
+          link: '/reference/overview'
         }]
       }],
       '/guide/': [

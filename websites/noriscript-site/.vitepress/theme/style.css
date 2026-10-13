@@ -482,3 +482,8 @@ html:not(.dark) .ns-hero-code__body {
 .vp-doc ul {
   margin-left: 1rem;
 }
+
+.VPLocalNav .menu-text {
+  opacity: 0;
+  transition: opacity 250ms ease-in;
+}

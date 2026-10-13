@@ -38,7 +38,7 @@ export default {
       }
     })
 
-    fixMobileNav(() => previousPage)
+    fixMobileNav(() => previousPage, router)
   }
 } satisfies Theme
 

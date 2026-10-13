@@ -34,8 +34,8 @@ export default {
         smoothScrollHomepage(document.documentElement, page, previousPage)
       }
     })
-
-    fixMobileNav(() => previousPage)
+    
+    fixMobileNav(() => previousPage, router)
   }
 } satisfies Theme
 
