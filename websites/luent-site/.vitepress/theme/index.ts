@@ -3,42 +3,21 @@ import { type Theme, useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { h } from 'vue'
 import './style.css'
-import { islands, mountIslands, smoothScrollHomepage } from "../../src/luent-islands.js"
 import CustomHome from './CustomHome.vue'
-import { installVitePressScrollRestoration } from '../../../shared/src/vitepress-scroll-restoration'
-
-const Layout = () => {
-  const { frontmatter } = useData()
-  if (frontmatter.value?.layout === 'home') {
-    return h(DefaultTheme.Layout, null, {
-      'home-hero-before': () => h(CustomHome)
-    })
-  }
-  return h(DefaultTheme.Layout)
-}
+import { islands, fixMobileNav, mountIslands, smoothScrollHomepage, installVitePressScrollRestoration } from '../../src/luent-islands'
 
 export default {
   extends: DefaultTheme,
-  Layout,
-  // Layout() {
-  //   return h(DefaultTheme.Layout, null, {
-  //     'sidebar-nav-before': () => h('language-toggle')
-  //   })
-  // },
-  enhanceApp({ router }) {
-    if (typeof document !== 'undefined') {
-      document.addEventListener('click', (event) => {
-        const target = event.target
-        if (!(target instanceof Element)) return
-
-        const link = target.closest('.VPNavScreen a[href]')
-        if (!link) return
-
-        event.preventDefault()
-        event.stopImmediatePropagation()
-      }, true)
+  Layout() {
+    const { frontmatter } = useData()
+    if (frontmatter.value?.layout === 'home') {
+      return h(DefaultTheme.Layout, null, {
+        'home-hero-before': () => h(CustomHome)
+      })
     }
-
+    return h(DefaultTheme.Layout)
+  },
+  enhanceApp({ router }) {
     let previousPage = router.route.path
     const prevBeforeRouteChange = router.onBeforeRouteChange
 
@@ -55,5 +34,8 @@ export default {
         smoothScrollHomepage(document.documentElement, page, previousPage)
       }
     })
+
+    fixMobileNav(() => previousPage)
   }
 } satisfies Theme
+
