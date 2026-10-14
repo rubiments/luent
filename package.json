@@ -29,12 +29,12 @@
     "preview:luent-site": "pnpm -F @luently/luent-site docs:preview"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.64.0",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.5",
     "typescript": "^7.0.2",
     "typescript-plugin-css-modules": "^5.2.0",
-    "vite": "^8.1.3",
+    "vite": "^8.3.4",
     "vite-plugin-babel": "^1.3.0",
     "vitest": "^5.0.3"
   },
