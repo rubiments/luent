@@ -176,12 +176,19 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
         return null
       }
 
+      const parserPlugins: ('jsx' | 'typescript')[] = fileName.endsWith('.tsx')
+        ? ['jsx', 'typescript']
+        : ['jsx']
+
       // TODO: migrate to oxc
       const result = await babel.transformAsync(code, {
         plugins: [
           BabelLuentPlugin,
-          ['@babel/plugin-syntax-typescript', { isTSX: true }]
+          ['@babel/plugin-syntax-typescript', { disallowAmbiguousJSXLike: false }]
         ],
+        parserOpts: {
+          plugins: parserPlugins
+        },
         filename: fileName,
         sourceMaps: true,
         generatorOpts: {

@@ -1,12 +1,14 @@
 import type { ArrayExpression, AssignmentExpression, Node as ASTNode, BinaryExpression, ForInStatement, ForOfStatement, ForStatement, WhileStatement, LogicalExpression, PrivateInExpression, Program, ArrayPattern, BlockStatement, TSModuleBlock, StaticBlock } from 'oxc-parser'
 import { CodeInformation, CodeMapping } from "@volar/language-core";
 import { BASE_CAPABILITIES, Capabilities } from './capabilities.ts';
-import { isFunctionNode } from './3-transform.ts';
 
 const TAB = '\t'
 
 
-
+function isFunctionNode(node: ASTNode | undefined) {
+  if (!node) return;
+  return node.type === 'ArrowFunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression'
+}
 
 
 class InternalError extends Error { }
