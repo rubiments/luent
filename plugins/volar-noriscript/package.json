@@ -18,10 +18,10 @@
       "volar-service-emmet": "0.0.71",
       "volar-service-html": "0.0.71",
       "volar-service-typescript": "0.0.71",
-      "vscode-uri": "^3.0.8",
+      "vscode-uri": "^3.2.0",
       "@luently/noriscript": "workspace:*",
       "@types/estree": "^1.0.8",
       "@types/estree-jsx": "^1.0.5",
-      "oxc-parser": "^0.130.0"
+      "oxc-parser": "^0.153.0"
    }
 }
