@@ -44,8 +44,8 @@
   },
   "devDependencies": {
     "@luently/types": "workspace:*",
-    "tsdown": "^0.23.1",
-    "typescript": "^6.0.3"
+    "tsdown": "^0.21.9",
+    "typescript": "^7.0.2"
   },
   "author": "Ruby Yi Wang",
   "license": "MIT"
