@@ -132,10 +132,10 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
     //     return null
     //   }
 
-    //   const { transpileNextScript } = await import('@luently/noriscript/transpile')
+    //   const { transpileNoriScript } = await import('@luently/noriscript/transpile')
 
     //   const code = await readFile(fileName, 'utf8')
-    //   const { transpiled } = transpileNextScript(fileName, code)
+    //   const { transpiled } = transpileNoriScript(fileName, code)
 
     //   const result = await babel.transformAsync(transpiled.code, {
     //     plugins: [

@@ -14,7 +14,7 @@ Frameworks may configure which parameterized type the postfix should represent. 
 ```ts
 // noriscript.config.ts
 
-export default configureNextScript({
+export default configureNoriScript({
   ts: {
     reactiveProxy: ['Ionic'],
     importSource: ['luent']

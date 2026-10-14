@@ -1,4 +1,4 @@
-import { transpileNextScript } from '@luently/noriscript/transpile';
+import { transpileNoriScript } from '@luently/noriscript/transpile';
 import { CodeMapping, LanguagePlugin, VirtualCode } from '@volar/language-core';
 import type * as ts from 'typescript';
 import { URI } from 'vscode-uri';
@@ -13,12 +13,12 @@ function scriptPath(id: ScriptId | undefined) {
    return id.path;
 }
 
-function isNextScriptFile(id: ScriptId | undefined, languageId: string) {
+function isNoriScriptFile(id: ScriptId | undefined, languageId: string) {
    const path = scriptPath(id);
    return languageId === 'noriscript' || path.endsWith('.nsx');
 }
 
-function isNextScriptVirtualCode(code: VirtualCode) {
+function isNoriScriptVirtualCode(code: VirtualCode) {
    return code.id === 'root' && code.languageId === 'typescriptreact';
 }
 
@@ -29,14 +29,14 @@ export const noriscriptLanguagePlugin: LanguagePlugin<ScriptId> = {
       }
    },
    createVirtualCode(scriptId, languageId, snapshot) {
-      if (isNextScriptFile(scriptId, languageId)) {
-         return new NextScriptVirtualCode(scriptPath(scriptId), snapshot);
+      if (isNoriScriptFile(scriptId, languageId)) {
+         return new NoriScriptVirtualCode(scriptPath(scriptId), snapshot);
       }
    },
    typescript: {
       extraFileExtensions: [{ extension: 'nsx', isMixedContent: true, scriptKind: 4 satisfies ts.ScriptKind.TSX }],
       getServiceScript(root) {
-         if (isNextScriptVirtualCode(root)) {
+         if (isNoriScriptVirtualCode(root)) {
             return {
                code: root,
                extension: '.tsx',
@@ -63,7 +63,7 @@ function createSnapshot(text: string): ts.IScriptSnapshot {
 }
 
 
-export class NextScriptVirtualCode implements VirtualCode {
+export class NoriScriptVirtualCode implements VirtualCode {
    id = 'root';
    languageId = 'typescriptreact';
    mappings: CodeMapping[] = []
@@ -72,7 +72,7 @@ export class NextScriptVirtualCode implements VirtualCode {
    constructor(filePath: string, sourceSnapshot: ts.IScriptSnapshot) {
       const length = sourceSnapshot.getLength()
       const source = sourceSnapshot.getText(0, length)
-      const result = transpileNextScript(filePath || 'virtual.nsx', source)
+      const result = transpileNoriScript(filePath || 'virtual.nsx', source)
       this.snapshot = createSnapshot(result.transpiled.code)
       this.mappings = result.map
    }

@@ -1,7 +1,7 @@
 import { createConnection, createServer, createTypeScriptProject, Diagnostic, loadTsdkByPath } from '@volar/language-server/node';
 import { create as createCssService } from 'volar-service-css';
 import { create as createTypeScriptServices } from 'volar-service-typescript';
-import {createNextScriptService} from './noriscript-service'
+import {createNoriScriptService} from './noriscript-service'
 import { noriscriptLanguagePlugin } from './language-plugin';
 
 // FIX: Volar starter
@@ -21,7 +21,7 @@ connection.onInitialize(params => {
       [
          createCssService(),
          ...createTypeScriptServices(tsdk.typescript),
-         createNextScriptService(),
+         createNoriScriptService(),
       ],
    )
 });

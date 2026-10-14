@@ -4,7 +4,7 @@ import { transformNSX } from "./3-transform.ts"
 import { printTSX } from "./4-generate.ts"
 import { codeMappingsToSourceMap } from "./sourceMap.ts"
 
-export function transpileNextScript(file: string, source: string) {
+export function transpileNoriScript(file: string, source: string) {
   const { code, edits } = preprocessNSX(source)
   const preTree = parseNSX(file, code)
   console.log('errors', preTree.errors)

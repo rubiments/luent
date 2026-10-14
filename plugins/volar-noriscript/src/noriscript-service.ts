@@ -1,6 +1,6 @@
 import type { LanguageServicePlugin, LanguageServicePluginInstance } from "@volar/language-server"
 
-export function createNextScriptService(): LanguageServicePlugin {
+export function createNoriScriptService(): LanguageServicePlugin {
    return {
       name: 'noriscript-service', // used to identify the service in the logs and in Volar Labs
       create(context): LanguageServicePluginInstance {
@@ -34,7 +34,7 @@ export function createNextScriptService(): LanguageServicePlugin {
 //                         return;
 //                      }
 //                      const virtualCode = context.language.scripts.get(decoded[0])?.generated?.embeddedCodes.get(decoded[1]);
-//                      if (!(virtualCode instanceof NextScriptVirtualCode)) {
+//                      if (!(virtualCode instanceof NoriScriptVirtualCode)) {
 //                         return;
 //                      }
 //                      const styleNodes = virtualCode.htmlDocument.roots.filter(root => root.tag === 'style');

@@ -445,7 +445,7 @@ Frameworks and libraries may register custom style element names in the NoriScri
 ```js
 // noriscript.config.js
 
-export default configureNextScript({
+export default configureNoriScript({
   jsx: {
     styleTags: ['o-style'],
   },
