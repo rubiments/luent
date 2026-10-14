@@ -20,15 +20,6 @@ export function fixMobileNav($currentPath: () => string, router: Router) {
       return;
     }
 
-    const root = href.split('/')[3]
-    if (!$currentPath().startsWith('/' + root)) {
-      router.onAfterPageLoad = () => {
-        awaitTick(() => {
-          updateLocalMenu(root)
-        })
-      }
-    }
-
     event.preventDefault()
     event.stopImmediatePropagation()
   }, /*capture*/true)
@@ -37,9 +28,16 @@ export function fixMobileNav($currentPath: () => string, router: Router) {
     return href.split('#')[0] === window.location.origin + $currentPath()
   }
 
-  window.addEventListener('load', () => {
-    updateLocalMenu(window.location.pathname.split('/')[1])
-  })
+  let prevRoot = ''
+  router.onAfterPageLoad = (to) => {
+    const root = to.split('/')[1]
+    if (root === prevRoot) return;
+    prevRoot = root;
+    if (root.startsWith('#')) return;
+    awaitTick(() => {
+      updateLocalMenu(root)
+    })
+  }
 }
 
 
