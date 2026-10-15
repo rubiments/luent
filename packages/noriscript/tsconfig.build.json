@@ -1,16 +1,24 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
+    "allowImportingTsExtensions": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "customConditions": [
+      "luentWorkspace"
+    ],
+    "allowArbitraryExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "strict": true,
     "jsx": "preserve",
-    "paths": {
-      "luent/jsx-runtime": [
-        "../luent/src/jsx-runtime/index.ts"
-      ],
-      "luent/jsx-dev-runtime": [
-        "../luent/src/jsx-runtime/index.ts"
-      ]
-    },
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "noEmit": false,
     "declaration": true,
     "emitDeclarationOnly": true,

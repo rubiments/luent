@@ -1,6 +1,8 @@
 import { type ArrayExpression, AssignmentExpression, Node as ASTNode, BinaryExpression, ForInStatement, ForOfStatement, ForStatement, WhileStatement, LogicalExpression, PrivateInExpression, Program, ArrayPattern, BlockStatement, TSModuleBlock, StaticBlock } from '@oxc-project/types'
 import { CodeInformation, CodeMapping } from "@volar/language-core";
-import { BASE_CAPABILITIES, Capabilities } from './capabilities.ts';
+import { GenMapping, maybeAddSegment, setSourceContent, toEncodedMap } from '@jridgewell/gen-mapping'
+import type { EncodedSourceMap } from '@jridgewell/gen-mapping'
+
 
 const TAB = '\t'
 
@@ -13,7 +15,21 @@ function isFunctionNode(node: ASTNode | undefined) {
 
 class InternalError extends Error { }
 
-export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[] } {
+export type GenerateTSXOptions = {
+  sourceMap?: {
+    sourceFile: string
+    generatedFile: string
+    source: string
+  }
+}
+
+export type GenerateTSXResult = {
+  code: string
+  mappings: CodeMapping[]
+  map?: EncodedSourceMap
+}
+
+export function generateTSX(program: ASTNode, options?: GenerateTSXOptions): GenerateTSXResult {
   const file = new Scribe({
     /**
      * const answer = 42
@@ -636,8 +652,20 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
     CallExpression(node, cursor) {
       const parenthesize = !isSimpleNode(node.callee)
       if (parenthesize) cursor.write('(')
+      const calleeStart = cursor.code.length
       cursor.visit(node.callee)
       if (parenthesize) cursor.write(')')
+      if (!isFunctionNode(node.callee)) {
+        cursor.mapSpan(calleeStart, {
+          span: node.callee,
+          capabilities: {
+            verification: true,
+            semantic: true,
+            navigation: true,
+            completion: false
+          }
+        })
+      }
 
       if (node.optional) cursor.write('?.')
       if (node.typeArguments) {
@@ -679,7 +707,19 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
       if (node.computed) cursor.write('[')
       else if (!node.optional) cursor.write('.')
 
+      const propertyStart = cursor.code.length
       cursor.visit(node.property)
+      if (!isFunctionNode(node.property)) {
+        cursor.mapSpan(propertyStart, {
+          span: node.property,
+          capabilities: {
+            verification: true,
+            semantic: true,
+            navigation: true,
+            completion: false
+          }
+        })
+      }
       if (node.computed) cursor.write(']')
     },
 
@@ -688,7 +728,19 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
      */
     NewExpression(node, cursor) {
       cursor.write('new ')
+      const calleeStart = cursor.code.length
       cursor.visit(node.callee)
+      if (!isFunctionNode(node.callee)) {
+        cursor.mapSpan(calleeStart, {
+          span: node.callee,
+          capabilities: {
+            verification: true,
+            semantic: true,
+            navigation: true,
+            completion: false
+          }
+        })
+      }
       cursor.write('(')
       const args = node.arguments ?? []
       for (let i = 0; i < args.length; i++) {
@@ -800,20 +852,23 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
     TemplateElement(node, cursor) {
       const value = (node as unknown as { value?: { raw?: string }, raw?: string })
       const raw = value.value?.raw ?? value.raw ?? ''
-      cursor.write(raw)
+      const span = cursor.findSpanInSource(node.start, node.end, raw)
+      cursor.write(raw, {
+        span: span ?? node,
+        capabilities: SEMANTIC_ONLY
+      })
     },
 
     /**
      * `sum: ${a + b}`
      */
     TemplateLiteral(node, cursor) {
+      const start = cursor.code.length
       cursor.write('`')
       const quasis = node.quasis ?? []
       const expressions = node.expressions ?? []
       for (let i = 0; i < quasis.length; i++) {
-        const quasi = quasis[i] as unknown as { value?: { raw?: string }, raw?: string }
-        const raw = quasi.value?.raw ?? quasi.raw ?? ''
-        cursor.write(raw)
+        cursor.visit(quasis[i] as unknown as ASTNode)
         if (i < expressions.length) {
           cursor.write('${')
           cursor.visit(expressions[i])
@@ -821,6 +876,12 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
         }
       }
       cursor.write('`')
+      cursor.mapSpan(start, {
+        span: node,
+        capabilities: {
+          verification: true
+        }
+      })
     },
 
     /**
@@ -970,7 +1031,10 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
      */
     Literal(leaf, cursor) {
       if (leaf.raw) {
-        cursor.write(leaf.raw)
+        cursor.write(leaf.raw, {
+          span: leaf,
+          capabilities: SEMANTIC_ONLY
+        })
         return
       }
 
@@ -983,21 +1047,33 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
       if (literal.regex) {
         const pattern = literal.regex.pattern ?? ''
         const flags = literal.regex.flags ?? ''
-        cursor.write(`/${pattern}/${flags}`)
+        cursor.write(`/${pattern}/${flags}`, {
+          span: leaf,
+          capabilities: SEMANTIC_ONLY
+        })
         return
       }
 
       if (typeof literal.bigint === 'string') {
-        cursor.write(`${literal.bigint}n`)
+        cursor.write(`${literal.bigint}n`, {
+          span: leaf,
+          capabilities: SEMANTIC_ONLY
+        })
         return
       }
 
       if (typeof literal.value === 'string') {
-        cursor.write(JSON.stringify(literal.value))
+        cursor.write(JSON.stringify(literal.value), {
+          span: leaf,
+          capabilities: SEMANTIC_ONLY
+        })
         return
       }
 
-      cursor.write(String(literal.value))
+      cursor.write(String(literal.value), {
+        span: leaf,
+        capabilities: SEMANTIC_ONLY
+      })
     },
 
     /**
@@ -1235,7 +1311,10 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
      * this.#count
      */
     PrivateIdentifier(leaf, cursor) {
-      cursor.write(`#${leaf.name}`)
+      cursor.write(`#${leaf.name}`, {
+        span: leaf,
+        capabilities: BASE_CAPABILITIES
+      })
     },
 
     /**
@@ -1564,12 +1643,18 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
      */
     JSXText(node, cursor) {
       if (typeof node.raw === 'string') {
-        cursor.write(node.raw)
+        cursor.write(node.raw, {
+          span: node,
+          capabilities: SEMANTIC_ONLY
+        })
         return
       }
 
       const value = typeof node.value === 'string' ? node.value : ''
-      cursor.write(escapeJSXTextValue(value))
+      cursor.write(escapeJSXTextValue(value), {
+        span: node,
+        capabilities: SEMANTIC_ONLY
+      })
     },
 
     // #endregion
@@ -2515,12 +2600,13 @@ export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[
     }
 
     // #endregion
-  })
+  }, options)
 
   file.visit(program)
 
   return {
     code: file.code,
+    mappings: file.mappings,
     map: file.map
   }
 }
@@ -2541,7 +2627,19 @@ function ArrayExpression(node: ArrayExpression | ArrayPattern, cursor: Scribe) {
 
 function OperatorExpression(node: AssignmentExpression | PrivateInExpression | LogicalExpression | BinaryExpression, cursor: Scribe) {
   cursor.visit(node.left)
-  cursor.write(` ${node.operator} `)
+
+  const operatorSpan = cursor.findSpanInSource(node.left.end, node.right.start, node.operator)
+  cursor.write(' ')
+  if (operatorSpan) {
+    cursor.write(node.operator, {
+      span: operatorSpan,
+      capabilities: SEMANTIC_ONLY
+    })
+  }
+  else {
+    cursor.write(node.operator)
+  }
+  cursor.write(' ')
   cursor.visit(node.right)
 }
 
@@ -2635,7 +2733,15 @@ export type Visitors<T extends BaseNode = BaseNode> = {
 
 class Scribe {
   code = ''
-  map: CodeMapping[] = []
+  mappings: CodeMapping[] = []
+  map?: EncodedSourceMap
+
+  private sourceMapGenerator?: GenMapping
+  private sourceText?: string
+  private sourceLineStarts?: number[]
+  private sourceFile?: string
+  private generatedLineStarts = [0]
+  private lastWriteWasMapped = false
 
   private static readonly DEFAULT_MAPPING_CAPABILITIES = {
     verification: true,
@@ -2668,47 +2774,114 @@ class Scribe {
   }
 
   constructor(
-    private visitors: Visitors<ASTNode>
+    private visitors: Visitors<ASTNode>,
+    options?: GenerateTSXOptions
   ) {
+    const sourceMapOptions = options?.sourceMap
+    if (!sourceMapOptions) return
+
+    this.sourceMapGenerator = new GenMapping({ file: sourceMapOptions.generatedFile })
+    this.sourceText = sourceMapOptions.source
+    this.sourceLineStarts = getLineStarts(sourceMapOptions.source)
+    this.sourceFile = sourceMapOptions.sourceFile
+    setSourceContent(this.sourceMapGenerator, sourceMapOptions.sourceFile, sourceMapOptions.source)
+    this.map = toEncodedMap(this.sourceMapGenerator)
+  }
+
+  findSpanInSource(searchStart: number, searchEnd: number, text: string) {
+    if (!this.sourceText) return
+    if (searchStart >= searchEnd || text.length === 0) return
+    const start = Math.max(0, searchStart)
+    const end = Math.min(this.sourceText.length, searchEnd)
+    if (start >= end) return
+
+    const haystack = this.sourceText.slice(start, end)
+    const relative = haystack.indexOf(text)
+    if (relative < 0) return
+
+    const spanStart = start + relative
+    return {
+      start: spanStart,
+      end: spanStart + text.length,
+    }
   }
 
   write(text: string, map?: { span: { start: number, end: number }, capabilities?: CodeInformation }) {
     const start = this.code.length
+
+    if (!map && this.sourceMapGenerator && this.lastWriteWasMapped && text.length > 0) {
+      const generatedPosition = offsetToPosition(start, this.generatedLineStarts)
+      maybeAddSegment(this.sourceMapGenerator, generatedPosition.line, generatedPosition.column)
+      this.map = toEncodedMap(this.sourceMapGenerator)
+      this.lastWriteWasMapped = false
+    }
+
     this.code += text
+    appendLineStarts(this.generatedLineStarts, text, start)
+
     if (map) {
-      const { span, capabilities } = map
-      if (span.start === 0 && span.end === 0) return; // synthetic node
-
       const end = this.code.length
-      const length = end - start
-
-      this.map.push({
-        sourceOffsets: [span.start],
-        generatedOffsets: [start],
-        data: capabilities ?? {},
-        lengths: [span.end - span.start],
-        generatedLengths: [length]
-      })
+      this.recordMapping(start, end, map)
     }
   }
 
   mapSpan(start: number, map: { span: { start: number, end: number }, capabilities?: CodeInformation }) {
-    const { span, capabilities } = map
-    if (span.start === 0 && span.end === 0) return; // synthetic node
-
     const end = this.code.length
-    const length = end - start
+    this.recordMapping(start, end, map)
+  }
 
-    this.map.push({
+  private recordMapping(generatedStart: number, generatedEnd: number, mapping: { span: { start: number, end: number }, capabilities?: CodeInformation }) {
+    const { span, capabilities } = mapping
+    if (span.start === 0 && span.end === 0) return // synthetic node
+
+    const generatedLength = generatedEnd - generatedStart
+    const sourceLength = span.end - span.start
+    if (generatedLength <= 0 || sourceLength <= 0) return
+
+    this.mappings.push({
       sourceOffsets: [span.start],
-      generatedOffsets: [start],
-      data: capabilities ?? {},
-      lengths: [span.end - span.start],
-      generatedLengths: [length]
+      generatedOffsets: [generatedStart],
+      data: capabilities ?? Scribe.DEFAULT_MAPPING_CAPABILITIES,
+      lengths: [sourceLength],
+      generatedLengths: [generatedLength]
     })
+
+    this.addSourceMapBoundary(span.start, generatedStart)
+    if (generatedLength > 1 && sourceLength > 1) {
+      this.addSourceMapBoundary(span.end - 1, generatedEnd - 1)
+    }
+    this.lastWriteWasMapped = true
+  }
+
+  private addSourceMapBoundary(sourceOffset: number, generatedOffset: number) {
+    if (!this.sourceMapGenerator || !this.sourceLineStarts || !this.sourceFile) return
+
+    const generatedPosition = offsetToPosition(generatedOffset, this.generatedLineStarts)
+    const sourcePosition = offsetToPosition(sourceOffset, this.sourceLineStarts)
+    maybeAddSegment(
+      this.sourceMapGenerator,
+      generatedPosition.line,
+      generatedPosition.column,
+      this.sourceFile,
+      sourcePosition.line,
+      sourcePosition.column
+    )
+    this.map = toEncodedMap(this.sourceMapGenerator)
   }
 
   private activeNodes = new Set<ASTNode>()
+
+  private static readonly FALLBACK_MAP_EXCLUDED = new Set([
+    'Program',
+    'BlockStatement',
+    'TSModuleBlock',
+    'ClassBody',
+  ])
+
+  private hasConcreteSpan(node: ASTNode): node is ASTNode & { start: number, end: number } {
+    const spanNode = node as ASTNode & { start?: number, end?: number }
+    return typeof spanNode.start === 'number' && typeof spanNode.end === 'number' && spanNode.end > spanNode.start
+  }
 
   private visitNode(node: ASTNode) {
     if (this.activeNodes.has(node)) {
@@ -2718,8 +2891,36 @@ class Scribe {
     this.activeNodes.add(node)
     const visit = (this.visitors as Visitors)[node.type]
     if (!visit) throw new InternalError(`Visitor not yet implemented for ${node.type}`)
+    const codeStart = this.code.length
+    const mappingStartIndex = this.mappings.length
     try {
       visit(node, this)
+      const emitted = this.code.length > codeStart
+      const excluded = Scribe.FALLBACK_MAP_EXCLUDED.has(node.type)
+      let hasStartAnchoredMapping = false
+
+      for (let i = mappingStartIndex; i < this.mappings.length; i++) {
+        const generatedOffsets = this.mappings[i].generatedOffsets
+        for (let j = 0; j < generatedOffsets.length; j++) {
+          if (generatedOffsets[j] === codeStart) {
+            hasStartAnchoredMapping = true
+            break
+          }
+        }
+        if (hasStartAnchoredMapping) break
+      }
+
+      if (emitted && !excluded && !hasStartAnchoredMapping && this.hasConcreteSpan(node)) {
+        this.mapSpan(codeStart, {
+          span: { start: node.start, end: node.end },
+          capabilities: {
+            verification: true,
+            semantic: true,
+            navigation: true,
+            completion: true,
+          }
+        })
+      }
     }
     finally {
       this.activeNodes.delete(node)
@@ -2740,7 +2941,117 @@ class Scribe {
   }
 }
 
+function getLineStarts(text: string) {
+  const lineStarts = [0]
+
+  for (let index = 0; index < text.length; index++) {
+    if (text.charCodeAt(index) === 10) {
+      lineStarts.push(index + 1)
+    }
+  }
+
+  return lineStarts
+}
+
+function appendLineStarts(lineStarts: number[], text: string, writeStart: number) {
+  for (let index = 0; index < text.length; index++) {
+    if (text.charCodeAt(index) === 10) {
+      lineStarts.push(writeStart + index + 1)
+    }
+  }
+}
+
+type Position = {
+  line: number
+  column: number
+}
+
+function offsetToPosition(offset: number, lineStarts: number[]): Position {
+  let low = 0
+  let high = lineStarts.length - 1
+
+  while (low <= high) {
+    const middle = (low + high) >> 1
+    const lineStart = lineStarts[middle]
+    const nextLineStart = lineStarts[middle + 1] ?? Number.POSITIVE_INFINITY
+
+    if (offset < lineStart) {
+      high = middle - 1
+      continue
+    }
+
+    if (offset >= nextLineStart) {
+      low = middle + 1
+      continue
+    }
+
+    return {
+      line: middle,
+      column: offset - lineStart
+    }
+  }
+
+  const lastLine = lineStarts.length - 1
+  return {
+    line: lastLine,
+    column: Math.max(0, offset - lineStarts[lastLine])
+  }
+}
+
 
 function hasCapabilities(node: { start: number, end: number }): node is { start: number, end: number, capabilities: Capabilities } {
   return 'capabilities' in node
 }
+
+type Capabilities = CodeMapping['data']
+
+type BaseCapabilities = {
+  completion: true,
+  navigation: true,
+  semantic: true,
+  verification: true
+}
+
+type NoCapabilities = {
+  completion: false,
+  navigation: false,
+  semantic: false,
+  verification: false
+}
+
+const BASE_CAPABILITIES = {
+  verification: true,
+  semantic: true,
+  navigation: true,
+  completion: true,
+};
+
+const NO_CAPABILITIES = {
+  verification: false,
+  completion: false,
+  semantic: false,
+  navigation: false,
+};
+
+const SEMANTIC_ONLY = {
+  verification: false,
+  semantic: true,
+  navigation: false,
+  completion: false,
+};
+
+const COMPLETION_ONLY = {
+  completion: true,
+  verification: false,
+  semantic: false,
+  navigation: false,
+};
+
+const STRUCTURE_ONLY = {
+  verification: false,
+  completion: false,
+  semantic: false,
+  navigation: false,
+  structure: true,
+};
+

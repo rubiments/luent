@@ -254,6 +254,9 @@ importers:
 
   packages/scribe:
     dependencies:
+      '@jridgewell/gen-mapping':
+        specifier: ^0.3.13
+        version: 0.3.13
       '@luently/utils':
         specifier: workspace:*
         version: link:../utils
