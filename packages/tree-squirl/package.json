@@ -5,10 +5,10 @@
   "description": "A lightweight AST traversal utility",
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./src/index.ts"
   },
-  "main": "./index.ts",
-  "module": "./index.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "scripts": {
     "build:types": "tsc -p tsconfig.build.json"
   },

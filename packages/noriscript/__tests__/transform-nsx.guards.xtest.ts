@@ -2,7 +2,7 @@ import { expect, it } from "vitest"
 import { preprocessNSX } from "../src/1-preprocess"
 import { parseNSX } from "../src/2-parse"
 import { transformNSX } from "../src/3-transform"
-import { printTSX } from "../src/4-generate"
+import { generateTSX } from "../../scribe/src/4-generate"
 import { describe } from "node:test"
 
 describe('NoriScript TypeGuard transforms', () => {
@@ -21,7 +21,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -48,7 +48,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -71,7 +71,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -95,7 +95,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -121,7 +121,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -146,7 +146,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -168,7 +168,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -189,7 +189,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -215,7 +215,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -247,7 +247,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª, assertµ } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -279,7 +279,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -311,7 +311,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª, assertµ } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +
@@ -339,7 +339,7 @@ describe('NoriScript TypeGuard transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { assertª } from "@luently/noriscript";\n` +
          `const obj = assertª(ref(undefined));\n` +

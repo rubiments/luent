@@ -1,0 +1,25 @@
+{
+  "name": "@luently/scribe",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A lightweight TSX code generator",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "scripts": {
+    "build:types": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@luently/utils": "workspace:*",
+    "@volar/language-core": "~2.4.0"
+  },
+  "devDependencies": {
+    "@oxc-project/types": "^0.154.0",
+    "@luently/types": "workspace:*"
+  },
+  "author": "Ruby Yi Wang",
+  "license": "MIT"
+}

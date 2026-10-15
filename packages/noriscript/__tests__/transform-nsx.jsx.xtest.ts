@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { preprocessNSX } from "../src/1-preprocess";
 import { parseNSX } from "../src/2-parse";
 import { transformNSX } from "../src/3-transform";
-import { printTSX } from "../src/4-generate";
+import { generateTSX } from "../../scribe/src/4-generate";
 
 describe('NoriScript JSX transforms', () => {
 
@@ -16,7 +16,7 @@ describe('NoriScript JSX transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       // expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `<Tooltip something='true' tooltip={tooltip}></Tooltip>;\n`
       )
@@ -29,7 +29,7 @@ describe('NoriScript JSX transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { JSXComponent } from "@luently/noriscript";\n` +
          `JSXComponent(<><div>hi</div></>);\n`
@@ -43,7 +43,7 @@ describe('NoriScript JSX transforms', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
       expect(generated.code).toBe(
          `import { JSXComponentAs } from "@luently/noriscript";\n` +
          `JSXComponentAs({\n\topen\n}, <><div>hi</div></>);\n`
@@ -90,7 +90,7 @@ describe('NoriScript JSX transforms', () => {
       console.log(ast.program.body)
       // const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       // expect(transformed).toBe(true)
-      // const generated = printTSX(tsxTree)
+      // const generated = generateTSX(tsxTree)
       // expect(generated.code).toBe(
       //    `import { assertª, assertµ } from "@luently/noriscript";\n` +
       //    `const foo = assertª(ref(0));\n` +

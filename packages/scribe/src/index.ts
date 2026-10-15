@@ -1,4 +1,4 @@
-import type { ArrayExpression, AssignmentExpression, Node as ASTNode, BinaryExpression, ForInStatement, ForOfStatement, ForStatement, WhileStatement, LogicalExpression, PrivateInExpression, Program, ArrayPattern, BlockStatement, TSModuleBlock, StaticBlock } from 'oxc-parser'
+import { type ArrayExpression, AssignmentExpression, Node as ASTNode, BinaryExpression, ForInStatement, ForOfStatement, ForStatement, WhileStatement, LogicalExpression, PrivateInExpression, Program, ArrayPattern, BlockStatement, TSModuleBlock, StaticBlock } from '@oxc-project/types'
 import { CodeInformation, CodeMapping } from "@volar/language-core";
 import { BASE_CAPABILITIES, Capabilities } from './capabilities.ts';
 
@@ -13,8 +13,8 @@ function isFunctionNode(node: ASTNode | undefined) {
 
 class InternalError extends Error { }
 
-export function printTSX(program: ASTNode): { code: string, map: CodeMapping[] } {
-  const file = new CodePrinter({
+export function generateTSX(program: ASTNode): { code: string, map: CodeMapping[] } {
+  const file = new Scribe({
     /**
      * const answer = 42
      */
@@ -2525,7 +2525,7 @@ export function printTSX(program: ASTNode): { code: string, map: CodeMapping[] }
   }
 }
 
-function ArrayExpression(node: ArrayExpression | ArrayPattern, cursor: CodePrinter) {
+function ArrayExpression(node: ArrayExpression | ArrayPattern, cursor: Scribe) {
   cursor.write('[')
   const elements = node.elements ?? []
   for (let i = 0; i < elements.length; i++) {
@@ -2539,13 +2539,13 @@ function ArrayExpression(node: ArrayExpression | ArrayPattern, cursor: CodePrint
   cursor.write(']')
 }
 
-function OperatorExpression(node: AssignmentExpression | PrivateInExpression | LogicalExpression | BinaryExpression, cursor: CodePrinter) {
+function OperatorExpression(node: AssignmentExpression | PrivateInExpression | LogicalExpression | BinaryExpression, cursor: Scribe) {
   cursor.visit(node.left)
   cursor.write(` ${node.operator} `)
   cursor.visit(node.right)
 }
 
-function writeForBinding(node: ASTNode, cursor: CodePrinter) {
+function writeForBinding(node: ASTNode, cursor: Scribe) {
   if (node.type === 'VariableDeclaration') {
     if (node.declare) cursor.write('declare ')
     cursor.write(node.kind)
@@ -2561,7 +2561,7 @@ function writeForBinding(node: ASTNode, cursor: CodePrinter) {
   cursor.visit(node)
 }
 
-function writeLoopBody(node: ForOfStatement | ForInStatement | ForStatement | WhileStatement, cursor: CodePrinter) {
+function writeLoopBody(node: ForOfStatement | ForInStatement | ForStatement | WhileStatement, cursor: Scribe) {
   if (node.body.type === 'BlockStatement') {
     cursor.write(' ')
     cursor.visit(node.body)
@@ -2574,7 +2574,7 @@ function writeLoopBody(node: ForOfStatement | ForInStatement | ForStatement | Wh
   }
 }
 
-function writeBlockBody(node: BlockStatement | TSModuleBlock | StaticBlock, cursor: CodePrinter) {
+function writeBlockBody(node: BlockStatement | TSModuleBlock | StaticBlock, cursor: Scribe) {
   cursor.write('{\n')
   cursor.enterScope()
   cursor.visitEach(node.body)
@@ -2583,7 +2583,7 @@ function writeBlockBody(node: BlockStatement | TSModuleBlock | StaticBlock, curs
   cursor.write('}\n')
 }
 
-function writeDecorators(node: { decorators?: ASTNode[] | null }, cursor: CodePrinter) {
+function writeDecorators(node: { decorators?: ASTNode[] | null }, cursor: Scribe) {
   const decorators = node.decorators ?? []
   for (let i = 0; i < decorators.length; i++) {
     cursor.visit(decorators[i])
@@ -2622,7 +2622,7 @@ export type BaseNode = {
 
 type NodeOf<K extends string, X> = X extends { type: infer T } ? K extends T ? X : never : never;
 
-export type Visit<T> = (node: T, cursor: CodePrinter) => void;
+export type Visit<T> = (node: T, cursor: Scribe) => void;
 
 export type Visitors<T extends BaseNode = BaseNode> = {
   [K in T['type']]?: Visit<NodeOf<K, T>>;
@@ -2633,7 +2633,7 @@ export type Visitors<T extends BaseNode = BaseNode> = {
 
 
 
-class CodePrinter {
+class Scribe {
   code = ''
   map: CodeMapping[] = []
 

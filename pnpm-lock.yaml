@@ -207,6 +207,9 @@ importers:
       '@jridgewell/gen-mapping':
         specifier: ^0.3.13
         version: 0.3.13
+      '@luently/scribe':
+        specifier: workspace:*
+        version: link:../scribe
       '@luently/tree-squirl':
         specifier: workspace:*
         version: link:../tree-squirl
@@ -248,6 +251,22 @@ importers:
       '@luently/types':
         specifier: workspace:*
         version: link:../types
+
+  packages/scribe:
+    dependencies:
+      '@luently/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@volar/language-core':
+        specifier: ~2.4.0
+        version: 2.4.28
+    devDependencies:
+      '@luently/types':
+        specifier: workspace:*
+        version: link:../types
+      '@oxc-project/types':
+        specifier: ^0.154.0
+        version: 0.154.0
 
   packages/tree-squirl:
     dependencies:
@@ -1572,6 +1591,9 @@ packages:
 
   '@oxc-project/types@0.153.0':
     resolution: {integrity: sha512-jSNrRIyvPVLL5E1z/tS5zLAprosGz/FuI1PWwEOz59j3E4TTTzSpqKb/RDGqJhhW0QHYISGXxq582wGx6T11Tw==}
+
+  '@oxc-project/types@0.154.0':
+    resolution: {integrity: sha512-KYOUGQFlLWR+s4QMV2Q9ko38TZm7EdO87Qm7rvZLqk/webse/cDjtyxKhg/47l0byCbs/k46LT8qc4PKjAikzA==}
 
   '@parcel/watcher-android-arm64@2.6.0':
     resolution: {integrity: sha512-trgpLSCKRC/huFjXX/Smh+0sWe4+YtKfktIToiMl59ghz7z+qkH6kMvNnUbLyRs9N11t8l4svSCs1+5B3rOAhA==}
@@ -4931,6 +4953,8 @@ snapshots:
 
   '@oxc-project/types@0.153.0': {}
 
+  '@oxc-project/types@0.154.0': {}
+
   '@parcel/watcher-android-arm64@2.6.0':
     optional: true
 
@@ -5516,7 +5540,7 @@ snapshots:
       '@volar/language-core': 2.4.28
       vscode-languageserver-protocol: 3.18.4
       vscode-languageserver-textdocument: 1.0.12
-      vscode-uri: 3.1.0
+      vscode-uri: 3.2.0
 
   '@volar/source-map@2.4.28': {}
 

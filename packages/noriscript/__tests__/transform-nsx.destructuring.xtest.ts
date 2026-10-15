@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { preprocessNSX } from "../src/1-preprocess"
 import { parseNSX } from "../src/2-parse"
-import { printTSX } from "../src/4-generate"
+import { generateTSX } from "../../scribe/src/4-generate"
 import { transformNSX } from "../src/3-transform"
 
 
@@ -36,7 +36,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -63,7 +63,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -90,7 +90,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { assertª, destructureªª } from "@luently/noriscript";\n` +
@@ -117,7 +117,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -146,7 +146,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -170,7 +170,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { assertª, destructureªª } from "@luently/noriscript";\n` +
@@ -195,7 +195,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -219,7 +219,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -246,7 +246,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -273,7 +273,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª, assertª } from "@luently/noriscript";\n` +
@@ -300,7 +300,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -324,7 +324,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª, assertª } from "@luently/noriscript";\n` +
@@ -349,7 +349,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -378,7 +378,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª, assertª } from "@luently/noriscript";\n` +
@@ -407,7 +407,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +
@@ -438,7 +438,7 @@ describe('transform', () => {
       const ast = parseNSX('test.nsx', code)
       const { ast: tsxTree, transformed } = transformNSX(ast.program, edits)
       expect(transformed).toBe(true)
-      const generated = printTSX(tsxTree)
+      const generated = generateTSX(tsxTree)
 
       expect(generated.code).toBe(
          `import { destructureªª } from "@luently/noriscript";\n` +

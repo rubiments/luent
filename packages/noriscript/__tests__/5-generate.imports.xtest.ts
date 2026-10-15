@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import { parseNSX } from '../src/2-parse'
-import { printTSX } from '../src/4-generate'
+import { generateTSX } from '../../scribe/src/4-generate'
 
 function parseProgram(code: string) {
    return parseNSX('imports-test.tsx', code).program
 }
 
-describe('printTSX import visitors', () => {
+describe('generateTSX import visitors', () => {
    it('prints named imports', () => {
       const program = parseProgram('import { x, y, z } from "module"')
-      const output = printTSX(program).code
+      const output = generateTSX(program).code
       expect(output).toBe('import { x, y, z } from "module";\n')
    })
 
    it('prints side-effect import attributes', () => {
       const program = parseProgram('import "./data.json" with { type: "json" }')
-      const output = printTSX(program).code
+      const output = generateTSX(program).code
       expect(output).toBe('import "./data.json" with { type: "json" };\n')
    })
 
@@ -24,7 +24,7 @@ describe('printTSX import visitors', () => {
       const declaration = program.body[0] as unknown as { specifiers: unknown[] }
       declaration.specifiers = [declaration.specifiers[1], declaration.specifiers[0]]
 
-      const output = printTSX(program).code
+      const output = generateTSX(program).code
       expect(output).toBe('import { a }, d from "pkg";\n')
    })
 
@@ -39,7 +39,7 @@ describe('printTSX import visitors', () => {
          namedDeclaration.specifiers[0],
       ]
 
-      const output = printTSX(program).code
+      const output = generateTSX(program).code
       expect(output).toBe('import * as ns, { a } from "pkg";\n')
    })
 })

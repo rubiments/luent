@@ -36,6 +36,7 @@
   "dependencies": {
     "@jridgewell/gen-mapping": "^0.3.13",
     "@luently/tree-squirl": "workspace:*",
+    "@luently/scribe": "workspace:*",
     "@luently/utils": "workspace:*",
     "@types/estree": "^1.0.8",
     "@types/estree-jsx": "^1.0.5",

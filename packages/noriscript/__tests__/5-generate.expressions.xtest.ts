@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { parseNSX } from '../src/2-parse'
-import { printTSX } from '../src/4-generate'
+import { generateTSX } from '../../scribe/src/4-generate'
 
 function parseProgram(code: string) {
    return parseNSX('expressions-test.tsx', code).program
 }
 
 function gen(code: string) {
-   return printTSX(parseProgram(code)).code
+   return generateTSX(parseProgram(code)).code
 }
 
 function stripRawFromAllLiterals(input: unknown) {
@@ -54,7 +54,7 @@ function stripRawFromAllJSXText(input: unknown) {
    }
 }
 
-describe('printTSX expression visitors', () => {
+describe('generateTSX expression visitors', () => {
 
    // #region: JSX
 
@@ -77,7 +77,7 @@ describe('printTSX expression visitors', () => {
    it('escapes JSXText fallback when raw is unavailable', () => {
       const program = parseProgram('const v = <div>& { x < y }</div>')
       stripRawFromAllJSXText(program)
-      expect(printTSX(program).code).toBe('const v = <div>&amp; {x < y}</div>;')
+      expect(generateTSX(program).code).toBe('const v = <div>&amp; {x < y}</div>;')
    })
 
    // #endregion
@@ -306,31 +306,31 @@ describe('printTSX expression visitors', () => {
    it('falls back to number literal value when raw is missing', () => {
       const program = parseProgram('const n = 42')
       stripRawFromAllLiterals(program)
-      expect(printTSX(program).code).toBe('const n = 42;')
+      expect(generateTSX(program).code).toBe('const n = 42;')
    })
 
    it('falls back to string literal value when raw is missing', () => {
       const program = parseProgram('const s = "hello"')
       stripRawFromAllLiterals(program)
-      expect(printTSX(program).code).toBe('const s = "hello";')
+      expect(generateTSX(program).code).toBe('const s = "hello";')
    })
 
    it('falls back to boolean and null literals when raw is missing', () => {
       const program = parseProgram('const b = true\nconst n = null')
       stripRawFromAllLiterals(program)
-      expect(printTSX(program).code).toBe('const b = true;const n = null;')
+      expect(generateTSX(program).code).toBe('const b = true;const n = null;')
    })
 
    it('falls back to regex literal when raw is missing', () => {
       const program = parseProgram('const r = /ab+/gi')
       stripRawFromAllLiterals(program)
-      expect(printTSX(program).code).toBe('const r = /ab+/gi;')
+      expect(generateTSX(program).code).toBe('const r = /ab+/gi;')
    })
 
    it('falls back to bigint literal when raw is missing', () => {
       const program = parseProgram('const b = 1n')
       stripRawFromAllLiterals(program)
-      expect(printTSX(program).code).toBe('const b = 1n;')
+      expect(generateTSX(program).code).toBe('const b = 1n;')
    })
 
    // #endregion
