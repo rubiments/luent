@@ -71,14 +71,14 @@
       "volar-service-typescript": "0.0.71",
       "vscode-css-languageservice": "6.3.10",
       "vscode-languageclient": "^10.1.2",
-      "vscode-languageserver-textdocument": "1.0.12",
-      "vscode-languageserver-types": "3.17.5",
-      "vscode-uri": "3.1.0"
+      "vscode-languageserver-textdocument": "1.0.15",
+      "vscode-languageserver-types": "3.18.4",
+      "vscode-uri": "3.2.0"
    },
    "devDependencies": {
       "esbuild": "0.28.2"
    },
    "optionalDependencies": {
-      "@oxc-parser/binding-darwin-arm64": "0.153.0"
+      "@oxc-parser/binding-darwin-arm64": "0.154.0"
    }
 }
