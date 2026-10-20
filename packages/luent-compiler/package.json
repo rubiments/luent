@@ -1,0 +1,25 @@
+{
+  "name": "luent-compiler",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Luent JSX transforms",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "scripts": {
+    "build:types": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@luently/utils": "workspace:*",
+    "@luently/tree-squirl": "workspace:*",
+    "oxc-parser": "^0.153.0"
+  },
+  "devDependencies": {
+    "@luently/types": "workspace:*"
+  },
+  "author": "Ruby Yi Wang",
+  "license": "MIT"
+}

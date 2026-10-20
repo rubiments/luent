@@ -900,7 +900,7 @@ body {
   }
 }
 
-.VPLocalNav .menu-text {
+.VPLocalNav .menu .menu-text {
   opacity: 0;
   transition: opacity 250ms ease-in;
 }

@@ -168,6 +168,22 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  packages/luent-compiler:
+    dependencies:
+      '@luently/tree-squirl':
+        specifier: workspace:*
+        version: link:../tree-squirl
+      '@luently/utils':
+        specifier: workspace:*
+        version: link:../utils
+      oxc-parser:
+        specifier: ^0.153.0
+        version: 0.153.0
+    devDependencies:
+      '@luently/types':
+        specifier: workspace:*
+        version: link:../types
+
   packages/luent-ui:
     dependencies:
       '@floating-ui/dom':

@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+    "noCheck": true,
+    "types": [],
+    "rootDir": "./src",
+    "outDir": "./dist/types",
+    "composite": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo/luent-compiler.dts.tsbuildinfo"
+  },
+  "references": [
+    { "path": "../types/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../tree-squirl/tsconfig.build.json" }
+  ]
+}

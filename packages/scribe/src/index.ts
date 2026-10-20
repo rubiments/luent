@@ -2832,7 +2832,7 @@ class Scribe {
 
   private recordMapping(generatedStart: number, generatedEnd: number, mapping: { span: { start: number, end: number }, capabilities?: CodeInformation }) {
     const { span, capabilities } = mapping
-    if (span.start === 0 && span.end === 0) return // synthetic node
+    if (Number.isNaN(span.start) && Number.isNaN(span.end)) return // synthetic node
 
     const generatedLength = generatedEnd - generatedStart
     const sourceLength = span.end - span.start

@@ -483,7 +483,7 @@ html:not(.dark) .ns-hero-code__body {
   margin-left: 1rem;
 }
 
-.VPLocalNav .menu-text {
+.VPLocalNav .menu .menu-text {
   opacity: 0;
   transition: opacity 250ms ease-in;
 }

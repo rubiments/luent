@@ -2,7 +2,7 @@ import { Function, ArrowFunctionExpression, AssignmentExpression, Node as ASTNod
 import { Edit, Edits } from "./1-preprocess.ts";
 import { Cursor, traverse, traverseAll } from '@luently/tree-squirl';
 
-
+// TODO: start and end of synthetic nodes must be NaN instead of 0
 // (1) reverse offset pass
 // (2) queue transforms pass
 // (3) apply transforms
@@ -472,8 +472,8 @@ export function transformNSX(ast: ASTNode, edits: Edits) {
             optional: false,
             callee: {
               type: 'ParenthesizedExpression',
-              start: 0,
-              end: 0,
+              start: NaN,
+              end: NaN,
               expression: DerivationArrowFunctionExpression(expression)
             },
             arguments: []
@@ -552,7 +552,7 @@ export function transformNSX(ast: ASTNode, edits: Edits) {
                   start: node.start,
                   end: node.end,
                   object: CovertCallExpression('ªªof', [exp.object, CovertString('?')]),
-                  property: exp.property as BindingIdentifier,
+                  property: exp.property as IdentifierName,
                   computed: exp.computed as false,
                   optional: false
                 })
@@ -598,7 +598,7 @@ export function transformNSX(ast: ASTNode, edits: Edits) {
                   start: node.start,
                   end: node.end,
                   object: CovertCallExpression('ªªof', [exp.object, CovertString('!')]),
-                  property: exp.property as BindingIdentifier,
+                  property: exp.property as IdentifierName,
                   computed: exp.computed as false,
                   optional: false
                 })
@@ -622,7 +622,7 @@ export function transformNSX(ast: ASTNode, edits: Edits) {
                 start: node.start,
                 end: node.end,
                 object: CovertCallExpression('ªªof', [expression.object]),
-                property: expression.property as BindingIdentifier,
+                property: expression.property as IdentifierName,
                 computed: true,
                 optional: false
               })
@@ -759,17 +759,17 @@ export function transformNSX(ast: ASTNode, edits: Edits) {
 function CovertJSXFragment(children: JSXChild[]): JSXFragment {
   return {
     type: 'JSXFragment',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     openingFragment: {
       type: 'JSXOpeningFragment',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
     },
     closingFragment: {
       type: 'JSXClosingFragment',
-      start: 0,
-      end: 0
+      start: NaN,
+      end: NaN
     },
     children,
   }
@@ -861,12 +861,12 @@ function scopeFunction(cursor: Cursor<ASTNode, Context>, node: Function | ArrowF
               if (body.type === 'BlockStatement') {
                 body.body.unshift({
                   type: 'ExpressionStatement',
-                  start: 0,
-                  end: 0,
+                  start: NaN,
+                  end: NaN,
                   expression: {
                     type: 'AssignmentExpression',
-                    start: 0,
-                    end: 0,
+                    start: NaN,
+                    end: NaN,
                     left: CovertIdentifier(variable),
                     operator: '=',
                     right: CovertCallExpression('toª', [CovertIdentifier(variable)])
@@ -897,8 +897,8 @@ function scopeFunction(cursor: Cursor<ASTNode, Context>, node: Function | ArrowF
             const declaration = importFromRuescript('destructureªª', program)
             transformNSX({
               type: 'Program',
-              start: 0,
-              end: 0,
+              start: NaN,
+              end: NaN,
               hashbang: null,
               sourceType: 'script',
               body: [declaration, covertDestructuring]
@@ -1011,8 +1011,8 @@ function GetterCall(node: Identifier): CallExpression {
   return {
     type: 'CallExpression',
     arguments: [],
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     // @ts-expect-error
     callee: node,
     optional: false
@@ -1022,8 +1022,8 @@ function GetterCall(node: Identifier): CallExpression {
 function DerivationArrowFunctionExpression(expression: Expression): ArrowFunctionExpression {
   return {
     type: 'ArrowFunctionExpression',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     async: expression.type === 'ParenthesizedExpression' && expression.expression.type === 'AwaitExpression',
     body: expression,
     expression: true,
@@ -1055,8 +1055,8 @@ function queueAccessorVariableWrite<N extends AssignmentExpression | UpdateExpre
       importFromRuescript('assertµ', program);
       (node as AssignmentExpression)[key as 'left'] = {
         type: 'MemberExpression',
-        start: 0,
-        end: 0,
+        start: NaN,
+        end: NaN,
         computed: false,
         optional: false,
         object: CovertCallExpression('assertµ', [{
@@ -1117,8 +1117,8 @@ const RUESCRIPT_IMPORT_SOURCE = '@luently/noriscript'
 function CovertImportDeclaration(source: string): ImportDeclaration {
   return {
     type: 'ImportDeclaration',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     phase: 'source',
     importKind: 'value',
     attributes: [],
@@ -1132,8 +1132,8 @@ function CovertImportDeclaration(source: string): ImportDeclaration {
 function CovertIdentifier(name: string, typeAnnotation?: TSTypeAnnotation | null): BindingIdentifier {
   return {
     type: 'Identifier',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     name,
     //@ts-expect-error
     typeAnnotation
@@ -1143,8 +1143,8 @@ function CovertIdentifier(name: string, typeAnnotation?: TSTypeAnnotation | null
 function CovertString(string: string): StringLiteral {
   return {
     type: 'Literal',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     raw: `"${string}"`,
     value: string,
   }
@@ -1153,8 +1153,8 @@ function CovertString(string: string): StringLiteral {
 function CovertNumber(num: number): NumericLiteral {
   return {
     type: 'Literal',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     raw: `${num}`,
     value: num,
   }
@@ -1163,13 +1163,13 @@ function CovertNumber(num: number): NumericLiteral {
 function CovertDestructuring(pattern: ObjectPattern | ArrayPattern, init: BindingIdentifier): VariableDeclaration {
   return {
     type: 'VariableDeclaration',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     kind: 'let',
     declarations: [{
       type: 'VariableDeclarator',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       id: pattern,
       init
     }]
@@ -1180,18 +1180,18 @@ function CovertImportSpecifier(name: string): ImportSpecifier {
 
   return {
     type: 'ImportSpecifier',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     imported: {
       type: 'Identifier',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       name
     },
     local: {
       type: 'Identifier',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       name
     },
     importKind: 'value',
@@ -1205,14 +1205,14 @@ function CovertImportSpecifier(name: string): ImportSpecifier {
 function CovertFunctionBlockBody(insert: Statement | Directive, body: Expression): BlockStatement {
   return {
     type: 'BlockStatement',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     body: [
       insert,
       {
         type: 'ReturnStatement',
-        start: 0,
-        end: 0,
+        start: NaN,
+        end: NaN,
         argument: body
       }
     ]
@@ -1223,13 +1223,13 @@ function CovertFunctionBlockBody(insert: Statement | Directive, body: Expression
 function CovertCallExpression(name: string, args: Expression[]): CallExpression {
   return {
     type: 'CallExpression',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     arguments: args,
     callee: {
       type: 'Identifier',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       name
     },
     optional: false
@@ -1421,8 +1421,8 @@ function undoAccessorVariablePostfix(node: BindingIdentifier, cursor: Cursor<AST
 function CovertObjectExpression(properties: ObjectPropertyKind[] = []): ObjectExpression {
   return {
     type: 'ObjectExpression',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     properties
   }
 }
@@ -1430,8 +1430,8 @@ function CovertObjectExpression(properties: ObjectPropertyKind[] = []): ObjectEx
 function CovertArrayExpression(elements: ArrayExpressionElement[] = []): ArrayExpression {
   return {
     type: 'ArrayExpression',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     elements
   }
 }
@@ -1439,8 +1439,8 @@ function CovertArrayExpression(elements: ArrayExpressionElement[] = []): ArrayEx
 function CovertObjectProperty(key: string, value: Expression, computed: boolean = false): ObjectProperty {
   return {
     type: 'Property',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     computed,
     key: CovertIdentifier(key),
     kind: 'init',
@@ -1574,30 +1574,30 @@ const TYPE_GUARD_PREFIX = 'ø_'
 function CovertTypeGuardVariableDeclaration(variable: string): VariableDeclaration {
   return {
     type: 'VariableDeclaration',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     kind: 'let',
     declarations: [{
       type: 'VariableDeclarator',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       id: CovertIdentifier(TYPE_GUARD_PREFIX + variable, {
         type: 'TSTypeAnnotation',
-        start: 0,
-        end: 0,
+        start: NaN,
+        end: NaN,
         typeAnnotation: {
           type: 'TSTypeReference',
-          start: 0,
-          end: 0,
+          start: NaN,
+          end: NaN,
           typeName: CovertIdentifier('ReturnType'),
           typeArguments: {
             type: 'TSTypeParameterInstantiation',
-            start: 0,
-            end: 0,
+            start: NaN,
+            end: NaN,
             params: [{
               type: 'TSTypeQuery',
-              start: 0,
-              end: 0,
+              start: NaN,
+              end: NaN,
               exprName: CovertIdentifier(variable),
               typeArguments: null,
             }]
@@ -1612,8 +1612,8 @@ function CovertTypeGuardVariableDeclaration(variable: string): VariableDeclarati
 function CovertSequenceExpression(expressions: Expression[]): SequenceExpression {
   return {
     type: 'SequenceExpression',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     expressions
   }
 }
@@ -1621,8 +1621,8 @@ function CovertSequenceExpression(expressions: Expression[]): SequenceExpression
 function CovertAssignmentExpression(left: AssignmentTarget, operator: AssignmentOperator, right: Expression): AssignmentExpression {
   return {
     type: 'AssignmentExpression',
-    start: 0,
-    end: 0,
+    start: NaN,
+    end: NaN,
     left,
     operator: '=',
     right
@@ -1669,8 +1669,8 @@ function transformAbsorbedTypeGuards(test: Expression | AssignmentTarget, cursor
         cursor.willReplace(test, CovertSequenceExpression([
           CovertAssignmentExpression(CovertIdentifier(typeGuardHelperVariable), '=', {
             type: 'CallExpression',
-            start: 0,
-            end: 0,
+            start: NaN,
+            end: NaN,
             callee: test,
             arguments: [],
             optional: false
@@ -1727,14 +1727,14 @@ function transformTypeGuardedAccessorVariableRead(identifier: Identifier, scope:
   if (scope.isTypeGuarded(identifier.name)) {
     cursor.willReplace(identifier, {
       type: 'TSAsExpression',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       expression: identifier,
       typeAnnotation: {
         type: 'TSTypeQuery',
         exprName: CovertIdentifier(TYPE_GUARD_PREFIX + identifier.name),
-        start: 0,
-        end: 0,
+        start: NaN,
+        end: NaN,
         typeArguments: null,
       },
     })
@@ -1752,8 +1752,8 @@ function transformTypeGuardedAccessorVariableWrite(assignment: AssignmentExpress
   if (left.type === 'Identifier' && scope.isTypeGuarded(left.name)) {
     cursor.willReplace(assignment, {
       type: 'AssignmentExpression',
-      start: 0,
-      end: 0,
+      start: NaN,
+      end: NaN,
       left: CovertIdentifier(TYPE_GUARD_PREFIX + left.name),
       operator: assignment.operator,
       right: assignment

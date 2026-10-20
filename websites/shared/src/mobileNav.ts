@@ -12,7 +12,8 @@ export function fixMobileNav($currentPath: () => string, router: Router) {
     const href = link.href
     if (typeof href !== 'string' || !href.startsWith(window.location.origin))
       return;
-    if (samePage(href)) {
+    const navScreen = document.querySelector('#VPNavScreen')
+    if (navScreen && samePage(href)) {
       const closeMenu = document.querySelector('.VPBackdrop, .VPNavBarHamburger')
       if (closeMenu && closeMenu instanceof HTMLElement) {
         closeMenu.click()
@@ -42,7 +43,7 @@ export function fixMobileNav($currentPath: () => string, router: Router) {
 
 
 function updateLocalMenu(root: string) {
-  const menu = document.querySelector('.VPLocalNav .menu-text')
+  const menu = document.querySelector('.VPLocalNav .menu .menu-text')
   if (!menu) return;
   menu.textContent = capitalizeFirstLetter(root);
   menu.style.opacity = 1;
