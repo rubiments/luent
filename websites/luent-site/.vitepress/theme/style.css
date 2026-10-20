@@ -279,11 +279,13 @@ section#code-glimpses {
 
 
 /* Toggle language preference */
-body.lang-mode-tsx .vp-doc [class*='language-nsx'], body.lang-mode-tsx .vp-doc [class*='language-ns'] {
+body.lang-mode-tsx .vp-doc [class*='language-nsx'],
+body.lang-mode-tsx .vp-doc [class*='language-ns'] {
   display: none;
 }
 
-body:not(.lang-mode-tsx) .vp-doc [class*='language-tsx'], body:not(.lang-mode-tsx) .vp-doc [class*='language-ts'] {
+body:not(.lang-mode-tsx) .vp-doc [class*='language-tsx'],
+body:not(.lang-mode-tsx) .vp-doc [class*='language-ts'] {
   display: none;
 }
 
@@ -858,12 +860,22 @@ body {
   position: fixed !important;
 }
 
-.VPNav .VPNavBar {
+/* .VPNav .VPNavBar {
   background-color: var(--vp-c-bg);
+} */
+
+.container {
+  @media (width >=48rem) {
+    max-width: 100%;
+  }
+
+  @media (width >=40rem) {
+    max-width: 100%;
+  }
 }
 
 .VPNavBar:not(.home.top) .divider-line {
-    background-color: var(--vp-c-gutter);
+  background-color: var(--vp-c-gutter);
 }
 
 /* Force navbar breakpoint: mobile menu at <= 959px, desktop menu at >= 960px. */

@@ -194,8 +194,18 @@
   position: fixed !important;
 }
 
-.VPNav .VPNavBar {
+/* .VPNav .VPNavBar {
   background-color: var(--vp-c-bg);
+} */
+
+.container {
+  @media (width >=48rem) {
+    max-width: 100%;
+  }
+
+  @media (width >=40rem) {
+    max-width: 100%;
+  }
 }
 
 
