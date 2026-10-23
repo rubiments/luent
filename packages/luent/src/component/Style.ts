@@ -19,7 +19,7 @@ import { inShadow } from "./shadow";
 
 
 
-function composeCSSText(strings: TemplateStringsArray, values: string[] =[]) {
+function composeCSSText(strings: TemplateStringsArray, ...values: string[]) {
   return strings.reduce((cssText, string, i) => cssText + string + (i < values.length ? values[i] : ''), '')
 }
 
@@ -50,8 +50,8 @@ export function RenderPageWithStyles() {
 
 export const css = composeCSSText;
 
-export function style(strings: TemplateStringsArray, values?: string[]) {
-  return Style(composeCSSText(strings, values))
+export function style(strings: TemplateStringsArray, ...values: string[]) {
+  return Style(composeCSSText(strings, ...values))
 }
 
 export function Style(cssText: string) {
