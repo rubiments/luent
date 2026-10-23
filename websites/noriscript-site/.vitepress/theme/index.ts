@@ -5,7 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import HeroCode from './HeroCode.vue'
 import './style.css'
 import '../../../shared/src/style-rules'
-import { fixMobileNav, islands, mountIslands, smoothScrollHomepage, installVitePressScrollRestoration } from '../../src/luent-islands'
+import { fixOverlayNav, islands, mountIslands, smoothScrollHomepage, installVitePressScrollRestoration } from '../../src/luent-islands'
 
 
 export default {
@@ -38,7 +38,7 @@ export default {
       }
     })
 
-    fixMobileNav(() => previousPage, router)
+    fixOverlayNav(() => previousPage, router)
   }
 } satisfies Theme
 

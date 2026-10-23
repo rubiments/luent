@@ -194,9 +194,9 @@
   position: fixed !important;
 }
 
-/* .VPNav .VPNavBar {
+.VPNav .VPNavBar.home {
   background-color: var(--vp-c-bg);
-} */
+}
 
 .container {
   @media (width >=48rem) {

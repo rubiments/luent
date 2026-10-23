@@ -1,7 +1,7 @@
 import { awaitTick } from 'luent';
 import type { Router } from 'vitepress'
 
-export function fixMobileNav($currentPath: () => string, router: Router) {
+export function fixOverlayNav($currentPath: () => string, router: Router) {
   if (typeof document === 'undefined') return
   // hack to fix Vitepress narrow screen navigation where menu closes before page loads causing a flash of the current page
   document.addEventListener('click', (event) => {
@@ -12,8 +12,8 @@ export function fixMobileNav($currentPath: () => string, router: Router) {
     const href = link.href
     if (typeof href !== 'string' || !href.startsWith(window.location.origin))
       return;
-    const navScreen = document.querySelector('#VPNavScreen')
-    if (navScreen && samePage(href)) {
+    const overlay = document.querySelector('#VPNavScreen') ?? document.querySelector('.VPSidebar.open')
+    if (overlay && samePage(href)) {
       const closeMenu = document.querySelector('.VPBackdrop, .VPNavBarHamburger')
       if (closeMenu && closeMenu instanceof HTMLElement) {
         closeMenu.click()

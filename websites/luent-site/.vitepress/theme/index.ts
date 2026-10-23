@@ -4,7 +4,7 @@ import DefaultTheme from 'vitepress/theme'
 import { h } from 'vue'
 import './style.css'
 import CustomHome from './CustomHome.vue'
-import { islands, fixMobileNav, mountIslands, smoothScrollHomepage, installVitePressScrollRestoration } from '../../src/luent-islands'
+import { islands, fixOverlayNav, mountIslands, smoothScrollHomepage, installVitePressScrollRestoration } from '../../src/luent-islands'
 
 export default {
   extends: DefaultTheme,
@@ -35,7 +35,7 @@ export default {
       }
     })
     
-    fixMobileNav(() => previousPage, router)
+    fixOverlayNav(() => previousPage, router)
   }
 } satisfies Theme
 
