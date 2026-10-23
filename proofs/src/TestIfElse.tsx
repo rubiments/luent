@@ -1,4 +1,4 @@
-import { component, template, If, Else, ElseIf, NodeRef, mountIsland, css } from "luent";
+import { If, Else, ElseIf, NodeRef, mountIsland, style } from "luent";
 import { ion, ooo, awaitRender, queueTask, toValue, observe } from "@luently/quarky";
 import "./style.css"
 
@@ -48,7 +48,7 @@ export function TestIfElse() {
             )}
          </div>
       </div>
-      <o-style>{css`
+      {style`
          .container {
             overflow: hidden;
          }
@@ -69,7 +69,7 @@ export function TestIfElse() {
          p.fade-out {
             transform: translateY(-16px);
          }
-      `}</o-style>
+      `}
       </>
    )
 }

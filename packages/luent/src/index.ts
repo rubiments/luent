@@ -98,7 +98,7 @@ export { $from } from './utils/destructure'
 export { mountIsland } from './client/mountIsland'
 export { writeIsland } from './server/writeHTML'
 // export { withIslands } from './server/writeIslands'
-export { css, Style } from './component/Style'
+export { css, style } from './component/Style'
 export { setUpElement } from './element/setUpElement'
 export {
   $fromContext,

@@ -1,4 +1,4 @@
-import { atUnmount, css, Else, For, If, ion, Ion, NodeRef } from 'luent';
+import { atUnmount, style, Else, For, If, ion, Ion, NodeRef } from 'luent';
 import { Tooltip, TOOLTIP_CONFIG, TooltipContent, TooltipKit, TooltipRoot } from '@luently/luent-ui'
 import { $CodeTab, Code, CodeTour, TourSection } from '@luently/websites-shared'
 import { highlightCode } from './highlighter'
@@ -108,7 +108,7 @@ export function CodeGlimpses() {
         </aside>
       </div>
 
-      <o-style>{css`
+      {style`
         .section-num {
           font-family: 'Fragment Mono', monospace;
           font-size: 12.5px;
@@ -211,7 +211,7 @@ export function CodeGlimpses() {
             display: none;
           }
         }
-      `}</o-style>
+      `}
     </>
   )
 }
@@ -250,12 +250,12 @@ FunctionalComponents.tsx =
       on:click={() => emojis.addRandom()}
     >+</button>
 
-    <o-style>{css\`
+    {style\`
       .collection {
         display: flex;  
         flex-wrap: wrap;
       }
-    \`}</o-style>
+    \`}
   </>
 }
 

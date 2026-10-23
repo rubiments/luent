@@ -1,4 +1,4 @@
-import { As, asJSX, ContextKey, css, For, fromContext, FromTag, If, ion, ionic, NodeRef, Style, Thru, observe, Bindings } from "luent";
+import { As, asJSX, ContextKey, css, For, fromContext, FromTag, If, ion, ionic, Thru, observe, Bindings, style } from "luent";
 import { Ion, queueTask } from "@luently/quarky";
 import { moveUniqueItems } from "@luently/utils";
 
@@ -36,7 +36,7 @@ export function TestColorSort() {
       })}
     </div>
 
-    <o-style>{css`
+    {style`
       * {
         margin: 0;
         padding: 0;
@@ -97,7 +97,7 @@ export function TestColorSort() {
       .slide-in {
         animation: 500ms cubic-bezier(0.55, 0, 0.1, 1) slide-in forwards;
       }
-    `}</o-style>
+    `}
   </>
 }
 
@@ -190,7 +190,7 @@ function ColorPalette(setup: FromTag<{
       </div>
     </div>
 
-    <o-style>{css`
+    {style`
       .container {
         display: flex;
         flex-direction: column;
@@ -215,7 +215,7 @@ function ColorPalette(setup: FromTag<{
         height: 44px;
         border-radius: 10px;
       }
-    `}</o-style>
+    `}
   </>
 }
 
@@ -228,7 +228,7 @@ const Gap = (setup: Bindings<'button'>) =>
       <Arrow />
     </button>
 
-    <o-style>{css`
+    {style`
       .gap {
         position: relative;
         margin: 0px;
@@ -249,7 +249,7 @@ const Gap = (setup: Bindings<'button'>) =>
       .gap:enabled:has(+ .endgap:hover) {
         opacity: 1;
       }
-    `}</o-style>
+    `}
   </>
 
 
@@ -260,7 +260,7 @@ const Endgap = (setup: Bindings<'button'>) =>
       auto-bind={setup}
     ></button>
 
-    <o-style>{css`
+    {style`
       .endgap:hover + .gap:enabled {
         opacity: 1;
       }
@@ -268,7 +268,7 @@ const Endgap = (setup: Bindings<'button'>) =>
       .endgap {
         width: 90px;
       }
-    `}</o-style>
+    `}
   </>
 
 
@@ -279,7 +279,7 @@ const Arrow = () =>
       <div class='chevron-down chevron-tac'></div>
     </div>
 
-    <o-style>{css`
+    {style`
       .chevron-arrow {
         position: absolute;
         left: 50%;
@@ -307,7 +307,7 @@ const Arrow = () =>
         transform-origin: left center;
         transform: rotate(-45deg);
       }
-    `}</o-style>
+    `}
   </>
 
 
@@ -448,7 +448,7 @@ function DraggableKit<T>(config: {
     />
   }
 
-  Style(css`
+  style`
     .dragged {
       cursor: grabbing;
       box-shadow: -5px 0px 5px 0px rgba(0, 0, 0, 0.25);
@@ -457,7 +457,7 @@ function DraggableKit<T>(config: {
     .tag-along {
       transition: transform 67ms ease;
     }
-  `)
+  `
 
   return {
     makeDraggable,
@@ -486,7 +486,7 @@ function DropZones(setup: FromTag<{
       </div>
     )}
 
-    <o-style>{css`
+    {style`
       .dropzones {
         position: absolute;
         display: flex;
@@ -505,7 +505,7 @@ function DropZones(setup: FromTag<{
       .drop-target {
         opacity: 1;
       }
-    `}</o-style>
+    `}
   </>
 }
 
@@ -667,11 +667,11 @@ function CelebrationKit($sorted: Ion<boolean>, onComplete: () => void) {
         }}
       ></$node>
 
-      Style(css`
+      style`
         .magnifying {
           transition: transform 90ms ease-in;
         }
-      `)
+      `
     }
   }
 }

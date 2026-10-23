@@ -1,4 +1,4 @@
-import { If, mountIsland, css } from "luent";
+import { If, mountIsland, style } from "luent";
 import { Ion, ion } from "@luently/quarky";
 import "./style.css"
 
@@ -45,11 +45,11 @@ export function TestIfElseDisplayView(setup: {}) {
           </div>
         </div>
       </div>
-      <o-style>{css`
+      {style`
          .container {
             overflow: hidden;
          }
-      `}</o-style>
+      `}
     </>
   )
 }

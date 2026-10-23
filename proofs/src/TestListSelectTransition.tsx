@@ -1,4 +1,4 @@
-import { For, listen, NodeRef, css, $$ } from "luent";
+import { For, listen, NodeRef, style, $$ } from "luent";
 import { moveUniqueItems, useRandomColorGenerator } from "@luently/utils";
 import './style.css'
 import { ion, awaitRender, queueTask, EACH, ionic } from "@luently/quarky";
@@ -172,7 +172,7 @@ export function TestListSelectTransition() {
                )}
             </div> */}
       </div>
-      <o-style>{css`
+      {style`
             body {
                overflow-y: scroll
             }
@@ -223,7 +223,7 @@ export function TestListSelectTransition() {
             .transition-item {
                transition: transform 500ms ease-in-out;
             }
-         `}</o-style>
+         `}
     </>
   )
 }

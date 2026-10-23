@@ -1,4 +1,4 @@
-import { component, template, If, Else, mountIsland, css } from "luent";
+import { style, If, Else, mountIsland } from "luent";
 import { ion } from "@luently/quarky";
 import "./style.css"
 
@@ -45,11 +45,11 @@ export function TestConsecutiveIfElse() {
             )}
          </div>
       </div>
-      <o-style>{css`
+      {style`
          .container {
             overflow: hidden;
          }
-      `}</o-style>
+      `}
       </>
    )
 }

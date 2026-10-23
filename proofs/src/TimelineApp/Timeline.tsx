@@ -1,5 +1,5 @@
 
-import { Ion, queueTask, As, JSX, ContextKey, css, For, fromContext, FromTag, If, ion, ionic, Thru, observe, Else, Bindings } from "luent";
+import { Ion, queueTask, As, JSX, ContextKey, style, For, fromContext, FromTag, If, ion, ionic, Thru, observe, Else, Bindings } from "luent";
 import { moveUniqueItems } from "@luently/utils";
 
 export function DayView(setup: FromTag<{
@@ -58,11 +58,11 @@ function CalendarNav() {
     <div class='calendar-nav'>
 
     </div>
-    <o-style>{css`
+    {style`
       .calendar-nav {
         
       }
-    `}</o-style>
+    `}
   </>
 }
 
@@ -107,7 +107,7 @@ function WeekNav(setup: FromTag<{
       )}
     </div>
     
-    <o-style>{css`
+    {style`
       .week {
         display: flex;
         flex-direction: row;
@@ -124,7 +124,7 @@ function WeekNav(setup: FromTag<{
         padding: 1rem 1rem;
         text-align: center;
       }
-    `}</o-style>
+    `}
   </>
 }
 
@@ -225,7 +225,7 @@ function ColorPalette(setup: FromTag<{
       </div>
     </div>
 
-    <o-style>{css`
+    {style`
       .container {
         display: flex;
         flex-direction: column;
@@ -258,7 +258,7 @@ function ColorPalette(setup: FromTag<{
           height: 30px;
         }
       }
-    `}</o-style>
+    `}
   </>
 }
 
@@ -271,7 +271,7 @@ const Gap = (setup: Bindings<'button'>) =>
       {Arrow()}
     </button>
 
-    <o-style>{css`
+    {style`
       .gap {
         position: relative;
         margin: 0px;
@@ -298,7 +298,7 @@ const Gap = (setup: Bindings<'button'>) =>
       .gap:enabled:has(+ .endgap:hover) {
         opacity: 1;
       }
-    `}</o-style>
+    `}
   </>
 
 
@@ -309,7 +309,7 @@ const Endgap = (setup: Bindings<'button'>) =>
       auto-bind={setup}
     ></button>
 
-    <o-style>{css`
+    {style`
       .endgap:hover + .gap:enabled {
         opacity: 1;
       }
@@ -323,7 +323,7 @@ const Endgap = (setup: Bindings<'button'>) =>
           max-width: 60px;
         }
       }
-    `}</o-style>
+    `}
   </>
 
 
@@ -334,7 +334,7 @@ const Arrow = () =>
       <div class='chevron-down chevron-tac'></div>
     </div>
 
-    <o-style>{css`
+    {style`
       .chevron-arrow {
         position: absolute;
         left: 50%;
@@ -372,5 +372,5 @@ const Arrow = () =>
         transform-origin: left center;
         transform: rotate(-45deg);
       }
-    `}</o-style>
+    `}
   </>

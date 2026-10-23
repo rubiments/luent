@@ -1,4 +1,4 @@
-import { For, css, If, Else, Thru, Ion, ion } from "luent";
+import { For, style, If, Else, Thru, Ion, ion } from "luent";
 // Modified Demo from Vue.js
 // barebones cells app
 
@@ -67,8 +67,9 @@ export function CellsApp() {
                   </tr>
                ))}
             </tbody>
-         </table >
-         <o-style>{css`
+         </table>
+         
+         {style`
             body {
                margin: 0;
             }
@@ -96,7 +97,7 @@ export function CellsApp() {
                height: 1.5em;
                overflow: hidden;
             }
-         `}</o-style>
+         `}
       </>
    )
 }
@@ -132,7 +133,7 @@ function Cell(input: {
                <span>{calcCellValue($value())}</span>
             )}
          </div >
-         <o-style>{css`
+         {style`
             .cell, .cell input {
                height: 1.5em;
                line-height: 1.5;
@@ -147,7 +148,7 @@ function Cell(input: {
                width: 100%;
                box-sizing: border-box;
             }
-         `}</o-style>
+         `}
       </>
    )
 }

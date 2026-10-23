@@ -1,4 +1,4 @@
-import { asJSX, css, If, ion, Ion, queueTask, RenderTag, Style, Thru } from "luent";
+import { asJSX, css, If, ion, Ion, queueTask, RenderTag, style, Thru } from "luent";
 
 function deepElementFromPoint(x: number, y: number, root: Document | ShadowRoot = document) {
   let element = root.elementFromPoint(x, y);
@@ -157,7 +157,7 @@ function DraggableKit<T>(config: {
     />
   }
 
-  Style(css`
+  style`
     .dragged {
       cursor: grabbing !important;
       box-shadow: -5px 0px 5px 0px rgba(0, 0, 0, 0.25);
@@ -166,7 +166,7 @@ function DraggableKit<T>(config: {
     .tag-along {
       transition: transform 67ms ease;
     }
-  `)
+  `
 
 
   function DropZones() {
@@ -185,7 +185,7 @@ function DraggableKit<T>(config: {
         </div>
       )}
 
-      <o-style>{css`
+      {style`
         .dropzones {
           position: absolute;
           display: flex;
@@ -213,7 +213,7 @@ function DraggableKit<T>(config: {
         .drop-target {
           opacity: 1;
         }
-      `}</o-style>
+      `}
     </>
   }
 

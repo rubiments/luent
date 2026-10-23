@@ -1,4 +1,4 @@
-import { component, mountIsland, css, template } from "luent";
+import { style } from "luent";
 import "./index.css"
 import "./TailwindPlay-card.css"
 import ".overrides.css" // transpiler
@@ -25,7 +25,7 @@ function Child() {
 
         <>
             <div class='bg-amber-400'>hi</div>
-            <o-style>{css`
+            {style`
                @reference "./index.css";
 
                .override0 .override1 .bg-amber-600 {
@@ -35,7 +35,7 @@ function Child() {
                .override1 .bg-amber-900 {
                   @apply bg-amber-900;
                }
-            `}</o-style>
+            `}
         </>
     )
 }

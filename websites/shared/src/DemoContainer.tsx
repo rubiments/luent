@@ -1,4 +1,4 @@
-import { FromTag, NodeRef, ShadowRoot, RenderTag, css, Style } from "luent";
+import { FromTag, NodeRef, ShadowRoot, RenderTag, style } from "luent";
 // function Powerset(setup: {
 //   'mu:powers': Ionic<string[]> & { addRandomPower(): void }
 //   limit: number,
@@ -43,7 +43,7 @@ export function DemoContainer(setup: FromTag<{
           </ShadowRoot>
       </div>
 
-      <o-style>{css`
+      {style`
         .demo-container {
           position: relative;
           margin: 16px 0;
@@ -67,7 +67,7 @@ export function DemoContainer(setup: FromTag<{
             border-radius: 10px;
           }
         }
-      `}</o-style>
+      `}
     </>
   )
 }

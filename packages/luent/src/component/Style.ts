@@ -17,12 +17,9 @@ import { inShadow } from "./shadow";
 //     .slice(0, 12)
 // }
 
-// TODO: dynamic styling?
-function declareStyles(strings: TemplateStringsArray, ...values: any[]): string {
-  return composeCSSText(strings, values)
-}
 
-function composeCSSText(strings: TemplateStringsArray, values: string[]) {
+
+function composeCSSText(strings: TemplateStringsArray, values: string[] =[]) {
   return strings.reduce((cssText, string, i) => cssText + string + (i < values.length ? values[i] : ''), '')
 }
 
@@ -33,12 +30,6 @@ function createStyleTag(cssText: string, id: string, shadow: true | undefined) {
   return style;
 }
 
-
-
-
-
-export const css = declareStyles
-export const style = declareStyles
 
 
 let existingStyleTags: Set<string> | undefined;
@@ -55,6 +46,12 @@ export function RenderPageWithStyles() {
       existingStyleTags = undefined;
     }
   }
+}
+
+export const css = composeCSSText;
+
+export function style(strings: TemplateStringsArray, values?: string[]) {
+  return Style(composeCSSText(strings, values))
 }
 
 export function Style(cssText: string) {

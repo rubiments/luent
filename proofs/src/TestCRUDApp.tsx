@@ -1,4 +1,4 @@
-import { component, template, For, css } from "luent";
+import { For, style } from "luent";
 import { ionic, ion, PRELUDE, observe } from "@luently/quarky"
 
 // Adapted from Vue's CRUDApp demo
@@ -74,7 +74,7 @@ export function CRUDApp() {
          {For($filteredNames, name =>
             <div>{name}</div>
          )}
-         <o-style>{css`
+         {style`
             * {
                font-size: inherit;
             }
@@ -97,7 +97,7 @@ export function CRUDApp() {
             button + button {
                margin-left: 5px;
             }
-         `}</o-style>
+         `}
       </>
    )
 }

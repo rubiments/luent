@@ -1,4 +1,4 @@
-import { Ion, ion, atMount, atUnmount, Await, css, Else, If, Meanwhile, NodeRef, FromTag, afterAttach, awaitLayout, listen, awaitTick, queueTask, awaiting, awaitRender, Bindings } from "luent";
+import { Ion, ion, atMount, atUnmount, Await, style, Else, If, Meanwhile, NodeRef, FromTag, afterAttach, awaitLayout, listen, awaitTick, queueTask, awaiting, awaitRender, Bindings } from "luent";
 import { codeHtml, trusted } from "./code-utils";
 import { TOOLTIP_CONFIG, TooltipKit } from "@luently/luent-ui";
 import { HoverInfo } from "./HoverInfo";
@@ -179,7 +179,7 @@ export function Code(setup: FromTag<{
 
       {/* </o:preserve> */}
     </div>
-    <o-style>{css`
+    {style`
         .code-container .code {
           line-height: 1rem;
         }
@@ -266,7 +266,7 @@ export function Code(setup: FromTag<{
           pointer-events: none;
         }
 
-      `}</o-style>
+      `}
   </>
 }
 
@@ -382,7 +382,7 @@ export function CodeToggle(setup: FromTag<{
       </span>
     </button>
 
-    <o-style>{css`
+    {style`
       .code-toggle {
         position: relative;
         border-radius: 1.5rem;
@@ -437,7 +437,7 @@ export function CodeToggle(setup: FromTag<{
           font-size: 13px;
         }
       } 
-    `}</o-style>
+    `}
   </>
 }
 

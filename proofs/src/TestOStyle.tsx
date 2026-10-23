@@ -1,15 +1,14 @@
-import { css } from "luent";
+import { style } from "luent";
 
 export function TestOStyle() {
   return <>
     <div class='allo'>Hello world</div>
 
-    <o-style>{css`
+    {style`
       .allo {
         background-color: pink;
         color: purple;
       }
     `}
-    </o-style>
   </>
 }

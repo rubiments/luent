@@ -1,4 +1,4 @@
-import { Bindings, css } from "luent";
+import { Bindings, style } from "luent";
 export function ThemeToggle(setup: Bindings<'button'>) {
 
   return <>
@@ -20,7 +20,7 @@ export function ThemeToggle(setup: Bindings<'button'>) {
       <span class="knob" aria-hidden="true"></span>
     </button>
 
-    <o-style>{css`
+    {style`
        :root {
         --t-line: rgba(27, 42, 49, .35);
         --knob: #1B2A31;
@@ -85,6 +85,6 @@ export function ThemeToggle(setup: Bindings<'button'>) {
         background-color: var(--knob);
         transition: left 200ms ease, background-color 200ms ease;
       }
-    `}</o-style>
+    `}
   </>
 }

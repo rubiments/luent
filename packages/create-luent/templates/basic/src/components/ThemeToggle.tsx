@@ -1,4 +1,4 @@
-import { css, Bindings } from "luent";
+import { style, Bindings } from "luent";
 export function ThemeToggle(setup: Bindings<'button'>) {
   return <>
     <button auto-bind={setup} class="toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle color scheme">
@@ -19,7 +19,7 @@ export function ThemeToggle(setup: Bindings<'button'>) {
       <span class="knob" aria-hidden="true"></span>
     </button>
 
-    <o-style>{css`
+    {style`
       .toggle {
         position: relative;
         display: flex;
@@ -66,6 +66,6 @@ export function ThemeToggle(setup: Bindings<'button'>) {
         background-color: var(--knob);
         transition: left 200ms ease, background-color 200ms ease;
       }
-    `}</o-style>
+    `}
   </>
 }

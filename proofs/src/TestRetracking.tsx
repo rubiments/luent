@@ -1,4 +1,4 @@
-import { component, css, For, template } from "luent";
+import { For, style } from "luent";
 import { ionic, ion } from "@luently/quarky";
 
 export function TestRetracking() {
@@ -32,12 +32,12 @@ export function TestRetracking() {
             <div on:click={e => (todo.completed = !todo.completed)}>{(todo.completed)} {todo.title}</div>
          ))}
       </div>
-      <o-style>{css`
+      {style`
          .item {
             border: 1px solid lightgray;
             padding: 1em;
          }
-      `}</o-style>
+      `}
       </>
    )
 }

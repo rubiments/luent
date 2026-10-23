@@ -1,4 +1,4 @@
-import { css, NodeRef } from "luent";
+import { style, NodeRef } from "luent";
 export function DoodleCanvas() {
   const { 
     $canvas, 
@@ -25,7 +25,7 @@ export function DoodleCanvas() {
         <button type="button" on:click={clearCanvas}>Clear</button>
       </div>
 
-      <o-style>{css`
+      {style`
         .canvas-app {
           display: grid;
           gap: 10px;
@@ -66,7 +66,7 @@ export function DoodleCanvas() {
           cursor: crosshair;
           touch-action: none;
         }
-      `}</o-style>
+      `}
     </>
   )
 }

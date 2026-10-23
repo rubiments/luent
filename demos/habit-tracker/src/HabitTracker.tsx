@@ -1,4 +1,4 @@
-import { ion, css, If, Thru, FromTag } from "luent";
+import { ion, style, If, Thru, FromTag } from "luent";
 
 export function HabitTracker(setup: FromTag<{
   habit: string,
@@ -26,7 +26,7 @@ export function HabitTracker(setup: FromTag<{
       )}
     </div>
 
-    <o-style>{css`
+    {style`
 
       .tracker {
         position: relative;

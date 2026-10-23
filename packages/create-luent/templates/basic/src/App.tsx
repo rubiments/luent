@@ -1,4 +1,4 @@
-import { ion, css } from "luent";
+import { ion, style } from "luent";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Counter } from "./components/Counter";
 import { AtomIcon } from "./components/AtomIcon";
@@ -35,11 +35,11 @@ export function App() {
       <span class="ver">v0.0.1</span>
     </footer>
 
-    <o-style>{css`
+    {style`
       .orb {
         width: 112px;
         height: 112px
       }
-    `}</o-style>
+    `}
   </>
 }

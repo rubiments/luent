@@ -1,4 +1,4 @@
-import { For, If, css, $$ } from "luent";
+import { For, If, style, $$ } from "luent";
 import { ion, Ionic, ionic } from "@luently/quarky"
 
 // Modified Demo from Vue.js
@@ -93,14 +93,15 @@ export function CircleApp() {
           <p>Adjust radius of circle at ({($selected()?.cx)}, {($selected()?.cy)})</p>
           <input
             type="range"
-            mu:value={(selected?.r@)@}
-            // mu:value={() => $$($selected())?.r}
+            // mu:value={(selected?.r@)@}
+            mu:value={() => $$($selected())?.r}
           min="1" max="300"
           />
         </div>
       }
       )}
-      <o-style>{css`
+
+      {style`
             body {
                margin: 0;
                overflow: hidden;
@@ -153,7 +154,7 @@ export function CircleApp() {
                padding: 0 50px;
                color: #bbb;
             }
-      `}</o-style>
+      `}
     </>
   )
 }

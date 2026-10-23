@@ -1,4 +1,4 @@
-import { ion, Ion, Ionic, ionic, $$, css, Else, For, FromTag, If, RenderTag, TagClass } from "luent";
+import { ion, Ion, Ionic, ionic, $$, style, Else, For, FromTag, If, RenderTag, TagClass } from "luent";
 export function EmojiQuest() {
   const powers = ['🍀', '🍄', '✨', '🔥', '🔮', '🪵'] as const
   const powerset = ionic(['🍀', '🍄', '✨'], {
@@ -19,13 +19,13 @@ export function EmojiQuest() {
           </Panel>
         </aside>
       </div>
-      <o-style>{css`
+      {style`
         .emoji-quest {
           align-self: start;
           font-family: 'Courier New';
           font-weight: 700;
         }
-      `}</o-style>
+      `}
     </>
   )
 }
@@ -52,7 +52,7 @@ function Panel(setup: FromTag<{
         </div>
       </div>
 
-      <o-style>{css`
+      {style`
         .panel {
           touch-action: manipulation;
           width: ${width}px;
@@ -81,7 +81,7 @@ function Panel(setup: FromTag<{
           border: 2px solid goldenrod;
           overflow: hidden;
         }
-      `}</o-style>
+      `}
     </>
   )
 }
@@ -133,7 +133,7 @@ function Powerset(setup: FromTag<{
 
     </div>
 
-    <o-style>{css`
+    {style`
         .powerset-panel {
           touch-action: manipulation;
           box-sizing: border-box;
@@ -249,7 +249,7 @@ function Powerset(setup: FromTag<{
           font-weight: inherit;
           color: saddlebrown;
         }
-      `}</o-style>
+      `}
   </>
 }
 

@@ -1,13 +1,13 @@
-import { css } from "luent";
+import { style } from "luent";
 export function TestStyleComments() {
   return <>
     <div>Hello world</div>
-    <o-style>{css`
+    {style`
       div {
         color: red;
         // opacity: .5;
         background-color: beige;
       }  
-    `}</o-style>
+    `}
   </>
 }
