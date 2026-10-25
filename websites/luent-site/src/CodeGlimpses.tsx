@@ -623,14 +623,14 @@ DynamicViewSetup.tsx =
 MutationSafety.heading = 'Mutation safety'
 
 function MutationSafety() {
-    return <>
-      <p>
-        Compile-time mutation checking* prevent hidden nonlocal mutations, while explicit mutable bindings enable safer, statically traceable cross-boundary mutations.
-      </p>
-      <p><small>* currently in development, not yet available</small></p>
-      {/* <a href='/guide/mutation-safety' class='medium brand'>Learn more</a> */}
-    </>
-  }
+  return <>
+    <p>
+      Compile-time mutation checking* prevent hidden nonlocal mutations, while explicit mutable bindings enable safer, statically traceable cross-boundary mutations.
+    </p>
+    <p><small>* currently in development, not yet available</small></p>
+    {/* <a href='/guide/mutation-safety' class='medium brand'>Learn more</a> */}
+  </>
+}
 
 MutationSafety.filename = 'EmojiQuest'
 MutationSafety.nsx =
@@ -696,13 +696,13 @@ function Powerset(setup: FromTag<{
 LifecycleHooks.heading = 'Inline lifecycle hooks'
 
 function LifecycleHooks() {
-    return <>
-      <p>
-        Lifecycle behavior specific to a view node may be declared inline through lifecycle bindings such as <code>at:mount</code> and <code>before:unmount</code>.
-      </p>
-      {/* <a href='/guide/lifecycle-hooks' class='medium brand'>Learn more</a> */}
-    </>
-  }
+  return <>
+    <p>
+      Lifecycle behavior specific to a view node may be declared inline through lifecycle bindings such as <code>at:mount</code> and <code>before:unmount</code>.
+    </p>
+    {/* <a href='/guide/lifecycle-hooks' class='medium brand'>Learn more</a> */}
+  </>
+}
 
 LifecycleHooks.filename = 'Editor'
 LifecycleHooks.nsx =
@@ -735,13 +735,13 @@ LifecycleHooks.tsx =
 Portals.heading = 'Portals'
 
 function Portals() {
-    return <>
-      <p>
-        Visually distinctive portal tags make it clear which sections of the view are rendered elsewhere in the DOM. Declare metadata locally in components through head elements like <code>{'<o-link>'}</code> and <code>{'<o-style>'}</code>.
-      </p>
-      {/* <a href='/guide/portals' class='medium brand'>Learn more</a> */}
-    </>
-  }
+  return <>
+    <p>
+      Visually distinctive portal tags make it clear which sections of the view are rendered elsewhere in the DOM. Declare metadata locally in components through head elements like <code>{'<o-link>'}</code> and <code>{'<o-style>'}</code>.
+    </p>
+    {/* <a href='/guide/portals' class='medium brand'>Learn more</a> */}
+  </>
+}
 
 Portals.filename = 'portal-examples'
 Portals.nsx =
@@ -778,13 +778,13 @@ Portals.tsx =
 ContextBindings.heading = 'Context bindings'
 
 function ContextBindings() {
-    return <>
-      <p>
-        Provide multiple context bindings in a single <code>{'<o:context>'}</code> tag to avoid excessive tag nesting. Merge context keys to provide the same binding across multiple decoupled components.
-      </p>
-      {/* <a href='/guide/contextual-bindings' class='medium brand'>Learn more</a> */}
-    </>
-  }
+  return <>
+    <p>
+      Provide multiple context bindings in a single <code>{'<o:context>'}</code> tag to avoid excessive tag nesting. Merge context keys to provide the same binding across multiple decoupled components.
+    </p>
+    {/* <a href='/guide/contextual-bindings' class='medium brand'>Learn more</a> */}
+  </>
+}
 // Provide from the root of an application locally with <code>{'<o--root>'}</code> or from reusable kits with <code>provideRoot()</code>. 
 
 ContextBindings.filename = 'App'
@@ -856,13 +856,14 @@ export function Sidebar() {
 ViewPreservation.heading = 'Preserved views'
 
 function ViewPreservation() {
-    return <>
-      <p>
-        Preserve the UI state and DOM nodes of temporarily hidden views with the <code>{'<o:preserve>'}</code> orbital tag or the <code>"preserve"</code> directive. Discard with <code>view.markDiscard()</code> when the view is no longer needed or state needs to be refreshed.
-      </p>
-      {/* <a href='/guide/preserving-views' class='medium brand'>Learn more</a> */}
-    </>
-  }
+  return <>
+    <p>
+      Preserve the UI state and DOM nodes of temporarily hidden views with the <code>{'<o:preserve>'}</code> orbital tag or the <code>"preserve"</code> directive. Discard with <code>view.markDiscard()</code> when the view is no longer needed or state needs to be refreshed.
+    </p>
+    {/* <a href='/guide/preserving-views' class='medium brand'>Learn more</a> */}
+  </>
+}
+
 
 ViewPreservation.filename = 'App'
 ViewPreservation.nsx =

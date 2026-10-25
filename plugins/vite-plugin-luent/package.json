@@ -50,7 +50,8 @@
     "@babel/core": "^8.0.7",
     "@babel/plugin-syntax-typescript": "^8.0.3",
     "@luently/babel-plugin-luent": "workspace:*",
-    "fast-glob": "^3.3.3"
+    "fast-glob": "^3.3.3",
+    "luent-compiler": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

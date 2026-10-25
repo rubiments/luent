@@ -13,8 +13,14 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo/luent-compiler.dts.tsbuildinfo"
   },
   "references": [
-    { "path": "../types/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../tree-squirl/tsconfig.build.json" }
+    {
+      "path": "../types/tsconfig.build.json"
+    },
+    {
+      "path": "../utils/tsconfig.build.json"
+    },
+    {
+      "path": "../tree-squirl/tsconfig.build.json"
+    }
   ]
 }

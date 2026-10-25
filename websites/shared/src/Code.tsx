@@ -165,7 +165,7 @@ export function Code(setup: FromTag<{
         </>
       })}
       {/* <o:preserve> */}
-      {Await(() => <>
+      {Await(<>
         {If(() => $tab() === 'main',
           <CodeBlock tab={main} highlight={highlight} />
         )}
@@ -443,7 +443,7 @@ export function CodeToggle(setup: FromTag<{
 
 function detectTouchscreen() {
   let hasTouch = false;
-
+  if (!window) return false;
   if (window.PointerEvent && ('maxTouchPoints' in navigator)) {
     if (navigator.maxTouchPoints > 0) {
       hasTouch = true;

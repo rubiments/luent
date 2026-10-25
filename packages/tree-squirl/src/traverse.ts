@@ -26,8 +26,8 @@ type Visit<T extends BaseNode, N extends BaseNode, C> = (this: Cursor<T, C>, nod
 type CreateScope<S> = (parent?: S | undefined) => S
 
 
-export function traverse<T extends BaseNode, C>(ast: T, context: C, visitors: Visitors<T, C>) {
-  const cursor = new Cursor<T, C>(CHILD_KEYS, context, visitors, undefined)
+export function traverse<T extends BaseNode, C>(this: Cursor<T, C> | void, ast: T, context: C, visitors: Visitors<T, C>) {
+  const cursor = this ?? new Cursor<T, C>(CHILD_KEYS, context, visitors, undefined)
 
   cursor.enterScope()
   try {
@@ -125,13 +125,15 @@ export class Cursor<T extends BaseNode, C> {
     this.getContext = getContext;
   }
 
+  traverse = traverse
+
   private visited = new Set()
 
   visit<N extends BaseNode>(node: N, context?: C) {
     if (!(node as BaseNodeProxy & N)[PROXY]) node = this.NodeProxy(node as T & N) as T & N
     if (this.skipped.has(node)) return;
     if (this.visited.has(node)) {
-      console.warn('node has already been visited', node)
+      console.warn('node has already been visited', node.type)
       return;
     }
     this.visited.add(node)

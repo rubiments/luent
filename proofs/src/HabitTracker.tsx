@@ -1,4 +1,5 @@
-import { ion, style, FromTag, If, Thru } from "luent";
+import { ion, style, FromTag, If, Thru } from 'luent';
+
 export function HabitTracker(setup: FromTag<{
   habit: string,
   goal?: number
@@ -8,8 +9,7 @@ export function HabitTracker(setup: FromTag<{
   const count = ion(0)
   const achieved = ion(() => count() === goal)
 
-  return (
-
+  return <>
     <div>
       {habit}
       <ul class='tracker'>
@@ -23,8 +23,9 @@ export function HabitTracker(setup: FromTag<{
           <li class='star'>🌟</li>
         )}
       </ul>
+    </div>
 
-      {style`
+    {style`
         ul.tracker {
           display: inline-flex;
           gap: 0.25rem;
@@ -60,6 +61,5 @@ export function HabitTracker(setup: FromTag<{
           font-size: 0.95rem;
         }
       `}
-    </div>
-  )
+  </>
 }

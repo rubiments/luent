@@ -1,4 +1,5 @@
 import { Cursor, traverse } from "@luently/tree-squirl";
+import { generateTSX } from "@luently/scribe"
 import { parseSync } from "oxc-parser";
 import type {
   Node as ASTNode,
@@ -6,14 +7,21 @@ import type {
   ArrowFunctionExpression,
   ArrayExpression,
   Expression,
-  SequenceExpression,
   JSXFragment,
   JSXElement,
-  JSXAttribute,
-  JSXExpression
+  JSXExpression,
+  JSXChild,
+  IdentifierReference,
+  JSXText,
+  Argument,
+  ArrayExpressionElement,
+  JSXExpressionContainer,
+  StringLiteral,
+  JSXSpreadChild,
+  SpreadElement
 } from "oxc-parser";
 
-type Context = {}
+type Context = { jsx: boolean }
 
 export function compileLuent(source: string, file: string) {
 
@@ -24,55 +32,76 @@ export function compileLuent(source: string, file: string) {
     sourceType: 'module'
   })
 
-  return traverse(ast.program as ASTNode, {}, {
-    CallExpression(node) {
-      transformFlowExpressions(node, this)
+  const result = traverse(ast.program as ASTNode, { jsx: false }, {
+    CallExpression(node, context) { // QUESTION: Not sure if I should allow flow expressions outside of JSX.
+      if (context.jsx) transformFlowExpressions(node, this)
+      this.visitChildren(node, { ...context })
     },
-    JSXFragment(node) {
-      transformFlowExpressions(node, this)
-      transformJSXFragment(node) // transform series
+    JSXFragment(node, context) {
+      transformJSXFragment(node, this) // transform series
+      this.visitChildren(node, { ...context, jsx: true })
     },
-    JSXElement(node) {
-      transformFlowExpressions(node, this)
+    JSXElement(node, context) {
       transformJSXAttributes(node, this, {
         transformRenderTag: true
       })
-      transformJSXSlot(node) // transforms series
+      transformJSXSlot(node, this) // transforms series
+      this.visitChildren(node, { ...context, jsx: true })
+    }
+  })
+
+  return generateTSX(result.ast, {
+    sourceMap: {
+      sourceFile: file,
+      generatedFile: file.replace(/(\.[^./]+)$/, '.virtual$1'),
+      source
     }
   })
 }
 
-function transformFlowExpressions(node: ASTNode, cursor: Cursor<ASTNode, Context>) {
-
-  traverse(node, {}, {
-    CallExpression(node) {
-      const callee = node.callee
-      if (callee.type !== 'Identifier') return;
-      const name = callee.name
-      if (isFlowFunction(name)) {
-        FlowTransforms[name](node, cursor)
-      }
-    }
-  })
+function transformFlowExpressions(node: CallExpression, squirl: Cursor<ASTNode, Context>) {
+  const callee = node.callee
+  if (callee.type !== 'Identifier') {
+    return;
+  }
+  const name = callee.name
+  if (isFlowFunction(name)) {
+    FlowTransforms[name](node, squirl)
+  }
+  // squirl.traverse(node, {}, {
+  //   CallExpression(node) {
+  //     // if (visited.has(node)) return;
+  //     // visited.add(node)
+  //     const callee = node.callee
+  //     if (callee.type !== 'Identifier') {
+  //       this.visitChildren(node)
+  //       return;
+  //     }
+  //     const name = callee.name
+  //     if (isFlowFunction(name)) {
+  //       FlowTransforms[name](node, this)
+  //     }
+  //     this.visitChildren(node)
+  //   }
+  // })
 }
 
 
 
-const FlowTransforms: { [key: string]: (node: CallExpression, cursor: Cursor<ASTNode, Context>) => void } = {
+const FlowTransforms: { [key: string]: (node: CallExpression, squirl: Cursor<ASTNode, Context>) => void } = {
   If: transformFlowSlot,
   ElseIf: transformFlowSlot,
   Else: transformFlowSlot,
   Try: transformFlowSlot,
   Await: transformFlowSlot,
-  Awaits: transformFlowSlot,
   Meanwhile: transformFlowSlot,
   For: transformFlowSlot,
   Portal: transformFlowSlot,
   Default: transformFlowSlot,
   As: transformFlowSlot,
-  Case: (node, cursor) => {
+  Case: (node, squirl) => {
     if (node.arguments.length > 1)
-      transformFlowSlot(node, cursor)
+      transformFlowSlot(node, squirl)
   }
 }
 
@@ -81,64 +110,24 @@ function isFlowFunction(name: string) {
   return name in FlowTransforms;
 }
 
-function transformFlowSlot(node: CallExpression, cursor: Cursor<ASTNode, Context>) {
+const flowSlotFragments = new Set()
+
+function transformFlowSlot(node: CallExpression, squirl: Cursor<ASTNode, Context>) {
   const args = node.arguments
   const lastIndex = args.length - 1;
   const templateArg = args[lastIndex]
   if (t.isJSXFragment(templateArg) || t.isJSXElement(templateArg)) {
-    cursor.willMutate(() => {
-      args[lastIndex] = createRenderFunction(templateArg)
+    if (t.isJSXFragment(templateArg)) flowSlotFragments.add(templateArg)
+    squirl.willMutate(() => {
+      args[lastIndex] = createRenderFunction(flowSlotToArrayExpression(templateArg))
     })
   }
 }
 
-const t = {
-  isJSXFragment: (node: ASTNode) => node.type === 'JSXFragment',
-  isJSXElement: (node: ASTNode) => node.type === 'JSXElement',
-  isArrayExpression: (node: ASTNode) => node.type === 'ArrayExpression',
-  isCallExpression: (node: ASTNode) => node.type === 'CallExpression',
-  isSequenceExpression: (node: ASTNode) => node.type === 'SequenceExpression',
-  isJSXExpressionContainer: (node: ASTNode) => node.type === 'JSXExpressionContainer',
-  isJSXAttribute: (node: ASTNode) => node.type === 'JSXAttribute',
-  isJSXNamespacedName: (node: ASTNode) => node.type === 'JSXNamespacedName',
-  isJSXText: (node: ASTNode) => node.type = 'JSXText',
-  isJSXEmptyExpression: (node: ASTNode) => node.type === 'JSXEmptyExpression'
-}
-
-function createRenderFunction(node: Expression): ArrowFunctionExpression {
-  return {
-    type: 'ArrowFunctionExpression',
-    expression: true,
-    async: false,
-    generator: false,
-    id: null,
-    params: [],
-    body: toArrayExpression(node),
-    start: NaN, // QUESTION: not sure if I should use node.start
-    end: NaN
-  }
-}
 
 
-function toArrayExpression(node: Expression): ArrayExpression | JSXFragment {
-  if (t.isArrayExpression(node)) return node;
-  if (t.isJSXFragment(node)) return node;
-  if (t.isSequenceExpression(node)) {
-    const expression = node.expressions.at(-1)
-    if (!expression) throw new Error('Invalid Node: Empty sequence expression')
-    return toArrayExpression(expression)
-  }
-  return {
-    type: 'ArrayExpression',
-    elements: [node],
-    start: NaN,
-    end: NaN
-    // TODO: I need to mark as visited so it doesn't get transformed.
-  }
-}
 
-
-function transformJSXAttributes(node: JSXElement, cursor: Cursor<ASTNode, Context>, options: { transformRenderTag?: boolean } = {}) {
+function transformJSXAttributes(node: JSXElement, squirl: Cursor<ASTNode, Context>, options: { transformRenderTag?: boolean } = {}) {
   const attributes = node.openingElement.attributes;
   for (const attribute of attributes) {
     if (!t.isJSXAttribute(attribute)) continue; // Spread Attribute
@@ -151,14 +140,15 @@ function transformJSXAttributes(node: JSXElement, cursor: Cursor<ASTNode, Contex
       const firstLetter = key[0]
       // TODO: FromTag types should require render function if attribute name is not Pascal-cased
       if (firstLetter && firstLetter.toUpperCase() === firstLetter) {
-        if (t.isJSXElement(value.expression)) {
-          cursor.willMutate(() => {
-            attribute.value = transformChildrenToRenderFunction([attribute.get('value.expression')])
+        const expression = value.expression
+        if (t.isJSXElement(expression)) {
+          squirl.willMutate(() => {
+            attribute.value = slotToRenderFunction([expression])
           })
         }
-        else if (t.isJSXFragment(value.expression)) {
-          cursor.willMutate(() => {
-            attribute.value = transformChildrenToRenderFunction(attribute.get('value.expression.children'))
+        else if (t.isJSXFragment(expression)) {
+          squirl.willMutate(() => {
+            attribute.value = slotToRenderFunction(expression.children)
           })
         }
       }
@@ -168,35 +158,32 @@ function transformJSXAttributes(node: JSXElement, cursor: Cursor<ASTNode, Contex
 
 
 
-function transformJSXFragment(path) {
-  const children = path.get('children')
-  //  transformJSXChildren(children)
-  path.replaceWith(transformJSXChildrenToArrayExpression(children))
+function transformJSXFragment(node: JSXFragment, squirl: Cursor<ASTNode, Context>) {
+  if (flowSlotFragments.has(node)) return;
+  squirl.willReplace(node, slotToArrayExpression(node.children))
 }
 
-function transformJSXSlot(path) {
-  const children = path.get('children')
+function transformJSXSlot(node: JSXElement, squirl: Cursor<ASTNode, Context>) {
+  const children = node.children
   if (children.length === 0) return;
-  //  transformJSXChildren(children)
-  path.node.children = [transformChildrenToRenderFunction(children)]
+  squirl.willMutate(() => {
+    node.children = [slotToRenderFunction(children)]
+  })
 }
 
 
-function transformChildrenToRenderFunction(paths) {
-  return t.jsxExpressionContainer(
-    t.arrowFunctionExpression(
-      [],
-      transformJSXChildrenToArrayExpression(paths)
-    ));
+function slotToRenderFunction(nodes: JSXChild[]) {
+  return JSXExpressionContainer(
+    createRenderFunction(
+      slotToArrayExpression(nodes)
+    )
+  );
 }
 
-
-
-
-function transformJSXChildrenToArrayExpression(nodes: ASTNode[]) {
-  const array = []
-  let series: null | JSXExpression[];
-  let seriesType: null | string;
+function slotToArrayExpression(nodes: JSXChild[]) {
+  const array: ArrayExpressionElement[] = []
+  let series: null | Expression[];
+  let seriesType: null | string = null;
 
   function closeSeries() {
     if (series) {
@@ -226,58 +213,8 @@ function transformJSXChildrenToArrayExpression(nodes: ASTNode[]) {
   }
 
   for (const node of nodes) {
-    if (t.isJSXExpressionContainer(node) && isIfSeriesElement(node.expression)) {
-      if (node.expression.callee.name === 'If') {
-        closeSeries()
-        seriesType = 'If'
-        series = [node.expression]
-      }
-      else if (node.expression.callee.name === 'Else') {
-        series.push(node.expression)
-        closeSeries()
-      }
-      else {
-        series.push(node.expression)
-      }
-    }
-    else if (t.isJSXExpressionContainer(node) && isAsSeriesElement(node.expression, seriesType)) {
-      if (node.expression.callee.name === 'As') {
-        closeSeries()
-        seriesType = 'As'
-        series = [node.expression]
-      }
-      else if (node.expression.callee.name === 'Default') {
-        series.push(node.expression)
-        closeSeries()
-      }
-    }
-    else if (t.isJSXExpressionContainer(node) && isTrySeriesElement(node.expression, seriesType)) {
-      if (node.expression.callee.name === 'Try') {
-        closeSeries()
-        seriesType = 'Try'
-        series = [node.expression]
-      }
-      else if (node.expression.callee.name === 'Catch') {
-        series.push(node.expression)
-        closeSeries()
-      }
-    }
-    else if (t.isJSXExpressionContainer(node) && isAwaitSeriesElement(node.expression, seriesType)) {
-      if (node.expression.callee.name === 'Await'/*  || node.expression.callee.name === 'Awaits' */) {
-        closeSeries()
-        seriesType = node.expression.callee.name
-        series = [node.expression]
-      }
-      else if (node.expression.callee.name === 'Catch') {
-        series.push(node.expression)
-        closeSeries()
-      }
-      else {
-        series.push(node.expression)
-      }
-    }
-    else if (t.isJSXText(node)) {
-      const stringLiteral = transformJSXText(node)
+    if (t.isJSXText(node)) {
+      const stringLiteral = JSXTextToStringLiteral(node)
       if (stringLiteral) {
         closeSeries()
         array.push(stringLiteral)
@@ -287,8 +224,48 @@ function transformJSXChildrenToArrayExpression(nodes: ASTNode[]) {
       const expression = node.expression;
       if (t.isJSXEmptyExpression(expression))
         continue;
+      if (isNamedCallExpression(expression)) {
+        const name = expression.callee.name;
+        if (name === 'If' || name === 'Try' || name === 'As' || name === 'Await') {
+          closeSeries()
+          seriesType = name
+          series = [expression]
+        }
+        else if (name === 'ElseIf') {
+          if (seriesType !== 'If') throw new Error(`Unexpected flow series opener: ${name}`)
+          series!.push(expression)
+        }
+        else if (name === 'Meanwhile') {
+          if (seriesType !== 'Await') throw new Error(`Unexpected flow series opener: ${name}`)
+          series!.push(expression)
+        }
+        else if (name === 'Else') {
+          if (seriesType !== 'If') throw new Error(`Unexpected flow series opener: ${name}`)
+          series!.push(expression)
+          closeSeries()
+        }
+        else if (name === 'Catch') {
+          if (seriesType !== 'Await' && seriesType !== 'Try') throw new Error(`Unexpected flow series opener: ${name}`)
+          series!.push(expression)
+          closeSeries()
+        }
+        else if (name === 'Default') {
+          if (seriesType !== 'As') throw new Error(`Unexpected flow series opener: ${name}`)
+          series!.push(expression)
+          closeSeries()
+        }
+        else {
+          closeSeries()
+          array.push(expression)
+        }
+        continue;
+      }
       closeSeries()
       array.push(expression)
+    }
+    else if (t.isJSXSpreadChild(node)) {
+      closeSeries()
+      array.push(JSXSpreadChildToSpreadElement(node))
     }
     else {
       closeSeries()
@@ -296,59 +273,141 @@ function transformJSXChildrenToArrayExpression(nodes: ASTNode[]) {
     }
   }
   closeSeries()
-  const arrayExpression = t.arrayExpression(array)
-  arrayExpression.visited = true;
-  return arrayExpression
+  return ArrayExpression(array)
 }
 
-function transformJSXText(node) {
+function JSXTextToStringLiteral(node: JSXText) {
   const value = node.value.replace(/\n\s*/g, '')
-  return value === '' ? null : t.stringLiteral(value)
+  return value === '' ? null : StringLiteral(value)
+}
+
+function JSXSpreadChildToSpreadElement(node: JSXSpreadChild): SpreadElement {
+  return {
+    type: 'SpreadElement',
+    argument: node.expression,
+    start: node.start,
+    end: node.end
+  }
+}
+
+function isNamedCallExpression(node: ASTNode): node is Expression & { type: 'Identifier', callee: IdentifierReference } {
+  if (!t.isCallExpression(node)) return false;
+  const callee = node.callee
+  if (callee.type !== 'Identifier') return false;
+  return true;
 }
 
 
-const conditionalStatements = {
-  If: true,
-  ElseIf: true,
-  Else: true
+function createIfSeries(series: Expression[]) {
+  return CallExpression(Identifier('_$$IfSeries'), [ArrayExpression(series)])
+}
+
+function createTrySeries(series: Expression[]) {
+  return CallExpression(Identifier('_$$TrySeries'), series)
+}
+
+function createAsSeries(series: Expression[]) {
+  return CallExpression(Identifier('_$$AsSeries'), series)
+}
+
+function createAwaitSeries(series: Expression[]) {
+  return CallExpression(Identifier('_$$AwaitSeries'), [ArrayExpression(series)])
 }
 
 
-function isIfSeriesElement(node) {
-  return t.isCallExpression(node) && node.callee.name in conditionalStatements
+
+const t = {
+  isJSXFragment: (node: ASTNode) => node.type === 'JSXFragment',
+  isJSXElement: (node: ASTNode) => node.type === 'JSXElement',
+  isJSXSpreadChild: (node: ASTNode) => node.type === 'JSXSpreadChild',
+  isArrayExpression: (node: ASTNode) => node.type === 'ArrayExpression',
+  isCallExpression: (node: ASTNode) => node.type === 'CallExpression',
+  isSequenceExpression: (node: ASTNode) => node.type === 'SequenceExpression',
+  isJSXExpressionContainer: (node: ASTNode) => node.type === 'JSXExpressionContainer',
+  isJSXAttribute: (node: ASTNode) => node.type === 'JSXAttribute',
+  isJSXNamespacedName: (node: ASTNode) => node.type === 'JSXNamespacedName',
+  isJSXText: (node: ASTNode) => node.type === 'JSXText',
+  isJSXEmptyExpression: (node: ASTNode) => node.type === 'JSXEmptyExpression'
 }
 
-function isTrySeriesElement(node, seriesType) {
-  return t.isCallExpression(node) && (node.callee.name === 'Try' || node.callee.name === 'Catch' && seriesType === 'Try')
+function CallExpression(callee: Expression, args: Argument[]): CallExpression {
+  return {
+    type: 'CallExpression',
+    arguments: args,
+    callee,
+    start: NaN,
+    end: NaN,
+    optional: false
+  }
 }
 
-function isAsSeriesElement(node, seriesType) {
-  return t.isCallExpression(node) && (node.callee.name === 'As' || node.callee.name === 'Default' && seriesType === 'As')
+function Identifier(name: string): IdentifierReference {
+  return {
+    type: 'Identifier',
+    name,
+    start: NaN,
+    end: NaN
+  }
 }
 
-function isAwaitSeriesElement(node, seriesType) {
-  return t.isCallExpression(node) && (
-    node.callee.name === 'Await'
-    // || node.callee.name === 'Awaits'
-    || node.callee.name === 'Meanwhile'
-    || node.callee.name === 'Twiddle'
-    || node.callee.name === 'Catch' && seriesType === 'Await'
-  )
+function ArrayExpression(elements: ArrayExpressionElement[]): ArrayExpression {
+  return {
+    type: 'ArrayExpression',
+    elements,
+    start: NaN,
+    end: NaN
+  }
+}
+
+function JSXExpressionContainer(expression: JSXExpression): JSXExpressionContainer {
+  return {
+    type: 'JSXExpressionContainer',
+    expression,
+    start: NaN,
+    end: NaN
+  }
+}
+
+function StringLiteral(value: string): StringLiteral {
+  return {
+    type: 'Literal',
+    value,
+    raw: JSON.stringify(value),
+    start: NaN,
+    end: NaN
+  }
 }
 
 
-function createIfSeries(series) {
-  return t.callExpression(t.identifier('_$$IfSeries'), [t.arrayExpression(series)])
+function createRenderFunction(body: ArrayExpression | JSXFragment): ArrowFunctionExpression {
+  return {
+    type: 'ArrowFunctionExpression',
+    expression: true,
+    async: false,
+    generator: false,
+    id: null,
+    params: [],
+    body,
+    start: NaN, // QUESTION: not sure if I should use node.start
+    end: NaN
+  }
 }
 
-function createTrySeries(series) {
-  return t.callExpression(t.identifier('_$$TrySeries'), series)
-}
 
-function createAsSeries(series) {
-  return t.callExpression(t.identifier('_$$AsSeries'), series)
-}
-
-function createAwaitSeries(series) {
-  return t.callExpression(t.identifier('_$$AwaitSeries'), [t.arrayExpression(series)])
+function flowSlotToArrayExpression(node: Expression): ArrayExpression {
+  if (t.isArrayExpression(node)) return node;
+  if (t.isJSXFragment(node)) {
+    return slotToArrayExpression(node.children);
+  }
+  if (t.isSequenceExpression(node)) {
+    const expression = node.expressions.at(-1)
+    if (!expression) throw new Error('Invalid Node: Empty sequence expression')
+    return flowSlotToArrayExpression(expression)
+  }
+  return {
+    type: 'ArrayExpression',
+    elements: [node],
+    start: NaN,
+    end: NaN
+  }
 }

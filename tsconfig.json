@@ -13,7 +13,6 @@
     "customConditions": [
       "luentWorkspace"
     ],
-    "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "allowArbitraryExtensions": true,
     "allowSyntheticDefaultImports": true,
@@ -24,7 +23,6 @@
     "strict": true,
     "jsx": "react-jsx",
     "jsxImportSource": "luent",
-
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -50,10 +48,10 @@
         "./packages/luent/src/index.ts"
       ],
       "luent/jsx-runtime": [
-        "packages/luent/src/jsx-runtime/index.ts"
+        "./packages/luent/src/jsx-runtime/index.ts"
       ],
       "luent/jsx-dev-runtime": [
-        "packages/luent/src/jsx-runtime/index.ts"
+        "./packages/luent/src/jsx-runtime/index.ts"
       ],
       "@luently/websites-shared": [
         "./websites/shared/src/index.ts"
@@ -74,13 +72,13 @@
         "./packages/noriscript/src/transpile.ts"
       ],
       "@luently/flask": [
-        "packages/flask/src/index.ts"
+        "./packages/flask/src/index.ts"
       ],
       "@luently/types": [
         "./packages/types/index.ts"
       ],
       "vite-plugin-luent": [
-        "plugins/vite-plugin-luent/src/index.ts"
+        "./plugins/vite-plugin-luent/src/index.ts"
       ]
     }
   },
@@ -91,6 +89,8 @@
     "**/src/*",
     "e2e",
     "plugins",
-    "websites"
-, "jungle", "jungle/astro-plugin-luent"  ]
+    "websites",
+    "jungle",
+    "jungle/astro-plugin-luent"
+  ]
 }

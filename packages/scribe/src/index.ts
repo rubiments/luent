@@ -1,4 +1,4 @@
-import { type ArrayExpression, AssignmentExpression, Node as ASTNode, BinaryExpression, ForInStatement, ForOfStatement, ForStatement, WhileStatement, LogicalExpression, PrivateInExpression, Program, ArrayPattern, BlockStatement, TSModuleBlock, StaticBlock } from '@oxc-project/types'
+import { type ArrayExpression, AssignmentExpression, Node as ASTNode, BinaryExpression, ForInStatement, ForOfStatement, ForStatement, WhileStatement, LogicalExpression, PrivateInExpression, Program, ArrayPattern, BlockStatement, TSModuleBlock, StaticBlock, Function } from '@oxc-project/types'
 import { CodeInformation, CodeMapping } from "@volar/language-core";
 import { GenMapping, maybeAddSegment, setSourceContent, toEncodedMap } from '@jridgewell/gen-mapping'
 import type { EncodedSourceMap } from '@jridgewell/gen-mapping'
@@ -213,7 +213,8 @@ export function generateTSX(program: ASTNode, options?: GenerateTSXOptions): Gen
     ExportNamedDeclaration(node, cursor) {
       cursor.indentScope()
       cursor.write('export ')
-      if (node.exportKind === 'type') cursor.write('type ')
+      if (node.exportKind === 'type' && node.declaration?.type !== 'TSInterfaceDeclaration') 
+        cursor.write('type ')
       if (node.declaration) {
         cursor.visit(node.declaration)
         if (cursor.code.endsWith('\n')) {
@@ -1266,7 +1267,7 @@ export function generateTSX(program: ASTNode, options?: GenerateTSXOptions): Gen
       if ((node as unknown as { declare: boolean }).declare) cursor.write('declare ')
       if (node.override) cursor.write('override ')
       const kind = node.kind
-      const value = node.value ?? {}
+      const value = node.value ?? {} as Function
       if (kind === 'constructor') {
         cursor.write('constructor')
       } else if (kind === 'get' || kind === 'set') {

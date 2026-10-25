@@ -8,7 +8,7 @@
     "moduleResolution": "Bundler",
     "strict": false,
     "declaration": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

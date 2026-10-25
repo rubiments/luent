@@ -66,13 +66,14 @@ export function runDemo() {
       provideRoot(MICROCLASS_MERGE, twMerge);
 
       return <>
-        <TestNamedSlots></TestNamedSlots>
+        {/* <TestNamedSlots></TestNamedSlots> */}
         {/* <HabitTracker habit="water" goal={8}></HabitTracker> */}
         {/* <BottomlessBlokkis></BottomlessBlokkis> */}
         {/* <DayView/> */}
         {/* <TestStyleComments/> */}
         {/* <TestColorSort></TestColorSort> */}
         {/* <TodoMVC /> */}
+        <TestAsyncTabs></TestAsyncTabs>
       </>
       // return <TestInnerHTML/>
     }, '#root')

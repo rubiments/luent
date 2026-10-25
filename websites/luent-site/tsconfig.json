@@ -3,7 +3,6 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "baseUrl": "../..",
     "ignoreDeprecations": "6.0",
     "lib": [
       "ESNext",
@@ -18,22 +17,22 @@
     "noEmit": true,
     "paths": {
       "react/jsx-runtime": [
-        "./packages/luent/src/jsx-runtime"
+        "../../packages/luent/src/jsx-runtime"
       ],
       "luent/jsx-runtime": [
-        "./packages/luent/src/jsx-runtime/index.ts"
+        "../../packages/luent/src/jsx-runtime/index.ts"
       ],
       "luent/jsx-dev-runtime": [
-        "./packages/luent/src/jsx-runtime/index.ts"
+        "../../packages/luent/src/jsx-runtime/index.ts"
       ],
       "luent": [
-        "./packages/luent/src/index.ts"
+        "../../packages/luent/src/index.ts"
       ],
       "@luently/quarky": [
-        "./packages/quarky/src/index.ts"
+        "../../packages/quarky/src/index.ts"
       ],
       "@luently/websites-shared": [
-        "./websites/shared/src/index.ts"
+        "../../websites/shared/src/index.ts"
       ],
     }
   },

@@ -5,20 +5,32 @@
   "description": "Luent JSX transforms",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "luentWorkspace": "./src/index.ts",
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/index.mjs"
+    }
   },
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
+  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "pnpm run build:js && pnpm run build:types",
+    "build:js": "tsdown",
     "build:types": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@luently/utils": "workspace:*",
     "@luently/tree-squirl": "workspace:*",
-    "oxc-parser": "^0.153.0"
+    "oxc-parser": "^0.153.0",
+    "@luently/scribe": "workspace:*"
   },
   "devDependencies": {
-    "@luently/types": "workspace:*"
+    "@luently/types": "workspace:*",
+    "tsdown": "^0.21.9"
   },
   "author": "Ruby Yi Wang",
   "license": "MIT"

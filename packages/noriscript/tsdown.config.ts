@@ -7,6 +7,7 @@ export default defineConfig([
     },
     format: 'esm',
     outDir: 'dist',
+    dts: false,
     clean: true
   },
   {
@@ -15,6 +16,7 @@ export default defineConfig([
     },
     format: 'esm',
     outDir: 'dist',
+    dts: false,
     deps: {
       alwaysBundle: [/^@luently\/utils$/, /^@luently\/tree-squirl$/]
     }
