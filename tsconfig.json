@@ -47,6 +47,9 @@
       "luent": [
         "./packages/luent/src/index.ts"
       ],
+      "luent-compiler": [
+        "./packages/luent-compiler/src/index.ts"
+      ],
       "luent/jsx-runtime": [
         "./packages/luent/src/jsx-runtime/index.ts"
       ],
