@@ -11,9 +11,9 @@
       "noriscript-language-server": "./bin/noriscript-language-server.js"
    },
    "dependencies": {
-      "@volar/language-core": "~2.4.0",
-      "@volar/language-server": "~2.4.0",
-      "@volar/typescript": "~2.4.0",
+      "@volar/language-core": "~2.4.30",
+      "@volar/language-server": "~2.4.30",
+      "@volar/typescript": "~2.4.30",
       "volar-service-css": "0.0.71",
       "volar-service-emmet": "0.0.71",
       "volar-service-html": "0.0.71",
@@ -22,6 +22,6 @@
       "@luently/noriscript": "workspace:*",
       "@types/estree": "^1.0.8",
       "@types/estree-jsx": "^1.0.5",
-      "oxc-parser": "^0.153.0"
+      "oxc-parser": "^0.155.0"
    }
 }

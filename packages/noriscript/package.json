@@ -39,12 +39,12 @@
     "@luently/utils": "workspace:*",
     "@types/estree": "^1.0.8",
     "@types/estree-jsx": "^1.0.5",
-    "@volar/language-core": "~2.4.0",
-    "oxc-parser": "^0.153.0"
+    "@volar/language-core": "~2.4.30",
+    "oxc-parser": "^0.155.0"
   },
   "devDependencies": {
     "@luently/types": "workspace:*",
-    "tsdown": "^0.21.9",
+    "tsdown": "^0.23.2",
     "typescript": "^7.0.2"
   },
   "author": "Ruby Yi Wang",
