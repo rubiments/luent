@@ -9,6 +9,6 @@
    "author": "Ruby Yi Wang",
    "license": "MIT",
    "dependencies": {
-      "@babel/types": "8.0.6"
+      "@babel/types": "8.0.8"
    }
 }
