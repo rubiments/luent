@@ -5,16 +5,17 @@
   "description": "",
   "exports": {
     ".": {
-      "luentWorkspace": "./src/index.ts",
-      "types": "./dist/types/index.d.ts",
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
     "./transpile": {
-      "types": "./dist/types/transpile.d.ts",
-      "default": "./dist/transpile.mjs"
+      "types": "./src/transpile.ts",
+      "import": "./src/transpile.ts",
+      "default": "./src/transpile.ts"
     }
   },
-  "types": "./dist/types/index.d.ts",
+  "types": "./src/index.ts",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "files": [
@@ -24,14 +25,29 @@
     "build": "pnpm run build:js && pnpm run build:types",
     "build:js": "tsdown",
     "build:types": "tsc -p tsconfig.build.json",
-    "watch": "tsdown --watch",
     "prepack": "pnpm run build",
+    "prepublishOnly": "pnpm run build",
     "pack": "pnpm pack",
     "publish:dry": "pnpm publish --dry-run --no-git-checks",
     "publish:public": "pnpm publish --no-git-checks"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/types/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/types/index.d.ts",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      },
+      "./transpile": {
+        "types": "./dist/types/transpile.d.ts",
+        "import": "./dist/transpile.mjs",
+        "default": "./dist/transpile.mjs"
+      }
+    }
   },
   "dependencies": {
     "@jridgewell/gen-mapping": "^0.3.13",

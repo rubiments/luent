@@ -22,10 +22,10 @@ importers:
         version: 5.2.0(typescript@7.0.2)
       vite:
         specifier: ^8.3.4
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       vitest:
         specifier: ^5.0.3
-        version: 5.0.4(@types/node@26.6.5)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
+        version: 5.0.4(@types/node@26.6.5)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
 
   demos/habit-tracker:
     dependencies:
@@ -33,12 +33,15 @@ importers:
         specifier: workspace:*
         version: link:../../packages/luent
     devDependencies:
+      tsx:
+        specifier: ^4.21.0
+        version: 4.23.15
       typescript:
         specifier: ~7.0.2
         version: 7.0.2
       vite:
         specifier: ^8.2.1
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       vite-plugin-luent:
         specifier: workspace:*
         version: link:../../plugins/vite-plugin-luent
@@ -51,9 +54,15 @@ importers:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
+      tsx:
+        specifier: ^4.21.0
+        version: 4.23.15
       vite:
         specifier: ^8.1.3
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
+      vite-plugin-luent:
+        specifier: workspace:*
+        version: link:../plugins/vite-plugin-luent
 
   packages/create-luent:
     dependencies:
@@ -136,7 +145,7 @@ importers:
         version: link:../types
       '@tailwindcss/vite':
         specifier: ^4.2.1
-        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
+        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -155,7 +164,7 @@ importers:
     devDependencies:
       vite:
         specifier: ^8.3.4
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
 
   packages/noriscript:
     dependencies:
@@ -249,7 +258,7 @@ importers:
         version: 7.0.2
       vite:
         specifier: ^8.1.3
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
 
   packages/utils:
     devDependencies:
@@ -264,7 +273,7 @@ importers:
         version: 7.0.2
       vite:
         specifier: ^8.1.3
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
 
   plugins/babel-plugin-luent:
     dependencies:
@@ -295,7 +304,7 @@ importers:
         version: 7.0.2
       vite:
         specifier: ^8.3.4
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
 
   plugins/volar-noriscript:
     dependencies:
@@ -421,22 +430,25 @@ importers:
         version: link:../packages/types
       '@tailwindcss/vite':
         specifier: ^4.2.1
-        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
+        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
+      tsx:
+        specifier: ^4.21.0
+        version: 4.23.15
       vite:
         specifier: ^8.3.4
-        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+        version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
+      vite-plugin-luent:
+        specifier: workspace:*
+        version: link:../plugins/vite-plugin-luent
 
   websites/luent-site:
     dependencies:
       '@tailwindcss/vite':
         specifier: ^4.3.0
-        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
-      vite-plugin-luent:
-        specifier: workspace:*
-        version: link:../../plugins/vite-plugin-luent
+        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
     devDependencies:
       '@luently/luent-ui':
         specifier: workspace:*
@@ -462,18 +474,21 @@ importers:
       tailwindcss:
         specifier: ^4.3.2
         version: 4.3.3
+      tsx:
+        specifier: ^4.21.0
+        version: 4.23.15
+      vite-plugin-luent:
+        specifier: workspace:*
+        version: link:../../plugins/vite-plugin-luent
       vitepress:
         specifier: 2.0.0-alpha.20
-        version: 2.0.0-alpha.20(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(postcss@8.5.29)(sass@1.102.0)(stylus@0.62.0)(typescript@7.0.2)
+        version: 2.0.0-alpha.20(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(postcss@8.5.29)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)(typescript@7.0.2)
 
   websites/noriscript-site:
     dependencies:
       '@tailwindcss/vite':
         specifier: ^4.3.0
-        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
-      vite-plugin-luent:
-        specifier: workspace:*
-        version: link:../../plugins/vite-plugin-luent
+        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
     devDependencies:
       '@luently/quarky':
         specifier: workspace:*
@@ -493,9 +508,15 @@ importers:
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
+      tsx:
+        specifier: ^4.21.0
+        version: 4.23.15
+      vite-plugin-luent:
+        specifier: workspace:*
+        version: link:../../plugins/vite-plugin-luent
       vitepress:
         specifier: 2.0.0-alpha.20
-        version: 2.0.0-alpha.20(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(postcss@8.5.29)(sass@1.102.0)(stylus@0.62.0)(typescript@7.0.2)
+        version: 2.0.0-alpha.20(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(postcss@8.5.29)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)(typescript@7.0.2)
       vue:
         specifier: ^3.5.43
         version: 3.5.43(typescript@7.0.2)
@@ -507,13 +528,13 @@ importers:
         version: link:../../packages/utils
       '@tailwindcss/vite':
         specifier: ^4.3.0
-        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
+        version: 4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
       vite-plugin-luent:
         specifier: workspace:*
         version: link:../../plugins/vite-plugin-luent
       vitepress:
         specifier: 2.0.0-alpha.17
-        version: 2.0.0-alpha.17(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(postcss@8.5.23)(sass@1.102.0)(stylus@0.62.0)(typescript@7.0.2)
+        version: 2.0.0-alpha.17(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(postcss@8.5.23)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)(typescript@7.0.2)
     devDependencies:
       '@luently/luent-ui':
         specifier: workspace:*
@@ -2968,6 +2989,11 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  tsx@4.23.15:
+    resolution: {integrity: sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   tw-animate-css@1.4.0:
     resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
 
@@ -4089,12 +4115,12 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.3.3
       '@tailwindcss/oxide-win32-x64-msvc': 4.3.3
 
-  '@tailwindcss/vite@4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))':
+  '@tailwindcss/vite@4.3.3(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))':
     dependencies:
       '@tailwindcss/node': 4.3.3
       '@tailwindcss/oxide': 4.3.3
       tailwindcss: 4.3.3
-      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
 
   '@tybys/wasm-util@0.10.3':
     dependencies:
@@ -4220,26 +4246,26 @@ snapshots:
 
   '@ungap/structured-clone@1.4.0': {}
 
-  '@vitejs/plugin-vue@6.0.10(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))(vue@3.5.43(typescript@7.0.2))':
+  '@vitejs/plugin-vue@6.0.10(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))(vue@3.5.43(typescript@7.0.2))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       vue: 3.5.43(typescript@7.0.2)
 
-  '@vitejs/plugin-vue@6.0.8(vite@7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0))(vue@3.5.43(typescript@7.0.2))':
+  '@vitejs/plugin-vue@6.0.8(vite@7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))(vue@3.5.43(typescript@7.0.2))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       vue: 3.5.43(typescript@7.0.2)
 
-  '@vitest/mocker@5.0.4(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))':
+  '@vitest/mocker@5.0.4(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.4
       estree-walker: 3.0.3
       magic-string: 1.4.3
     optionalDependencies:
-      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
 
   '@vitest/spy@5.0.4': {}
 
@@ -5374,6 +5400,12 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  tsx@4.23.15:
+    dependencies:
+      esbuild: 0.28.2
+    optionalDependencies:
+      fsevents: 2.3.3
+
   tw-animate-css@1.4.0: {}
 
   typescript-auto-import-cache@0.3.6:
@@ -5483,7 +5515,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0):
+  vite@7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15):
     dependencies:
       esbuild: 0.28.2
       fdir: 6.5.0(picomatch@4.0.7)
@@ -5499,8 +5531,9 @@ snapshots:
       lightningcss: 1.33.0
       sass: 1.102.0
       stylus: 0.62.0
+      tsx: 4.23.15
 
-  vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0):
+  vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -5515,8 +5548,9 @@ snapshots:
       less: 4.8.0
       sass: 1.102.0
       stylus: 0.62.0
+      tsx: 4.23.15
 
-  vitepress@2.0.0-alpha.17(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(postcss@8.5.23)(sass@1.102.0)(stylus@0.62.0)(typescript@7.0.2):
+  vitepress@2.0.0-alpha.17(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(postcss@8.5.23)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)(typescript@7.0.2):
     dependencies:
       '@docsearch/css': 4.6.3
       '@docsearch/js': 4.6.3
@@ -5526,7 +5560,7 @@ snapshots:
       '@shikijs/transformers': 3.23.0
       '@shikijs/types': 3.23.0
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 6.0.8(vite@7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0))(vue@3.5.43(typescript@7.0.2))
+      '@vitejs/plugin-vue': 6.0.8(vite@7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))(vue@3.5.43(typescript@7.0.2))
       '@vue/devtools-api': 8.2.1
       '@vue/shared': 3.5.40
       '@vueuse/core': 14.3.0(vue@3.5.43(typescript@7.0.2))
@@ -5535,7 +5569,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 3.23.0
-      vite: 7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 7.3.6(@types/node@26.6.5)(jiti@2.7.0)(less@4.8.0)(lightningcss@1.33.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       vue: 3.5.43(typescript@7.0.2)
     optionalDependencies:
       postcss: 8.5.23
@@ -5564,7 +5598,7 @@ snapshots:
       - universal-cookie
       - yaml
 
-  vitepress@2.0.0-alpha.20(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(postcss@8.5.29)(sass@1.102.0)(stylus@0.62.0)(typescript@7.0.2):
+  vitepress@2.0.0-alpha.20(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(postcss@8.5.29)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)(typescript@7.0.2):
     dependencies:
       '@docsearch/css': 4.7.1
       '@docsearch/js': 4.7.1
@@ -5572,7 +5606,7 @@ snapshots:
       '@iconify-json/simple-icons': 1.2.99
       '@shikijs/transformers': 4.5.0
       '@types/markdown-it': 14.2.0
-      '@vitejs/plugin-vue': 6.0.10(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))(vue@3.5.43(typescript@7.0.2))
+      '@vitejs/plugin-vue': 6.0.10(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))(vue@3.5.43(typescript@7.0.2))
       '@vue/devtools-api': 8.2.1
       '@vue/shared': 3.5.43
       '@vueuse/core': 14.4.0(vue@3.5.43(typescript@7.0.2))
@@ -5581,7 +5615,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 4.5.0
-      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       vue: 3.5.43(typescript@7.0.2)
     optionalDependencies:
       postcss: 8.5.29
@@ -5611,10 +5645,10 @@ snapshots:
       - universal-cookie
       - yaml
 
-  vitest@5.0.4(@types/node@26.6.5)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)):
+  vitest@5.0.4(@types/node@26.6.5)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.4(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0))
+      '@vitest/mocker': 5.0.4(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15))
       chai: 6.3.0
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
@@ -5625,7 +5659,7 @@ snapshots:
       tinybench: 6.2.2
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
-      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)
+      vite: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.0)(sass@1.102.0)(stylus@0.62.0)(tsx@4.23.15)
       why-is-node-running: 3.2.1
     optionalDependencies:
       '@types/node': 26.6.5

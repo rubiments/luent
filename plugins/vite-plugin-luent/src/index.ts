@@ -1,6 +1,5 @@
-import { fileURLToPath } from 'node:url'
 import { transformWithOxc } from 'vite'
-import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite'
+import type { ConfigEnv, Plugin, UserConfig } from 'vite'
 // import * as babel from '@babel/core'
 // import { luentPreTransform as BabelLuentPlugin } from '@luently/babel-plugin-luent'
 
@@ -9,13 +8,30 @@ type CompileLuent = (
   file: string
 ) => { code?: string; map?: object } | null | undefined
 
-const pluginFile = fileURLToPath(import.meta.url)
-let devServer: ViteDevServer | undefined
-let workspaceCompiler: Promise<CompileLuent> | undefined
-let compileLuentSource = 'luent-compiler'
+const workspacePackages = [
+  'luent',
+  'luent-compiler',
+  'vite-plugin-luent',
+  '@luently/utils',
+  '@luently/types',
+  '@luently/flask',
+  '@luently/quarky',
+  '@luently/tree-squirl',
+  '@luently/scribe',
+  '@luently/noriscript',
+  '@luently/luent-ui',
+  '@luently/websites-shared',
+  '@luently/babel-plugin-luent',
+]
 
-interface LuentPluginOptions {
+export interface LuentPluginOptions {
+  /** @deprecated Workspace packages always resolve to source. */
   useWorkspace?: boolean
+  /**
+   * Workspace dev configs pass the compiler source directly so Vite bundles
+   * and watches it. Published consumers leave this unset.
+   */
+  compileLuent?: CompileLuent
 }
 
 // [] generate html from html.tsx
@@ -33,7 +49,7 @@ interface LuentPluginOptions {
 // }
 
 
-export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
+export default function LuentPlugin(_options: LuentPluginOptions = {}): Plugin {
   // const pages = new Map<string, Page>()
   // const clientModules = new Map<string, ClientModule>()
 
@@ -41,19 +57,12 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
     name: 'luent',
     enforce: 'pre',
 
-    configureServer(server) {
-      devServer = server
-    },
-
     async config(userConfig: UserConfig, env: ConfigEnv) {
       const { command, isSsrBuild } = env
-      const conditions = userConfig.resolve?.conditions ?? []
-      const workspaceConditions = options.useWorkspace
-        ? composeList('luentWorkspace', conditions)
-        : conditions
       const configuredExtensions = userConfig.resolve?.extensions
       const optimizeDeps = userConfig.optimizeDeps
       const ssrOptions = typeof userConfig.ssr === 'object' && userConfig.ssr !== null ? userConfig.ssr : undefined
+      const extensionBase = configuredExtensions ?? ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
 
       // const input = await discoverPages({
       //   forEach(id, route) {
@@ -64,43 +73,16 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
       return {
         resolve: {
           ...userConfig.resolve,
-          conditions: workspaceConditions,
-          ...(configuredExtensions
-            ? { extensions: composeList('.nsx', composeList('.ns', configuredExtensions)) }
-            : {}),
+          extensions: composeList('.nsx', composeList('.ns', extensionBase)),
         },
-        ...(options.useWorkspace
-          ? {
-              optimizeDeps: {
-                ...optimizeDeps,
-                rolldownOptions: {
-                  ...(optimizeDeps?.rolldownOptions ?? {}),
-                  resolve: {
-                    ...(optimizeDeps?.rolldownOptions?.resolve ?? {}),
-                    conditionNames: composeList(
-                      'luentWorkspace',
-                      optimizeDeps?.rolldownOptions?.resolve?.conditionNames ?? []
-                    ),
-                  },
-                },
-              },
-              ssr: {
-                ...ssrOptions,
-                noExternal: composeNoExternal(ssrOptions?.noExternal),
-                resolve: {
-                  ...(ssrOptions?.resolve ?? {}),
-                  conditions: composeList(
-                    'luentWorkspace',
-                    ssrOptions?.resolve?.conditions ?? []
-                  ),
-                  externalConditions: composeList(
-                    'luentWorkspace',
-                    ssrOptions?.resolve?.externalConditions ?? []
-                  ),
-                },
-              },
-            }
-          : {}),
+        optimizeDeps: {
+          ...optimizeDeps,
+          exclude: composeExclude(optimizeDeps?.exclude),
+        },
+        ssr: {
+          ...ssrOptions,
+          noExternal: composeNoExternal(ssrOptions?.noExternal),
+        },
         oxc: {
           ...(userConfig.oxc || {}),
           jsx: {
@@ -208,14 +190,8 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
       //   }
       // })
 
-      const compileLuent = await loadCompileLuent(options.useWorkspace)
+      const compileLuent = await loadCompileLuent(_options.compileLuent)
       const result = compileLuent(code, fileName)
-      console.log('compile luent?...', fileName, compileLuentSource)
-
-      // testCompile()
-
-      // console.log('RESULT', result.code)
-
       if (!result?.code) {
         return null
       }
@@ -251,41 +227,22 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
   }
 }
 
-async function loadCompileLuent(useWorkspace?: boolean): Promise<CompileLuent> {
-  if (!useWorkspace) {
-    const mod = await import('luent-compiler')
-    compileLuentSource = 'luent-compiler'
-    return mod.compileLuent
+async function loadCompileLuent(provided?: CompileLuent): Promise<CompileLuent> {
+  if (provided) return provided
+
+  const mod = await import('luent-compiler')
+  if (typeof mod.compileLuent !== 'function') {
+    throw new Error('vite-plugin-luent: luent-compiler did not export compileLuent')
   }
-
-  if (!devServer) {
-    throw new Error(
-      'vite-plugin-luent: useWorkspace requires the dev server before luent-compiler can be loaded from source'
-    )
-  }
-
-  workspaceCompiler ??= devServer.pluginContainer
-    .resolveId('luent-compiler', pluginFile, { ssr: true })
-    .then(async (resolved) => {
-      if (!resolved || resolved.external) {
-        throw new Error(
-          `vite-plugin-luent: failed to resolve workspace luent-compiler from ${pluginFile}`
-        )
-      }
-
-      compileLuentSource = resolved.id
-      const mod = await devServer!.ssrLoadModule(resolved.id) as { compileLuent: CompileLuent }
-      if (typeof mod.compileLuent !== 'function') {
-        throw new Error('vite-plugin-luent: workspace luent-compiler did not export compileLuent')
-      }
-      return mod.compileLuent
-    })
-
-  return workspaceCompiler
+  return mod.compileLuent
 }
 
 function composeList(item: string, existing: string[]): string[] {
   return [item, ...existing.filter((c) => c !== item)]
+}
+
+function composeExclude(existing: string[] | undefined): string[] {
+  return [...new Set([...(existing ?? []), ...workspacePackages])]
 }
 
 function composeNoExternal(

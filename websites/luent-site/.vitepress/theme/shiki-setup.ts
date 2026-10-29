@@ -1,6 +1,6 @@
-import nsxGetInjectionGrammar from '../../../../plugins/vscode-noriscript/grammar/nsx-get.injection.tmLanguage.json'
-import tropicaDark from './tropica-dark.json'
-import tropicaLight from './tropica-light.json'
+import nsxGetInjectionGrammar from '../../../../plugins/vscode-noriscript/grammar/nsx-get.injection.tmLanguage.json' with { type: 'json' }
+import tropicaDark from './tropica-dark.json' with { type: 'json' }
+import tropicaLight from './tropica-light.json' with { type: 'json' }
 import { ThemeRegistrationResolved } from 'shiki/types'
 
 const tokenColors = [

@@ -1,6 +1,6 @@
-import nsxGetInjectionGrammar from '../../../../plugins/vscode-noriscript/grammar/nsx-get.injection.tmLanguage.json'
-import dusky from './dusky.json'
-import goldenHour from './golden-hour.json'
+import nsxGetInjectionGrammar from '../../../../plugins/vscode-noriscript/grammar/nsx-get.injection.tmLanguage.json' with { type: 'json' }
+import dusky from './dusky.json' with { type: 'json' }
+import goldenHour from './golden-hour.json' with { type: 'json' }
 import { ThemeRegistrationResolved } from 'shiki/types'
 
 const tokenColors = [

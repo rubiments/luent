@@ -3,10 +3,10 @@
   "compilerOptions": {
     "paths": {
       "luent/jsx-runtime": [
-        "./packages/luent/src/jsx-runtime/index.ts"
+        "./src/jsx-runtime/index.ts"
       ],
       "luent/jsx-dev-runtime": [
-        "./packages/luent/src/jsx-runtime/index.ts"
+        "./src/jsx-runtime/index.ts"
       ]
     }
   }

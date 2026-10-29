@@ -4,13 +4,15 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vite",
     "test": "pnpm exec playwright test --config=playwright.config.ts --project=chromium"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^26.6.5",
-    "vite": "^8.1.3"
+    "tsx": "^4.21.0",
+    "vite": "^8.1.3",
+    "vite-plugin-luent": "workspace:*"
   },
   "author": "Ruby Yi Wang",
   "license": "MIT"

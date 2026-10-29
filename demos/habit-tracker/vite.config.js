@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import luent from 'vite-plugin-luent'
+import luent from '../../plugins/vite-plugin-luent/dev.ts'
 
 
 export default defineConfig(async () => {

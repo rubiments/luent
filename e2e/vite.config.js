@@ -1,11 +1,8 @@
 import { defineConfig } from 'vite'
-import luent from '../plugins/vite-plugin-luent/src/index.js'
+import luent from '../plugins/vite-plugin-luent/dev.ts'
 
 
 export default defineConfig({
-   esbuild: {
-      charset: 'utf8'
-   },
    server: {
       fs: {
          cachedChecks: false

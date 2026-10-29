@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
-import luent from '../plugins/vite-plugin-luent/src/index.ts'
+import luent from '../plugins/vite-plugin-luent/dev.ts'
 
 
 export default defineConfig(() => {
@@ -18,7 +18,7 @@ export default defineConfig(() => {
     },
     plugins: [
       tailwindcss(),
-      luent({ useWorkspace: true }),
+      luent(),
     ],
     define: {
       __INTERNAL__: true

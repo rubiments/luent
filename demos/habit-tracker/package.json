@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vite",
+    "build": "tsc && NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vite build",
+    "preview": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vite preview"
   },
   "devDependencies": {
+    "tsx": "^4.21.0",
     "typescript": "~7.0.2",
     "vite": "^8.2.1",
     "vite-plugin-luent": "workspace:*"

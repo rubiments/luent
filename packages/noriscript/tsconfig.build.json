@@ -4,9 +4,6 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "customConditions": [
-      "luentWorkspace"
-    ],
     "allowArbitraryExtensions": true,
     "allowSyntheticDefaultImports": true,
     "lib": [

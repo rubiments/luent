@@ -27,7 +27,6 @@ export default defineConfig({
 
   transformHtml(code, id, ctx) {
     const { html, portals } = extractPortals(code)
-    console.log('transformHTML', portals)
     return injectPortals(html, portals)
   },
 
@@ -39,7 +38,7 @@ export default defineConfig({
       }
     },
     // Keep static assets (logo, etc.) in ../public while docs live in ./docs.
-    publicDir: resolve(__dirname, '../public')
+    publicDir: resolve(import.meta.dirname, '../public')
   },
 
   title: "Luent",

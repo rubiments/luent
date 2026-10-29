@@ -18,16 +18,7 @@
     "paths": {
       "react/jsx-runtime": [
         "../../packages/luent/src/jsx-runtime"
-      ],
-      "luent": [
-        "../../packages/luent/src/index.ts"
-      ],
-      "@luently/quarky": [
-        "../../packages/quarky/src/index.ts"
-      ],
-      "@luently/websites-shared": [
-        "../../websites/shared/src/index.ts"
-      ],
+      ]
     }
   },
   "include": [

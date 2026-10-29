@@ -6,12 +6,12 @@
     "type": "module",
     "exports": {
       ".": {
-        "luentWorkspace": "./src/index.ts",
-        "types": "./dist/types/index.d.ts",
+        "types": "./src/index.ts",
+        "import": "./src/index.ts",
         "default": "./src/index.ts"
       }
     },
-    "types": "./dist/types/index.d.ts",
+    "types": "./src/index.ts",
     "main": "./src/index.ts",
     "module": "./src/index.ts",
     "scripts": {

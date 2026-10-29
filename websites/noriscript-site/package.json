@@ -11,19 +11,22 @@
     "shiki": "^4.5.0",
     "vue": "^3.5.43",
     "vitepress": "2.0.0-alpha.20",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "tsx": "^4.21.0",
+    "vite-plugin-luent": "workspace:*"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.0",
-    "vite-plugin-luent": "workspace:*"
+    "@tailwindcss/vite": "^4.3.0"
   },
   "author": "Ruby Yi Wang",
   "license": "MIT",
   "scripts": {
-    "docs:preview": "vitepress preview",
-    "islands:dev": "concurrently \"vite build --watch --config island.server.config.ts\" \"vite build --watch --config island.client.config.ts\"",
-    "docs:dev": "pnpm docs:prebuild && concurrently -k \"vite build --watch --config island.server.config.ts\" \"vite build --watch --config island.client.config.ts\" \"vitepress dev\"",
-    "docs:prebuild": "pnpm --dir ../../plugins/vite-plugin-luent run build && vite build --config island.server.config.ts && vite build --config island.client.config.ts",
-    "docs:build": "pnpm docs:prebuild && vitepress build"
+    "islands": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vite build --config island.server.config.ts && NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vite build --config island.client.config.ts",
+    "dev": "pnpm islands && NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" concurrently -k \"vite build --watch --config island.server.config.ts\" \"vite build --watch --config island.client.config.ts\" \"vitepress dev\"",
+    "build": "pnpm islands && NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vitepress build",
+    "preview": "NODE_OPTIONS=\"${NODE_OPTIONS:+$NODE_OPTIONS }--import tsx\" vitepress preview",
+    "docs:dev": "pnpm dev",
+    "docs:build": "pnpm build",
+    "docs:preview": "pnpm preview"
   }
 }

@@ -7,7 +7,7 @@
     "exports": {
         ".": "./index.ts"
     },
-    "types": "./dist/types/index.d.ts",
+    "types": "./index.ts",
     "main": "./index.ts",
     "module": "./index.ts",
     "scripts": {

@@ -41,7 +41,7 @@ export default defineConfig({
       }
     },
     // Keep static assets (logo, etc.) in ../public while docs live in ./docs.
-    publicDir: resolve(__dirname, '../public')
+    publicDir: resolve(import.meta.dirname, '../public')
   },
 
 

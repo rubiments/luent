@@ -12,34 +12,34 @@
    "type": "module",
    "exports": {
       ".": {
-         "luentWorkspace": "./src/index.ts",
-         "types": "./dist/index.d.ts",
-         "default": "./dist/index.mjs"
+         "types": "./src/index.ts",
+         "import": "./src/index.ts",
+         "default": "./src/index.ts"
       },
       "./client": {
-         "luentWorkspace": "./src/client/index.ts",
-         "types": "./dist/client/index.d.ts",
-         "default": "./dist/client/index.mjs"
+         "types": "./src/client/index.ts",
+         "import": "./src/client/index.ts",
+         "default": "./src/client/index.ts"
       },
       "./server": {
-         "luentWorkspace": "./src/server/index.ts",
-         "types": "./dist/server/index.d.ts",
-         "default": "./dist/server/index.mjs"
+         "types": "./src/server/index.ts",
+         "import": "./src/server/index.ts",
+         "default": "./src/server/index.ts"
       },
       "./jsx-runtime": {
-         "luentWorkspace": "./src/jsx-runtime/index.ts",
-         "types": "./jsx-runtime.d.ts",
-         "default": "./dist/jsx-runtime.mjs"
+         "types": "./src/jsx-runtime/index.ts",
+         "import": "./src/jsx-runtime/index.ts",
+         "default": "./src/jsx-runtime/index.ts"
       },
       "./jsx-dev-runtime": {
-         "luentWorkspace": "./src/jsx-runtime/index.ts",
-         "types": "./jsx-runtime.d.ts",
-         "default": "./dist/jsx-runtime.mjs"
+         "types": "./src/jsx-runtime/index.ts",
+         "import": "./src/jsx-runtime/index.ts",
+         "default": "./src/jsx-runtime/index.ts"
       }
    },
-   "types": "./dist/index.d.ts",
-   "main": "./dist/index.mjs",
-   "module": "./dist/index.mjs",
+   "types": "./src/index.ts",
+   "main": "./src/index.ts",
+   "module": "./src/index.ts",
    "files": [
       "dist",
       "jsx-runtime.d.ts"
@@ -49,8 +49,8 @@
       "build:js": "tsdown",
       "build:dts": "pnpm run build:dts:deps && tsc -p tsconfig.build.json && node ./scripts/bundle-dts.mjs",
       "build:dts:deps": "pnpm --filter @luently/types run build:types && pnpm --filter @luently/utils run build:types && pnpm --filter @luently/flask run build:types && pnpm --filter @luently/quarky run build:types && pnpm --filter @luently/tree-squirl run build:types && pnpm --filter @luently/noriscript run build:types",
-      "watch": "tsdown --watch",
       "prepack": "pnpm run build",
+      "prepublishOnly": "pnpm run build",
       "prep:publish": "npm pack --dry-run",
       "pack": "pnpm pack",
       "publish:dry": "pnpm publish --dry-run --no-git-checks",
@@ -67,7 +67,37 @@
       "csstype": "^3.1.0"
    },
    "publishConfig": {
-      "access": "public"
+      "access": "public",
+      "main": "./dist/index.mjs",
+      "module": "./dist/index.mjs",
+      "types": "./dist/index.d.ts",
+      "exports": {
+         ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "default": "./dist/index.mjs"
+         },
+         "./client": {
+            "types": "./dist/client/index.d.ts",
+            "import": "./dist/client/index.mjs",
+            "default": "./dist/client/index.mjs"
+         },
+         "./server": {
+            "types": "./dist/server/index.d.ts",
+            "import": "./dist/server/index.mjs",
+            "default": "./dist/server/index.mjs"
+         },
+         "./jsx-runtime": {
+            "types": "./jsx-runtime.d.ts",
+            "import": "./dist/jsx-runtime.mjs",
+            "default": "./dist/jsx-runtime.mjs"
+         },
+         "./jsx-dev-runtime": {
+            "types": "./jsx-runtime.d.ts",
+            "import": "./dist/jsx-runtime.mjs",
+            "default": "./dist/jsx-runtime.mjs"
+         }
+      }
    },
    "author": "Ruby Yi Wang",
    "license": "MIT"

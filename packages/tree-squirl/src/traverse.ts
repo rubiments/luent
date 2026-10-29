@@ -28,7 +28,6 @@ type CreateScope<S> = (parent?: S | undefined) => S
 
 export function traverse<T extends BaseNode, C>(this: Cursor<T, C> | void, ast: T, context: C, visitors: Visitors<T, C>) {
   const cursor = this ?? new Cursor<T, C>(CHILD_KEYS, context, visitors, undefined)
-
   cursor.enterScope()
   try {
     cursor.visit(ast, context)

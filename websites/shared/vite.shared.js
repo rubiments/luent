@@ -1,19 +1,11 @@
 import tailwindcss from '@tailwindcss/vite'
-import luent from 'vite-plugin-luent'
+import luent from '../../plugins/vite-plugin-luent/dev.ts'
 
 export function createSharedViteConfig() {
   return {
-    esbuild: {
-      charset: 'utf8'
-    },
-    resolve: {
-      conditions: ['luentWorkspace'],
-      // Keep Vite defaults for extensionless imports and add .nsx for NoriScript files.
-      extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.nsx']
-    },
     plugins: [
       tailwindcss(),
-      luent({ useWorkspace: true })
+      luent()
     ],
   }
 }
