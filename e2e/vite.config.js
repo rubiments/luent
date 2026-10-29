@@ -14,10 +14,10 @@ export default defineConfig({
    plugins: [
       luent(),
    ],
-   define: {
-      __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
-      __INTERNAL__: JSON.stringify(process.env.NODE_ENV === 'development'),
-      __SSR__: false,
-      __TEST__: JSON.stringify(process.env.NODE_ENV === 'test'),
-   },
+  //  define: {
+  //     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
+  //     __INTERNAL__: JSON.stringify(process.env.NODE_ENV === 'development'),
+  //     __SSR__: false,
+  //     __TEST__: JSON.stringify(process.env.NODE_ENV === 'test'),
+  //  },
 })

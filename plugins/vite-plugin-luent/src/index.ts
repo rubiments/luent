@@ -1,8 +1,18 @@
+import { fileURLToPath } from 'node:url'
 import { transformWithOxc } from 'vite'
-import type { ConfigEnv, Plugin, UserConfig } from 'vite'
+import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite'
 // import * as babel from '@babel/core'
 // import { luentPreTransform as BabelLuentPlugin } from '@luently/babel-plugin-luent'
-import { compileLuent } from 'luent-compiler'
+
+type CompileLuent = (
+  source: string,
+  file: string
+) => { code?: string; map?: object } | null | undefined
+
+const pluginFile = fileURLToPath(import.meta.url)
+let devServer: ViteDevServer | undefined
+let workspaceCompiler: Promise<CompileLuent> | undefined
+let compileLuentSource = 'luent-compiler'
 
 interface LuentPluginOptions {
   useWorkspace?: boolean
@@ -26,15 +36,14 @@ interface LuentPluginOptions {
 export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
   // const pages = new Map<string, Page>()
   // const clientModules = new Map<string, ClientModule>()
-  // let server: ViteDevServer
 
   return {
     name: 'luent',
     enforce: 'pre',
 
-    // configureServer(devServer) {
-    //   server = devServer
-    // },
+    configureServer(server) {
+      devServer = server
+    },
 
     async config(userConfig: UserConfig, env: ConfigEnv) {
       const { command, isSsrBuild } = env
@@ -199,7 +208,9 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
       //   }
       // })
 
+      const compileLuent = await loadCompileLuent(options.useWorkspace)
       const result = compileLuent(code, fileName)
+      console.log('compile luent?...', fileName, compileLuentSource)
 
       // testCompile()
 
@@ -238,6 +249,39 @@ export default function LuentPlugin(options: LuentPluginOptions = {}): Plugin {
     //   }
     // }
   }
+}
+
+async function loadCompileLuent(useWorkspace?: boolean): Promise<CompileLuent> {
+  if (!useWorkspace) {
+    const mod = await import('luent-compiler')
+    compileLuentSource = 'luent-compiler'
+    return mod.compileLuent
+  }
+
+  if (!devServer) {
+    throw new Error(
+      'vite-plugin-luent: useWorkspace requires the dev server before luent-compiler can be loaded from source'
+    )
+  }
+
+  workspaceCompiler ??= devServer.pluginContainer
+    .resolveId('luent-compiler', pluginFile, { ssr: true })
+    .then(async (resolved) => {
+      if (!resolved || resolved.external) {
+        throw new Error(
+          `vite-plugin-luent: failed to resolve workspace luent-compiler from ${pluginFile}`
+        )
+      }
+
+      compileLuentSource = resolved.id
+      const mod = await devServer!.ssrLoadModule(resolved.id) as { compileLuent: CompileLuent }
+      if (typeof mod.compileLuent !== 'function') {
+        throw new Error('vite-plugin-luent: workspace luent-compiler did not export compileLuent')
+      }
+      return mod.compileLuent
+    })
+
+  return workspaceCompiler
 }
 
 function composeList(item: string, existing: string[]): string[] {

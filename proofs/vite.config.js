@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite'
-import luent from '../plugins/vite-plugin-luent/src/index.js'
+import tailwindcss from '@tailwindcss/vite'
+import luent from '../plugins/vite-plugin-luent/src/index.ts'
 
 
-export default defineConfig(async () => {
-  const { default: tailwindcss } = await import('@tailwindcss/vite')
-
+export default defineConfig(() => {
   return {
     oxc: {
       charset: 'utf8',

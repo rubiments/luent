@@ -5,31 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build-babel": "tsc --jsx react-jsx && babel src -d dist"
-  },
-  "dependencies": {
-    "@babel/traverse": "^8.0.7",
-    "@luently/flask": "workspace:*",
-    "luent": "workspace:*",
-    "@luently/quarky": "workspace:*",
-    "@luently/utils": "workspace:*",
-    "lodash-es": "^4.18.1",
-    "marked": "^18.1.0"
+    "test": "pnpm exec playwright test --config=playwright.config.ts --project=chromium"
   },
   "devDependencies": {
-    "@babel/cli": "^8.0.6",
-    "@babel/core": "^8.0.7",
-    "@babel/plugin-syntax-jsx": "^8.0.1",
-    "@babel/plugin-syntax-typescript": "^8.0.3",
-    "@babel/plugin-transform-react-jsx": "^8.0.1",
-    "@babel/preset-env": "^8.0.7",
-    "@babel/preset-react": "^8.0.1",
-    "@babel/preset-typescript": "^8.0.7",
-    "@babel/types": "^8.0.6",
-    "@luently/types": "workspace:*",
-    "vite-plugin-luent": "workspace:*",
-    "@types/babel__core": "^7.20.5",
-    "@types/babel__traverse": "^7.20.6",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^26.6.5",
     "vite": "^8.1.3"
   },

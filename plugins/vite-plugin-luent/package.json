@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "luentWorkspace": "./src/index.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     }

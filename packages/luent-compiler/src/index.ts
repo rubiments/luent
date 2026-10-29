@@ -24,7 +24,6 @@ import type {
 type Context = { jsx: boolean }
 
 export function compileLuent(source: string, file: string) {
-
   const ast = parseSync(file, source, {
     astType: 'ts',
     lang: 'tsx',

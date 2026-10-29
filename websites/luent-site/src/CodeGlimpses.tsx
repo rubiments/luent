@@ -176,7 +176,6 @@ export function CodeGlimpses() {
           font-size: 15.5px;
           line-height: 1.7;
           color: var(--vp-c-text-2);
-          max-width: 40ch;
         }
 
         @media (max-width:900px) {
