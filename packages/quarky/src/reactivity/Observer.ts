@@ -5,10 +5,8 @@ import { AnyObject, Glass } from "@luently/types";
 import { __DEV__unwrap } from "@luently/utils";
 import { SimpleState } from "./State";
 import { $currentCycle, getDefaultPhase, Phase, PRELUDE, SYNC } from "./RenderCycle";
-import { dev, logAtoms } from "../debug/dev";
 import { Traceable } from "../debug/Traceable";
 import { Ion } from "../ion/Ion";
-import { hasQuark, quarkOf } from "../abstract/Quark";
 import { toValue } from "../ion/utils";
 import { $activeUpdate, getActiveUpdate } from "./Update";
 

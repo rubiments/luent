@@ -1,5 +1,6 @@
 import { transformWithOxc } from 'vite'
 import type { ConfigEnv, Plugin, UserConfig } from 'vite'
+import * as ts from "typescript";
 // import * as babel from '@babel/core'
 // import { luentPreTransform as BabelLuentPlugin } from '@luently/babel-plugin-luent'
 

@@ -1,4 +1,3 @@
-import { RenderTag } from "../component/Component";
 import { AnyObject } from "@luently/types";
 import { createRootContext } from "../context/provide";
 import { popContext, pushContext } from "../context/context-stack";
@@ -6,6 +5,7 @@ import { Flask, flaskStack } from "@luently/flask";
 import { load, queueInternalRender } from "@luently/quarky";
 import { mountDOMNodes, processJSXOutput, setUpNodeVine } from "../node/VineNode";
 import { RenderFunction } from "../node/makeJSXNode";
+import { RenderTag } from "../component/bindings-types";
 
 export function mountIsland<T extends AnyObject>(App: RenderTag<T> | RenderFunction, element: string | Element | HTMLElement | SVGAElement) {
   const rootContext = createRootContext()

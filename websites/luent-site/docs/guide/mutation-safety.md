@@ -15,6 +15,18 @@ Mutation-safety checking is currently under development and not yet ready to use
 
 Local mutation is encouraged as it preserves local reasoning of state changes. A mutation is considered local if it is performed in the same lexical scope where the state is initialized.
 
+<!-- ### Ownership boundary
+
+The **owner scope** of state is the lexical scope that creates it (for example, the function body, module body, or factory body containing `ion(...)`).
+
+Mutation is treated as local only within that owner scope. Once a value crosses a lexical boundary (component boundary, function call boundary, callback boundary, or module boundary), it is treated as nonlocal in the receiving scope unless explicitly annotated (`mu:` / `mo:`).
+
+Common boundary cases:
+- **Factory/hook return**: if a helper creates and returns state, the helper is the owner scope; callers receive nonlocal state.
+- **Module-level singleton state**: the module body is the owner scope; imported usage sites are nonlocal.
+- **Closure-captured state**: closures created in the owner scope may mutate locally; the same value received by unrelated scopes is nonlocal.
+- **Re-exported state**: re-exporting does not transfer ownership; the original creation scope remains the owner. -->
+
 If a child component needs to mutate state received from a parent or ancestor, it may mutate state indirectly through callbacks:
 ```nsx
 // child
@@ -134,6 +146,7 @@ function Counter() {
 
 This keeps mutations visible to the component who owns the state—`Counter` in the example above.
 
+<p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
 
 ## Nonlocal mutation
 
@@ -141,9 +154,29 @@ Indirect mutation can sometimes become unwieldy, especially when requests for mu
 
 Mutability annotations tell the compiler to allow nonlocal mutation while making it explicit to the owner scope. This way, mutations are statically traceable and state changes can still be reasoned about.
 
-### Mutability annotations
+<p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
 
-#### Annotation objects
+## Mutability annotations
+
+### Annotations
+
+Luent offers two mutability annotations with the following meanings:
+<!-- - `mu:` indicates that deep property assignments and method calls may be performed through the binding
+- `m:` indicates that deep method calls (but no property assignments) may be performed through the binding
+- no annotation indicates that no property assignments or method calls are performed through the binding -->
+- **`mu:`**: deep property assignments and method calls allowed; stands for "mutable"
+- **`mo:`**: deep method calls allowed, but direct property assignment is disallowed; stands for "methods only"
+- **no annotation**: no property assignments or method calls allowed
+
+Comparison table:
+
+| Annotation | Property assignment allowed | Method calls allowed | Considered mutable |
+|---|---|---|---|
+| `mu:` | ✅ | ✅ | ✅ |
+| `mo:` | ❌ | ✅ | ✅ (via methods) |
+| none | ❌ | ❌ | ❌ |
+
+### Annotation objects
 
 Mutation annotations are expressed through **annotation objects**—objects with a single property whose name serves as an annotation to its value or the properties of an object literal annotation pack. 
 
@@ -156,49 +189,17 @@ For example:
 
 **Annotated pack**
 ```tsx
-{ mu: { foo, bar } }
+{ mu:{ foo, bar } }
 ```
 
-#### Annotation sites
+<p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
 
-An object serves as an annotation for the compiler only when it appears at recognized annotation sites.
+<!-- ### Annotation sites
 
-**Argument site**
+An object serves as an annotation for the compiler only when it appears at recognized annotation sites. -->
 
-To annotate arguments, the annotation object must be expressed as an inlined object literal.
 
-```tsx
-// ✅ annotated argument
-foo({ mu: user })
-```
-```tsx
-// ✅ annotated argument pack
-foo({ mu: { user } })
-```
-:::danger An annotation object that annotates an argument must be defined inline
-<!-- **Annotation objects must be defined inline** -->
-```tsx
-const muUser = { mu: user } // ❌ not an annotation
-
-foo(muUser)
-```
-:::
-
-:::danger Annotated argument packs must be *fully* defined inline
-```tsx
-const muPack = { user } 
-
-// ❌ not an annotation for `user`
-// ❗ unintended annotation for `muPack`
-foo({ mu: muPack }) 
-```
-:::
-
-:::danger Annotation packs must not be deeply nested in an argument object
-```tsx
-foo({ bar: { mu: user } }) // ❌ not an annotation
-```
-:::
+### Parameter annotations
 
 
 **Parameter site**
@@ -210,7 +211,7 @@ function foo({ mu: user }: Mu<User>) {
 ```
 ```tsx
 // ✅ annotated parameter
-function foo({ mu: { user } }: MuPack<{ user: User }>) {
+function foo({ mu:{ user } }: MuPack<{ user: User }>) {
   user.name = 'foo'
 }
 ```
@@ -234,7 +235,7 @@ Annotation objects that annotate a pack of value(s) (as opposed to directly anno
 **Parameter pack destructuring site**
 ```tsx
 function foo(setup: MuPack<{ user: User }>) {
-  const { mu: { user } } = setup; // ✅ annotated access
+  const { mu:{ user } } = setup; // ✅ annotated access
   user.name = 'foo'
 }
 ```
@@ -274,24 +275,73 @@ function foo(setup: MuPack<{ user: User }>) {
 ```
 :::
 
+### Argument annotations
+
+**Argument site**
+
+To annotate arguments, the annotation object must be expressed as an inlined object literal.
+
+```tsx
+// ✅ annotated argument
+foo({ mu: user })
+```
+```tsx
+// ✅ annotated argument pack
+foo({ mu:{ user } })
+```
+:::danger An annotation object that annotates an argument must be defined inline
+<!-- **Annotation objects must be defined inline** -->
+```tsx
+const muUser = { mu: user } // ❌ not an annotation
+
+foo(muUser)
+```
+:::
+
+:::danger Annotated argument packs must be *fully* defined inline
+```tsx
+const muPack = { user } 
+
+// ❌ not an annotation for `user`
+// ❗ unintended annotation for `muPack`
+foo({ mu: muPack }) 
+```
+:::
+
+:::danger Annotation packs must not be deeply nested in an argument object
+```tsx
+foo({ bar: { mu: user } }) // ❌ not an annotation
+```
+:::
+
+**JSX tag binding site**
+
+Since namespaced attributes in Luent represent namespace objects, `mu:` and `mo:` JSX attribute namespaces are treated by the compiler as mutability annotations.
+
+```nsx
+<input mu:value={newTodo@} />
+```
+```tsx
+<input mu:value={$newTodo} />
+```
+:::info transpiled
+```js
+jsx('input', { mu:{ value: $newTodo } })
+```
+:::
+
+<p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
 
 
 
 
-#### Annotations
-
-Luent offers two mutability annotations with the following meanings:
-<!-- - `mu:` indicates that deep property assignments and method calls may be performed through the binding
-- `m:` indicates that deep method calls (but no property assignments) may be performed through the binding
-- no annotation indicates that no property assignments or method calls are performed through the binding -->
-- **`mu:`**: deep property assignments and method calls allowed; stands for "mutable"
-- **`mo:`**: deep method calls (but no property assignments) allowed; stands for "method-callable only"
-- **no annotation**: no property assignments or method calls allowed
 
 
-Since namespaced attributes in Luent represent namespace objects, 
+<!-- Since namespaced attributes in Luent represent namespace objects, 
 
-mu package objects must not be mutated.
+mu package objects must not be mutated. -->
+<!-- 
+#### Usage
 
 Mutability annotations may be used on select element bindings:
 
@@ -303,7 +353,7 @@ Mutability annotations may be used on select element bindings:
 ```
 :::info transpiled
 ```js
-jsx('input', { mu: { value: $newTodo } })
+jsx('input', { mu:{ value: $newTodo } })
 ```
 :::
 
@@ -317,16 +367,16 @@ jsx('input', { mu: { value: $newTodo } })
 ```
 :::info transpiled
 ```js
-jsx(Todos, { mu: { todos: $todos } })
+jsx(Todos, { mu:{ todos: $todos } })
 ```
-:::
+::: -->
 
 
 
 <!-- Mutable bindings are marked in the providing scope with `mu:` or `m:` annotations. The `mu:` annotation allows receiving scopes to deeply mutate reference values of mutable bindings, either through property assignment or method calls. The `m:` annotation allows mutation through method calls only. -->
 <p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
 
-### Element bindings
+## Element bindings
 
 Input elements such as `<input>` and `<select>` expose mutable bindings on attributes that may reflect user input.
 
@@ -360,7 +410,7 @@ Compare with the more verbose one-way binding implementation:
 <p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
 
 
-### Component bindings
+## Component bindings
 
 Components define mutable bindings through the type annotation of its setup parameter.
 
@@ -385,7 +435,7 @@ function Counter(setup: FromTag<{
     increment: () => void;
   };
 }>) {
-  const { mo: { $count } } = setup;
+  const { mo:{ $count } } = setup;
 
   return <>
     {$count}
@@ -411,16 +461,16 @@ function Counter(setup: FromTag<{
 function Counter(setup: FromTag<{
   'mu:count': MutableIon<number>
 }>) {
-  const { mu: { $count } } = setup;
+  const { mu:{ $count } } = setup;
 
-  <:>
+  return <>
     {$count}
     <button on:click={() => $count.value++}>+</button>
-  </:>
+  </>
 }
 ```
 
-### Function arguments
+## Function arguments
 Mutation safety and annotations apply equally to regular functions as they do to components.
 
 ```nsx
@@ -449,10 +499,10 @@ function foo(config: {
 ```
 ```tsx
 function foo(config: { 
-  mu: { bar: Bar }, 
+  mu:{ bar: Bar }, 
   user: User 
 }) {
-  const { mu: { bar }, user } = config;
+  const { mu:{ bar }, user } = config;
 
   bar.value = 0 // mutation OK
   user.name = 'kermie' // X not allowed
@@ -463,19 +513,19 @@ function foo(config: {
 
 ## More on mutability annotations
 
-### Annotation objects
+<!-- ### Annotation objects -->
 
 ### Capability, not guarantee
 Note that in the providing scope, mutability annotations indicate the *possibility* of mutation, not guaranteed mutation. 
 
 ### All methods are suspect
-The mutation safety compiler does not distinguish between accessor methods and mutator methods. All nested nonlocal methods are considered potential mutators and must be annotated with `m:` or `mu:` in order to be called.
+The mutation safety compiler does not distinguish between accessor methods and mutator methods. All nested nonlocal methods are considered potential mutators and must be annotated with `mo:` or `mu:` in order to be called.
 
 ```nsx
 function CountDisplay(setup: FromTag<{
-  'mo:count': Ion<number> & { isNegative(): boolean }
+  +mo:count: Ion<number> & { isNegative(): boolean }
 }>) {
-  const { mo: { count@ } } = setup;
+  const { +mo:count@ } = setup;
 
   <:>
     {count@}
@@ -489,7 +539,7 @@ function CountDisplay(setup: FromTag<{
 function CountDisplay(setup: FromTag<{
   'mo:count': Ion<number> & { isNegative(): boolean }
 }>) {
-  const { mo: { $count } } = setup;
+  const { mo:{ $count } } = setup;
 
   return <>
     {$count}
@@ -502,9 +552,9 @@ function CountDisplay(setup: FromTag<{
 
 ```nsx
 function Counter(setup: FromTag<{
-  'mo:count': Ion<number> & { increment(): void }
+  +mo:count: Ion<number> & { increment(): void }
 }>) {
-  const { mo: { count@ } } = setup;
+  const { +mo:count@ } = setup;
 
   <:>
     {count@}
@@ -517,7 +567,7 @@ function Counter(setup: FromTag<{
 function Counter(setup: FromTag<{
   'mo:count': Ion<number> & { increment(): void }
 }>) {
-  const { mo: { $count } } = setup;
+  const { mo:{ $count } } = setup;
 
   return <>
     {$count}
@@ -532,9 +582,9 @@ In the receiving scope, mutability annotations tell the mutation safety compiler
 In this example, the TypeScript compiler prevents the mutation of count despite the mutability annotation.
 ```nsx
 function Counter(setup: FromTag<{
-  'mu:count': Ion<number> & { readonly value: number }
+  +mu:count: Ion<number> & { readonly value: number }
 }>) {
-  const { mu: { count@ } } = setup;
+  const { +mu:count@ } = setup;
 
   function increment() {
     count++ // ❌ Cannot assign to 'value' because it is a read-only property.
@@ -549,10 +599,10 @@ function Counter(setup: FromTag<{
 function Counter(setup: FromTag<{
   'mu:count': Ion<number> & { readonly value: number }
 }>) {
-  const { mu: { $count } } = setup;
+  const { mu:{ $count } } = setup;
 
   function increment() {
-    count++ // ❌ Cannot assign to 'value' because it is a read-only property.
+    count.value++ // ❌ Cannot assign to 'value' because it is a read-only property.
   }
   
   return <>
@@ -570,9 +620,9 @@ In this example, a runtime error will be thrown because `count` has been frozen.
 ```
 ```nsx
 function Counter(setup: FromTag<{
-  'mu:count': MutableIon<number>
+  +mu:count: MutableIon<number>
 }>) {
-  const { mu: { count@ } } = setup;
+  const { +mu:count@ } = setup;
 
   <:>
     {count@}
@@ -584,7 +634,7 @@ function Counter(setup: FromTag<{
 function Counter(setup: FromTag<{
   'mu:count': MutableIon<number>
 }>) {
-  const { mu: { $count } } = setup;
+  const { mu:{ $count } } = setup;
 
   return <>
     {$count}
@@ -605,9 +655,9 @@ Mutability annotations enable nested property assignments and method calls. Muta
 
 ```nsx
 function NameEditor(setup: FromTag<{
-  'mu:user': { name: { first: string, last: string } }
+  +mu:user: { name: { first: string, last: string } }
 }>) {
-  const { mu: { user } } = setup;
+  const { +mu:user } = setup;
 
   <:>
     <form on:submit={e => {
@@ -628,7 +678,7 @@ function NameEditor(setup: FromTag<{
 function NameEditor(setup: FromTag<{
   'mu:user': { name: { first: string, last: string } }
 }>) {
-  const { mu: { user } } = setup;
+  const { mu:{ user } } = setup;
 
   return <>
     <form on:submit={e => {
@@ -652,9 +702,9 @@ Mutation capabilities enabled by mutability annotations are confined to local bo
 
 ```nsx
 function Foo(setup: FromTag<{ 
-  'mu:bar': Bar
+  +mu:bar: Bar
 }>) {
-  const { mu: { bar } } = setup
+  const { +mu:bar } = setup
 
   <:>
     <Bar mu:bar={bar}>
@@ -667,7 +717,7 @@ function Foo(setup: FromTag<{
 function Foo(setup: FromTag<{ 
   'mu:bar': Bar
 }>) {
-  const { mu: { bar } } = setup
+  const { mu:{ bar } } = setup
 
   return <>
     <Bar mu:bar={bar}>
@@ -682,28 +732,28 @@ function Foo(setup: FromTag<{
 This creates a trail of mutability annotation breadcrumbs from the state-owner scope down to the mutating scope.
 
 
-### Opt-in mutability
-
+<!-- ### Opt-in mutability
+mu?:user -->
 
 ### Statically-traced mutability
 
 ```tsx
 function foo(setup: MuPack<{ user: User }>) {
-  const { mu: { user } } = setup
+  const { mu:{ user } } = setup
   const _user = user;
   _user.name = 'foo'
 }
 ```
 ```tsx
 function foo(setup: MuPack<{ user: User }>) {
-  const { mu: { user } } = setup
+  const { mu:{ user } } = setup
   const address = user.address;
   address.street = 'foo street'
 }
 ```
 
 ### Mutability assertions
-Escape hatch for third-party or unannotated APIs.
+Escape hatch for third-party APIs that take in callbacks with mutable parameters.
 
 ```tsx
 onThirdPartyEvent((/*mo*/node) => {
@@ -717,6 +767,15 @@ onThirdPartyEvent(node => {
 }))
 ```
 
-### Callbacks
+<!-- ### Callbacks -->
 
 <p align="right"><a href="#mutation-safety" style="text-decoration: none">[top]</a></p>
+
+
+### Read-only assertions
+
+<!-- All 
+
+Escape hatch for third-party APIs 
+
+RO<T> /*ro*/ ass -->

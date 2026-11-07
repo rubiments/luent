@@ -1,5 +1,6 @@
 {
   "recommendations": [
-    "local.vscode-noriscript"
+    "local.vscode-noriscript",
+    "fabiospampinato.vscode-highlight"
   ]
 }
