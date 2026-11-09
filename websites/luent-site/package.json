@@ -9,13 +9,13 @@
     "@luently/websites-shared": "workspace:*",
     "concurrently": "^10.0.6",
     "luent": "workspace:*",
-    "shiki": "^4.5.0",
+    "shiki": "^4.6.0",
     "tailwind-merge": "^3.7.0",
-    "tailwindcss": "^4.3.2",
+    "tailwindcss": "^4.3.5",
     "vitepress": "2.0.0-alpha.20"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.0",
+    "@tailwindcss/vite": "^4.3.5",
     "vite-plugin-luent": "workspace:*"
   },
   "author": "Ruby Yi Wang",
