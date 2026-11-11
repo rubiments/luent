@@ -1,4 +1,4 @@
-import { FromTag, Ion, ion } from "luent"
+import { ContextKey, fromContext, FromTag, Ion, ion } from "luent"
 
 function Counter(setup: FromTag<{
   count: MuIon<number>
@@ -12,7 +12,7 @@ function Counter(setup: FromTag<{
 
     <Ru count={$count}></Ru>
     <Ru count={$count}></Ru>
-    <Ru /*mu*/count={$count}></Ru>
+    <Ru /*mu*/ count={$count}></Ru>
     <Mubi mu:count={$count}></Mubi>
     <Mubi mu:count={$count}></Mubi>
     <Mubi mu:count={$num}></Mubi>
@@ -20,21 +20,25 @@ function Counter(setup: FromTag<{
 }
 
 
+function bar(a: Mu & User) {
 
+}
 
-type RoMark = { '~ro'?: true }
-type MoMark = { '~mo'?: true }
-type MuMark = { '~mu'?: true, '~mo'?: true, }
+const myUser: User = { name: 'kermit' }
 
-function mo<T>(x: T & MoMark) { return x }
-function mu<T>(x: T): T & MuMark { return x }
+bar(myUser)
 
-type MuIon<T> = Ion<T> & MuMark & { value: T }
-type MoIon<T> = Ion<T> & MoMark
+type Ro = { readonly '~mutability'?: 'ro' | 'mo' | 'mu' }
+type Mo = { readonly '~mutability'?: 'mo' | 'mu' }
+type Mu = { readonly '~mutability'?: 'mu' }
+
+type MuIon<T> = Ion<T> & Mu & { value: T }
+type MoIon<T> = Ion<T> & Mo
 
 function Ru(setup: FromTag<{
-  count: Ion<number> & RoMark
+  count: Ro & Ion<number>
 }>) {
+  const { $count } = setup
   return <></>
 }
 
@@ -50,33 +54,34 @@ function foo($count: MuIon<number>) {
 
 }
 
+
+// Argument annotations
+
 const $ct = ion(0)
 
-foo(mu($ct))
-
-foo(/*mu*/$ct)
+foo(/*~mu*/$ct)
 
 const count = 1;
 const user = { name: 'kermit' }
 const userA = { name: 'kermit' }
 
-reset(/*mu*/{ name: 'kermit' }, count)
+reset(/*~mu*/{ name: 'kermit' }, count)
 
-reset(/*mu*/user, count)
+reset(/*~mu*/user, count)
 
-resetThird(/*mu*/user, count)
+resetThird(/*~mu*/user, count)
 
 // mu pack
-setup({ /*mu*/user, count })
+setup({ /*~mu*/user, count })
 
-setup({ /*mu*/user: userA, count })
+setup({ /*~mu*/user: userA, count })
 
 // optional mupack
 opt({ mu: { user }, count })
 
 opt({ user, count })
 
-function reset(user: Mu<User>, count: number) {
+function reset(user: Mu & User, count: number) {
 
 }
 
@@ -84,15 +89,24 @@ function resetThird(user: User, count: number) {
 
 }
 
-function setup(obj: { user: Mu<User>, count: number }) { }
+type Admin = {
+  name: string,
+  location: Mu & { address: string }
+}
+
+function setup(obj: { user: Mu & User, count: number }) { }
+function setupAdmin(admin: { name: string, location: Mu & { address: string } }) { }
 function setupThird(obj: { user: User, count: number }) { }
 
 function opt(obj: { mu: { user: User } } | { user: User, count: number }) { }
 
-type Mu<T> = T & MuMark
 
 // Mu<User>
 // Mo<User>
 // Ro<User>
 
 // Mu<T>
+
+const FROG = ContextKey<{ name: string }>()
+
+const frog = fromContext(FROG)
