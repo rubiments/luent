@@ -1,6 +1,12 @@
 {
   "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "removeComments": false,
+  },
   "include": [
-    "src/*"
+    "src/**/*",
+    "*.ts",
+    "src/**/*.d.ts",
+    "*.tsx",
   ]
 }

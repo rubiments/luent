@@ -1,13 +1,11 @@
-import { noIllegalMutabilityOpsRule } from "./rules/no-illegal-mutability-ops.ts";
-import { requireMutabilityCommentRule } from "./rules/require-mutability-comment.ts";
+import { checkInvocationBoundary } from "./rules/check-invocation-boundary.ts";
 
 const plugin = {
   meta: {
-    name: "@luently/eslint-plugin-mutability"
+    name: "eslint-plugin-mutability"
   },
   rules: {
-    "require-mutability-comment": requireMutabilityCommentRule,
-    "no-illegal-mutability-ops": noIllegalMutabilityOpsRule
+    "check-invocation-boundary": checkInvocationBoundary,
   }
 };
 
@@ -15,3 +13,7 @@ export default plugin;
 
 export const rules = plugin.rules;
 
+
+// - No incompatible invocation annotations
+// - No missing invocation annotations
+// - No invalid invocation annotations

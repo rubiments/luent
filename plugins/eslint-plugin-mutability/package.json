@@ -16,7 +16,8 @@
   "types": "./src/index.ts",
   "sideEffects": false,
   "scripts": {
-    "build:types": "tsc -p tsconfig.build.json"
+    "build:types": "tsc -p tsconfig.build.json",
+    "test": "vitest run src/rules/check-invocation-boundary.test.ts"
   },
   "peerDependencies": {
     "eslint": "^9.0.0",
@@ -27,7 +28,10 @@
     "@typescript-eslint/utils": "^8.46.2"
   },
   "devDependencies": {
-    "@types/eslint": "^9.6.1"
+    "@types/eslint": "^9.6.1",
+    "@typescript-eslint/parser": "^8.46.2",
+    "typescript": "^6.0.0",
+    "vitest": "^5.0.3"
   },
   "author": "Ruby Yi Wang",
   "license": "MIT"

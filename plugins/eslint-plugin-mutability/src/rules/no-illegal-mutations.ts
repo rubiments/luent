@@ -5,7 +5,7 @@ const createRule = ESLintUtils.RuleCreator(
 );
 
 export const noIllegalMutabilityOpsRule = createRule({
-  name: "no-illegal-mutability-ops",
+  name: "no-illegal-mutations",
   meta: {
     type: "problem",
     docs: {

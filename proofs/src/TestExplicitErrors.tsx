@@ -1,4 +1,5 @@
-import { ContextKey, fromContext, FromTag, Ion, ion } from "luent"
+import { ContextKey, fromContext, FromTag, Ion, ion, ionic } from "luent"
+
 
 function Counter(setup: FromTag<{
   count: MuIon<number>
@@ -26,7 +27,7 @@ function bar(a: Mu & User) {
 
 const myUser: User = { name: 'kermit' }
 
-bar(myUser)
+bar(/*~mu*/myUser)
 
 type Ro = { readonly '~mutability'?: 'ro' | 'mo' | 'mu' }
 type Mo = { readonly '~mutability'?: 'mo' | 'mu' }
@@ -49,10 +50,39 @@ function Mubi(setup: FromTag<{
   return <></>
 }
 
+function mu<T>(obj: T): Mu&T {return obj as Mu&T}
 
 function foo($count: MuIon<number>) {
+  const list = mu(ionic(['']))
 
 }
+
+let something: null | string = null;
+
+function getSomething() {
+  if (something === null) 
+    return thrown(new SyntaxError('oops!'))
+  return something;
+}
+
+function thrown<T>(error: Ro& T): { '~thrown': T } {
+  throw error;
+}
+
+function doSomething() {
+  const something = getSomething()
+  if (hasErred(something)) return erred(something);
+  console.log(/*~um*/something)
+  return something;
+}
+
+function hasErred(value: any): value is { '~thrown': any } {
+  return false;
+}
+
+function erred<T>(error: Ro& T): T{return error}
+
+
 
 
 // Argument annotations
@@ -65,11 +95,15 @@ const count = 1;
 const user = { name: 'kermit' }
 const userA = { name: 'kermit' }
 
-reset(/*~mu*/{ name: 'kermit' }, count)
 
-reset(/*~mu*/user, count)
 
-resetThird(/*~mu*/user, count)
+reset({ name: 'kermit' }, count) // should not error
+
+reset(user, count) // should not error
+
+resetThird(/*~mu*/user, count) // good
+
+resetThird(user, count) // should error user argument
 
 // mu pack
 setup({ /*~mu*/user, count })
@@ -81,7 +115,9 @@ opt({ mu: { user }, count })
 
 opt({ user, count })
 
-function reset(user: Mu & User, count: number) {
+
+function reset(user: Ro& User, count: number): void
+function reset(user: User, count: number) {
 
 }
 
@@ -94,8 +130,8 @@ type Admin = {
   location: Mu & { address: string }
 }
 
-function setup(obj: { user: Mu & User, count: number }) { }
-function setupAdmin(admin: { name: string, location: Mu & { address: string } }) { }
+function setup(obj: { user: Mu& User, count: number }) { }
+function setupAdmin(admin: { name: string, location: Mu& { address: string } }) { }
 function setupThird(obj: { user: User, count: number }) { }
 
 function opt(obj: { mu: { user: User } } | { user: User, count: number }) { }

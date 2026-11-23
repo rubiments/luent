@@ -1,6 +1,5 @@
 import { For, FromTag, style, $$, ion, ionic, Ion, Ionic, awaiting, render, queueTask } from "luent";
 import './TestListTransit.css'
-
 // Modified Demo from Svelte
 type Todo = {
   id: number;
