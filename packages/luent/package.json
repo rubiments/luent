@@ -62,9 +62,9 @@
       "@luently/quarky": "workspace:*",
       "@luently/types": "workspace:*",
       "@luently/utils": "workspace:*",
-      "tsdown": "^0.21.9",
+      "tsdown": "^0.23.7",
       "typescript": "^7.0.2",
-      "csstype": "^3.1.0"
+      "csstype": "^3.2.4"
    },
    "publishConfig": {
       "access": "public"
