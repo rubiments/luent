@@ -102,8 +102,44 @@ export class App {
     return user.name
   }
 
-  store(/*um*/user: User) {
+  store(/*mu:this*//*um*/user: User) {
     this.users.push(user)
+  }
+
+  count = 0
+
+  increment(/*mu:this*/) {
+    this.count++
+  }
+
+  isNegative() {
+    return this.count < 0
+  }
+}
+
+export class AppExplicit {
+  users: User[] = []
+
+  reset(/*mu*/user: User, count: number) {
+    user.name = ""
+  }
+
+  readName(user: User, count: number) {
+    return user.name
+  }
+
+  store(/*mu*/this: { users: User[] }, /*um*/user: User) {
+    this.users.push(user)
+  }
+
+  count = 0
+
+  increment(/*mu*/this: { count: number }) {
+    this.count++
+  }
+
+  isNegative() {
+    return this.count < 0
   }
 }
 
@@ -119,19 +155,29 @@ export const singleton = {
 
   store(/*mu:this*//*um*/user: User) {
     this.users.push(user)
+  },
+
+  count: 0,
+
+  increment(/*mu:this*/) {
+    this.count++
+  },
+
+  isNegative() {
+    return this.count < 0
   }
 }
 
 export const $app = ion([] as User[], {
-    reset(/*mu*/user: User, count: number) {
-      user.name = ""
-    },
+  reset(/*mu*/user: User, count: number) {
+    user.name = ""
+  },
 
-    readName(user: User, count: number) {
-      return user.name
-    },
+  readName(user: User, count: number) {
+    return user.name
+  },
 
-    store(/*mu:this*//*um*/user: User) {
-      this.value.push(user)
-    }
-  })
+  store(/*mu:this*//*um*/user: User) {
+    this.value.push(user)
+  }
+})

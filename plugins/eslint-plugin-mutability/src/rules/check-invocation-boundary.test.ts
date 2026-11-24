@@ -87,6 +87,100 @@ function run() {
 `
     },
     {
+      filename: "case_invocAnnot_deepPacks.ts",
+      code: `
+${prelude}
+function reset(pack: { payload: {/*mu*/user: User }; count: number }) {}
+function store(pack: { payload: {/*um*/user: User }; count: number }) {}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset({ payload: {/*mu*/user }, count: 1 });
+  store({ payload: {/*um*/user }, count: 1 });
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_parameterPack_noninline.ts",
+      code: `
+${prelude}
+type PackMu = {/*mu*/user: User; count: number };
+type Pack = {user: User; count: number };
+type PackUm = {/*um*/user: User; count: number };
+
+function reset(pack: PackMu, count: number) { pack.user.name = ""; }
+function readName(pack: Pack, count: number) { return pack.user.name; }
+function store(pack: PackUm, count: number) { void pack; void count; }
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset({user, count: 2}, 1);
+  readName({user, count: 2}, 1);
+  store({user, count: 2}, 1);
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_parameter_v_parameterPack.ts",
+      code: `
+${prelude}
+function reset(/*mu*/pack: {/*mu*/user: User; count: number}, count: number) {
+  pack.user.name = "";
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset(/*mu*/{user, count: 2}, 1);
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_tuples.ts",
+      code: `
+${prelude}
+function reset(tup: [/*mu*/User, number], count: number) {}
+function readName(tup: [User, number], count: number) {}
+function store(tup: [/*um*/User, number], count: number) {}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset([/*mu*/user, 2], 1);
+  readName([user, 2], 1);
+  store([/*um*/user, 2], 1);
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_parameter_v_tuple.ts",
+      code: `
+${prelude}
+function reset(/*mu*/tup: [/*mu*/User, number], count: number) {
+  tup[0].name = "";
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset(/*mu*/[user, 2], 1);
+}
+`
+    },
+    {
+      filename: "case_validAnnot.ts",
+      code: `
+${prelude}
+function reset(/*mu*/user: User, count: number) {}
+function store(/*um*/user: User) {}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset(/*mu*/user, 1);
+  reset(/*um*//*mu*/user, 1);
+  store(/*um*/user);
+  store(/*mu*//*um*/user);
+}
+`
+    },
+    {
       filename: "case_invocAnnot_rest.ts",
       code: `
 ${prelude}
@@ -161,6 +255,111 @@ function run() {
   app.reset(/*mu*/user, 1);
   app.readName(user, 1);
   app.store(/*um*/user);
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_this_apply_call.ts",
+      code: `
+${prelude}
+class App {
+  users: User[] = [];
+  count = 0;
+
+  increment(/*mu:this*/) {
+    this.count += 1;
+  }
+
+  isNegative() {
+    return this.count < 0;
+  }
+
+  reset(/*mu*/user: User, count: number) {}
+  readName(user: User, count: number) { return user.name; }
+  store(/*mu:this*//*um*/user: User) {
+    this.users.push(user);
+  }
+}
+
+function run() {
+  const app = new App();
+  const appA = { count: 0, users: [] as User[] };
+  const user = { name: "kermit", location: { street: "swamp" } };
+
+  app.increment.apply(/*mu*/appA);
+  app.increment.call(/*mu*/appA);
+  app.isNegative.apply(appA);
+  app.isNegative.call(appA);
+  app.reset.apply(appA, [/*mu*/user, 1]);
+  app.reset.call(appA, /*mu*/user, 1);
+  app.readName.apply(appA, [user, 1]);
+  app.readName.call(appA, user, 1);
+  app.store.apply(/*mu*/appA, [/*um*/user]);
+  app.store.call(/*mu*/appA, /*um*/user);
+
+  const increment = app.increment;
+  const reset = app.reset;
+  increment.apply(/*mu*/appA);
+  reset.call(appA, /*mu*/user, 1);
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_thisExplicit_apply_call.ts",
+      code: `
+${prelude}
+class AppExplicit {
+  users: User[] = [];
+  count = 0;
+
+  increment(/*mu*/this: { count: number }) {
+    this.count += 1;
+  }
+
+  store(/*mu*/this: { users: User[] }, /*um*/user: User) {
+    this.users.push(user);
+  }
+}
+
+function run() {
+  const app = new AppExplicit();
+  const appA = { count: 0, users: [] as User[] };
+  const user = { name: "kermit", location: { street: "swamp" } };
+
+  app.increment.apply(/*mu*/appA);
+  app.increment.call(/*mu*/appA);
+  app.store.apply(/*mu*/appA, [/*um*/user]);
+  app.store.call(/*mu*/appA, /*um*/user);
+
+  const store = app.store;
+  store.apply(/*mu*/appA, [/*um*/user]);
+}
+`
+    },
+    {
+      filename: "case_invocAnnot_constructors.ts",
+      code: `
+${prelude}
+class Store {
+  constructor(public /*um*/user: User) {}
+}
+
+class Base {
+  constructor(public /*mu*/user: User) {
+    user.name = "";
+  }
+}
+
+class Child extends Base {
+  constructor(/*mu*/user: User) {
+    super(/*mu*/user);
+  }
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  new Store(/*um*/user);
+  new Child(/*mu*/user);
 }
 `
     },
@@ -323,6 +522,199 @@ function run() {
       ]
     },
     {
+      filename: "invalid_case_invocAnnot_deepPacks.ts",
+      code: `
+${prelude}
+function reset(pack: { payload: {/*mu*/user: User }; count: number }) {}
+function store(pack: { payload: {/*um*/user: User }; count: number }) {}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset({ payload: { user }, count: 1 });
+  store({ payload: { user }, count: 1 });
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_parameterPack_noninline.ts",
+      code: `
+${prelude}
+type PackMu = {/*mu*/user: User; count: number };
+type Pack = {user: User; count: number };
+type PackUm = {/*um*/user: User; count: number };
+
+function reset(pack: PackMu, count: number) { pack.user.name = ""; }
+function readName(pack: Pack, count: number) { return pack.user.name; }
+function store(pack: PackUm, count: number) { void pack; void count; }
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset({/*mu*/user, count: 2}, 1);
+  readName({/*um*/user, count: 2}, 1);
+  store({/*mu*/user, count: 2}, 1);
+}
+`,
+      errors: [
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedNoAnnotation" }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_argumentPack_noninline.ts",
+      code: `
+${prelude}
+function reset(pack: {/*mu*/user: User; count: number}, count: number) {
+  pack.user.name = "";
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  const pack = {/*mu*/user, count: 2};
+  reset(pack, 1);
+}
+`,
+      errors: [
+        {
+          messageId: "expectedPackPropertyAnnotation",
+          data: { expected: "mu", key: "user" }
+        }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_parameter_v_parameterPack.ts",
+      code: `
+${prelude}
+function reset(/*mu*/pack: {/*mu*/user: User; count: number}, count: number) {
+  pack.user.name = "";
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset({/*mu*/user, count: 2}, 1);
+  reset({/*um*/user, count: 2}, 1);
+  reset({user, count: 2}, 1);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_tuples.ts",
+      code: `
+${prelude}
+function reset(tup: [/*mu*/User, number], count: number) {}
+function readName(tup: [User, number], count: number) {}
+function store(tup: [/*um*/User, number], count: number) {}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset([/*um*/user, 2], 1);
+  reset([user, 2], 1);
+  readName([/*mu*/user, 2], 1);
+  store([/*mu*/user, 2], 1);
+  store([user, 2], 1);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_parameter_v_tuple.ts",
+      code: `
+${prelude}
+function reset(/*mu*/tup: [/*mu*/User, number], count: number) {
+  tup[0].name = "";
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset([/*mu*/user, 2], 1);
+  reset([/*um*/user, 2], 1);
+  reset([user, 2], 1);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_tuples_noninline.ts",
+      code: `
+${prelude}
+function reset(tup: readonly [/*mu*/User, number], count: number) {
+  tup[0].name = "";
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  const tuple = [/*mu*/user, 2] as const;
+  reset(tuple, 1);
+}
+`,
+      errors: [
+        {
+          messageId: "expectedTupleIndexAnnotation",
+          data: { expected: "mu", index: "1" }
+        }
+      ]
+    },
+    {
+      filename: "invalid_case_validAnnot.ts",
+      code: `
+${prelude}
+function reset(/*mu*/user: User, count: number) {}
+function store(/*um*/user: User) {}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  reset(/*mu*//*um*/user, 1);
+  reset(/*m u*/user, 1);
+  reset(user/*mu*/, 1);
+  reset(/*mu */user, 1);
+  reset(/* mu */user, 1);
+  reset(/* mu*/user, 1);
+
+  store(/*um*//*mu*/user);
+  store(user/*um*/);
+  store(/*um */user);
+  store(/* um */user);
+  store(/* um*/user);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
       filename: "invalid_case_invocAnnot_rest.ts",
       code: `
 ${prelude}
@@ -412,6 +804,120 @@ function run() {
         { messageId: "expectedAnnotation", data: { expected: "mu" } },
         { messageId: "expectedNoAnnotation" },
         { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_this_apply_call.ts",
+      code: `
+${prelude}
+class App {
+  users: User[] = [];
+  count = 0;
+
+  increment(/*mu:this*/) {
+    this.count += 1;
+  }
+
+  isNegative() {
+    return this.count < 0;
+  }
+
+  reset(/*mu*/user: User, count: number) {}
+  readName(user: User, count: number) { return user.name; }
+  store(/*mu:this*//*um*/user: User) {
+    this.users.push(user);
+  }
+}
+
+function run() {
+  const app = new App();
+  const appA = { count: 0, users: [] as User[] };
+  const user = { name: "kermit", location: { street: "swamp" } };
+
+  app.increment.apply(appA);
+  app.isNegative.call(/*mu*/appA);
+  app.reset.apply(appA, [/*um*/user, 1]);
+  app.readName.call(appA, /*um*/user, 1);
+  app.store.call(/*mu*/appA, user);
+
+  const store = app.store;
+  store.apply(/*um*/appA, [/*mu*/user]);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_thisExplicit_apply_call.ts",
+      code: `
+${prelude}
+class AppExplicit {
+  users: User[] = [];
+  count = 0;
+
+  increment(/*mu*/this: { count: number }) {
+    this.count += 1;
+  }
+
+  store(/*mu*/this: { users: User[] }, /*um*/user: User) {
+    this.users.push(user);
+  }
+}
+
+function run() {
+  const app = new AppExplicit();
+  const appA = { count: 0, users: [] as User[] };
+  const user = { name: "kermit", location: { street: "swamp" } };
+
+  app.increment.call(appA);
+  app.store.apply(/*um*/appA, [/*mu*/user]);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_constructors.ts",
+      code: `
+${prelude}
+class Store {
+  constructor(public /*um*/user: User) {}
+}
+
+class Base {
+  constructor(public /*mu*/user: User) {
+    user.name = "";
+  }
+}
+
+class Child extends Base {
+  constructor(/*mu*/user: User) {
+    super(user);
+  }
+}
+
+function run() {
+  const user = { name: "kermit", location: { street: "swamp" } };
+  new Store(/*mu*/user);
+  new Store(user);
+  new Child(user);
+}
+`,
+      errors: [
+        { messageId: "expectedAnnotation", data: { expected: "mu" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "um" } },
+        { messageId: "expectedAnnotation", data: { expected: "mu" } }
       ]
     },
     {

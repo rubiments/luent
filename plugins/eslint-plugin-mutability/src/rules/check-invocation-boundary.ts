@@ -21,13 +21,22 @@ type ParsedAnnotation = {
 type PackExpectation = {
   key: string;
   expectation: Expectation;
+  nested: PackExpectation[];
+};
+
+type TupleExpectation = {
+  index: number;
+  expectation: Expectation;
 };
 
 const MUTABILITY_COMMENT_RE = /^(mu|um)$/;
+const THIS_MUTABILITY_COMMENT_RE = /\/\*(mu|um):this\*\//g;
 
 const MESSAGE_IDS = {
   expectedAnnotation: "expectedAnnotation",
-  expectedNoAnnotation: "expectedNoAnnotation"
+  expectedNoAnnotation: "expectedNoAnnotation",
+  expectedPackPropertyAnnotation: "expectedPackPropertyAnnotation",
+  expectedTupleIndexAnnotation: "expectedTupleIndexAnnotation"
 } as const;
 
 type MessageId = (typeof MESSAGE_IDS)[keyof typeof MESSAGE_IDS];
@@ -44,7 +53,11 @@ export const checkInvocationBoundary = createRule({
       expectedAnnotation:
         "Expected mutability annotation /*{{expected}}*/ for this argument.",
       expectedNoAnnotation:
-        "Expected no mutability annotation for this argument."
+        "Expected no mutability annotation for this argument.",
+      expectedPackPropertyAnnotation:
+        "Expected mutability annotation /*{{expected}}*/ for `{{key}}` property in this argument.",
+      expectedTupleIndexAnnotation:
+        "Expected mutability annotation /*{{expected}}*/ for index {{index}} of this argument."
     }
   },
   defaultOptions: [],
@@ -54,44 +67,24 @@ export const checkInvocationBoundary = createRule({
     const sourceCode = context.sourceCode;
     const fileCheckCache = new Map<string, boolean>();
 
-    return {
-      CallExpression(node) {
-        const tsNode = services.esTreeNodeToTSNodeMap.get(node);
-        const signature = checker.getResolvedSignature(tsNode);
-        if (!signature) {
-          return;
+    const validateSignatureArguments = (
+      signature: TsSignatureLike,
+      argumentsList: readonly TSESTree.CallExpressionArgument[]
+    ): void => {
+      for (let i = 0; i < argumentsList.length; i += 1) {
+        const argument = argumentsList[i];
+        const parameter = getParameterSymbol(signature, i);
+        if (!parameter) {
+          continue;
         }
 
-        for (let i = 0; i < node.arguments.length; i += 1) {
-          const argument = node.arguments[i];
-          const parameter = getParameterSymbol(signature, i);
-          if (!parameter) {
-            continue;
-          }
+        const declaration = parameter.valueDeclaration ?? parameter.declarations?.[0];
+        if (!declaration || !isCheckedFile(declaration.getSourceFile(), fileCheckCache)) {
+          continue;
+        }
 
-          const declaration = parameter.valueDeclaration ?? parameter.declarations?.[0];
-          if (!declaration || !isCheckedFile(declaration.getSourceFile(), fileCheckCache)) {
-            continue;
-          }
-
-          const packExpectations = getPackExpectationsFromDeclaration(
-            declaration,
-            services,
-            sourceCode
-          );
-          if (packExpectations.length > 0 && argument.type === "ObjectExpression") {
-            validatePackArgument(
-              context,
-              sourceCode,
-              argument,
-              packExpectations,
-              checker,
-              services
-            );
-            continue;
-          }
-
-          const expectation = getParameterExpectation(declaration, services, sourceCode);
+        const expectation = getParameterExpectation(declaration, services, sourceCode);
+        if (expectation !== "none") {
           validateArgument(
             context,
             sourceCode,
@@ -100,8 +93,122 @@ export const checkInvocationBoundary = createRule({
             argument,
             expectation
           );
+          continue;
+        }
+
+        const packExpectations = getPackExpectationsFromDeclaration(
+          declaration,
+          services,
+          sourceCode
+        );
+        if (packExpectations.length > 0) {
+          if (argument.type === "ObjectExpression") {
+            validatePackArgument(
+              context,
+              sourceCode,
+              argument,
+              packExpectations,
+              checker,
+              services
+            );
+          } else {
+            reportMissingPackExpectation(context, argument, packExpectations);
+          }
+          continue;
+        }
+
+        const tupleExpectations = getTupleExpectationsFromDeclaration(
+          declaration,
+          services,
+          sourceCode
+        );
+        if (tupleExpectations.length > 0) {
+          if (argument.type === "ArrayExpression") {
+            validateTupleArgument(
+              context,
+              sourceCode,
+              argument,
+              tupleExpectations,
+              checker,
+              services
+            );
+          } else {
+            reportMissingTupleExpectation(context, argument, tupleExpectations);
+          }
+          continue;
+        }
+
+        validateArgument(
+          context,
+          sourceCode,
+          checker,
+          services,
+          argument,
+          expectation
+        );
+      }
+    };
+
+    const checkInvocation = (node: TSESTree.CallExpression | TSESTree.NewExpression): void => {
+      if (node.type === "CallExpression") {
+        const applyOrCall = getApplyOrCallTargetSignature(node, checker, services);
+        if (applyOrCall) {
+          const thisExpectation = getThisExpectation(
+            applyOrCall.signature,
+            services,
+            sourceCode,
+            fileCheckCache
+          );
+          const thisArgument = node.arguments[0];
+          if (thisArgument) {
+            validateArgument(
+              context,
+              sourceCode,
+              checker,
+              services,
+              thisArgument,
+              thisExpectation
+            );
+          }
+
+          if (applyOrCall.kind === "call") {
+            validateSignatureArguments(
+              applyOrCall.signature,
+              node.arguments.slice(1)
+            );
+            return;
+          }
+
+          const applyArguments = node.arguments[1];
+          if (applyArguments?.type === "ArrayExpression") {
+            const callArgs: TSESTree.CallExpressionArgument[] = [];
+            for (const element of applyArguments.elements) {
+              if (!element) {
+                continue;
+              }
+              callArgs.push(
+                (element.type === "SpreadElement" ? element.argument : element) as
+                  TSESTree.CallExpressionArgument
+              );
+            }
+            validateSignatureArguments(applyOrCall.signature, callArgs);
+          }
+          return;
         }
       }
+
+      const tsNode = services.esTreeNodeToTSNodeMap.get(node);
+      const signature = checker.getResolvedSignature(tsNode);
+      if (!signature) {
+        return;
+      }
+
+      validateSignatureArguments(signature, node.arguments);
+    };
+
+    return {
+      CallExpression: checkInvocation,
+      NewExpression: checkInvocation
     };
   }
 });
@@ -129,16 +236,64 @@ function validateArgument(
     if (annotation) {
       reportExpectedNone(context, argument);
     }
+    reportNestedAnnotationsWhenNoExpectation(context, sourceCode, argument);
     return;
   }
 
   if (!annotation) {
     reportExpectedAnnotation(context, argument, expectation);
+    reportNestedAnnotationsWhenNoExpectation(context, sourceCode, argument);
     return;
   }
 
   if (annotation.annotation !== expectation) {
     reportExpectedAnnotation(context, argument, expectation);
+  }
+
+  reportNestedAnnotationsWhenNoExpectation(context, sourceCode, argument);
+}
+
+function validateTupleArgument(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  argument: TSESTree.ArrayExpression,
+  tupleExpectations: TupleExpectation[],
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices
+): void {
+  const expectationByIndex = new Map<number, Expectation>();
+  for (const entry of tupleExpectations) {
+    expectationByIndex.set(entry.index, entry.expectation);
+  }
+
+  for (let i = 0; i < argument.elements.length; i += 1) {
+    const element = argument.elements[i];
+    if (!element) {
+      continue;
+    }
+
+    const expected = expectationByIndex.get(i) ?? "none";
+    const annotation = getNearestDirectPrefixAnnotation(sourceCode, element);
+    const tsNode = services.esTreeNodeToTSNodeMap.get(element as never);
+    const objectLike = isObjectLike(checker.getTypeAtLocation(tsNode), checker);
+
+    if (!objectLike) {
+      if (annotation) {
+        reportExpectedNone(context, element);
+      }
+      continue;
+    }
+
+    if (expected === "none") {
+      if (annotation) {
+        reportExpectedNone(context, element);
+      }
+      continue;
+    }
+
+    if (!annotation || annotation.annotation !== expected) {
+      reportExpectedAnnotation(context, element, expected);
+    }
   }
 }
 
@@ -151,8 +306,10 @@ function validatePackArgument(
   services: ESLintUtils.ParserServices
 ): void {
   const expectationsByKey = new Map<string, Expectation>();
+  const nestedExpectationsByKey = new Map<string, PackExpectation[]>();
   for (const entry of packExpectations) {
     expectationsByKey.set(entry.key, entry.expectation);
+    nestedExpectationsByKey.set(entry.key, entry.nested);
   }
 
   for (const property of argument.properties) {
@@ -178,15 +335,61 @@ function validatePackArgument(
       continue;
     }
 
+    const nestedExpectations = nestedExpectationsByKey.get(key) ?? [];
     if (expected === "none") {
       if (annotation) {
         reportExpectedNone(context, property.key);
       }
+    } else if (!annotation || annotation.annotation !== expected) {
+      reportExpectedAnnotation(context, property.key, expected);
+    }
+
+    if (nestedExpectations.length === 0) {
       continue;
     }
 
-    if (!annotation || annotation.annotation !== expected) {
-      reportExpectedAnnotation(context, property.key, expected);
+    if (property.value.type === "ObjectExpression") {
+      validatePackArgument(
+        context,
+        sourceCode,
+        property.value,
+        nestedExpectations,
+        checker,
+        services
+      );
+    } else {
+      reportMissingPackExpectation(context, property.value, nestedExpectations);
+    }
+  }
+}
+
+function reportNestedAnnotationsWhenNoExpectation(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  argument: TSESTree.CallExpressionArgument
+): void {
+  if (argument.type === "ObjectExpression") {
+    for (const property of argument.properties) {
+      if (property.type !== "Property") {
+        continue;
+      }
+      const annotation = getNearestDirectPrefixAnnotation(sourceCode, property.key);
+      if (annotation) {
+        reportExpectedNone(context, property.key);
+      }
+    }
+    return;
+  }
+
+  if (argument.type === "ArrayExpression") {
+    for (const element of argument.elements) {
+      if (!element) {
+        continue;
+      }
+      const annotation = getNearestDirectPrefixAnnotation(sourceCode, element);
+      if (annotation) {
+        reportExpectedNone(context, element);
+      }
     }
   }
 }
@@ -206,8 +409,7 @@ function getNearestDirectPrefixAnnotation(
       continue;
     }
 
-    const trimmed = comment.value.trim();
-    const match = MUTABILITY_COMMENT_RE.exec(trimmed);
+    const match = MUTABILITY_COMMENT_RE.exec(comment.value);
     if (!match) {
       continue;
     }
@@ -251,6 +453,89 @@ function getParameterSymbol(signature: TsSignatureLike, argumentIndex: number): 
   }
 
   return null;
+}
+
+function getApplyOrCallTargetSignature(
+  node: TSESTree.CallExpression,
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices
+): { kind: "apply" | "call"; signature: TsSignatureLike } | null {
+  if (node.callee.type !== "MemberExpression" || node.callee.computed) {
+    return null;
+  }
+
+  if (node.callee.property.type !== "Identifier") {
+    return null;
+  }
+
+  const kind = node.callee.property.name;
+  if (kind !== "apply" && kind !== "call") {
+    return null;
+  }
+
+  const targetTsNode = services.esTreeNodeToTSNodeMap.get(node.callee.object as never);
+  const targetType = checker.getTypeAtLocation(targetTsNode);
+  const signatures = checker.getSignaturesOfType(targetType, ts.SignatureKind.Call);
+  const signature = signatures[0];
+  if (!signature) {
+    return null;
+  }
+
+  return {
+    kind,
+    signature
+  };
+}
+
+function getThisExpectation(
+  signature: TsSignatureLike,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  fileCheckCache: Map<string, boolean>
+): Expectation {
+  const thisParameter = signature.thisParameter;
+  if (thisParameter) {
+    const declaration = thisParameter.valueDeclaration ?? thisParameter.declarations?.[0];
+    if (!declaration || !isCheckedFile(declaration.getSourceFile(), fileCheckCache)) {
+      return "none";
+    }
+    return getParameterExpectation(declaration, services, sourceCode);
+  }
+
+  const declaration = signature.getDeclaration();
+  if (!declaration || !isCheckedFile(declaration.getSourceFile(), fileCheckCache)) {
+    return "none";
+  }
+
+  return getDeclarationThisExpectation(declaration);
+}
+
+function getDeclarationThisExpectation(declaration: ts.SignatureDeclaration): Expectation {
+  const sourceFile = declaration.getSourceFile();
+  let headerEnd = declaration.end;
+  if (declaration.parameters.length > 0) {
+    headerEnd = declaration.parameters[0].getStart(sourceFile);
+  } else if ("body" in declaration && declaration.body) {
+    headerEnd = declaration.body.getStart(sourceFile);
+  }
+
+  const header = sourceFile.text.slice(
+    declaration.getStart(sourceFile),
+    headerEnd
+  );
+
+  let match: RegExpExecArray | null = null;
+  let last: MutabilityAnnotation | null = null;
+  while (true) {
+    match = THIS_MUTABILITY_COMMENT_RE.exec(header);
+    if (!match) {
+      break;
+    }
+    last = match[1] as MutabilityAnnotation;
+  }
+  THIS_MUTABILITY_COMMENT_RE.lastIndex = 0;
+
+  return last ?? "none";
 }
 
 function getParameterExpectation(
@@ -297,9 +582,22 @@ function getPackExpectationsFromDeclaration(
     return [];
   }
 
-  const sourceFile = declaration.getSourceFile();
+  return getPackExpectationsFromTypeLiteral(
+    declaration.type,
+    declaration.getSourceFile(),
+    services,
+    sourceCode
+  );
+}
+
+function getPackExpectationsFromTypeLiteral(
+  typeLiteral: ts.TypeLiteralNode,
+  sourceFile: ts.SourceFile,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>
+): PackExpectation[] {
   const expectations: PackExpectation[] = [];
-  for (const member of declaration.type.members) {
+  for (const member of typeLiteral.members) {
     if (!ts.isPropertySignature(member)) {
       continue;
     }
@@ -314,11 +612,103 @@ function getPackExpectationsFromDeclaration(
       expectation:
         getAnnotationFromTsNode(member.name, services, sourceCode) ??
         getTsNodeDirectPrefixAnnotation(member.name, sourceFile) ??
-        "none"
+        "none",
+      nested: getNestedPackExpectations(member.type, sourceFile, services, sourceCode)
     });
   }
 
   return expectations;
+}
+
+function getNestedPackExpectations(
+  typeNode: ts.TypeNode | undefined,
+  sourceFile: ts.SourceFile,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>
+): PackExpectation[] {
+  if (!typeNode) {
+    return [];
+  }
+
+  const nestedTypeLiteral = unwrapTypeLiteralNode(typeNode);
+  if (!nestedTypeLiteral) {
+    return [];
+  }
+
+  return getPackExpectationsFromTypeLiteral(
+    nestedTypeLiteral,
+    sourceFile,
+    services,
+    sourceCode
+  );
+}
+
+function getTupleExpectationsFromDeclaration(
+  declaration: ts.Declaration,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>
+): TupleExpectation[] {
+  if (!ts.isParameter(declaration) || !declaration.type) {
+    return [];
+  }
+
+  const tupleType = unwrapTupleTypeNode(declaration.type);
+  if (!tupleType) {
+    return [];
+  }
+
+  const sourceFile = declaration.getSourceFile();
+  const expectations: TupleExpectation[] = [];
+
+  for (let i = 0; i < tupleType.elements.length; i += 1) {
+    const element = tupleType.elements[i];
+    const target =
+      ts.isNamedTupleMember(element)
+        ? element.type
+        : element;
+
+    const expectation =
+      getAnnotationFromTsNode(target, services, sourceCode) ??
+      getTsNodeDirectPrefixAnnotation(target, sourceFile) ??
+      "none";
+
+    expectations.push({ index: i, expectation });
+  }
+
+  return expectations.some((entry) => entry.expectation !== "none")
+    ? expectations
+    : [];
+}
+
+function unwrapTupleTypeNode(typeNode: ts.TypeNode): ts.TupleTypeNode | null {
+  if (ts.isTupleTypeNode(typeNode)) {
+    return typeNode;
+  }
+
+  if (ts.isParenthesizedTypeNode(typeNode)) {
+    return unwrapTupleTypeNode(typeNode.type);
+  }
+
+  if (
+    ts.isTypeOperatorNode(typeNode) &&
+    typeNode.operator === ts.SyntaxKind.ReadonlyKeyword
+  ) {
+    return unwrapTupleTypeNode(typeNode.type);
+  }
+
+  return null;
+}
+
+function unwrapTypeLiteralNode(typeNode: ts.TypeNode): ts.TypeLiteralNode | null {
+  if (ts.isTypeLiteralNode(typeNode)) {
+    return typeNode;
+  }
+
+  if (ts.isParenthesizedTypeNode(typeNode)) {
+    return unwrapTypeLiteralNode(typeNode.type);
+  }
+
+  return null;
 }
 
 function getAnnotationFromTsNode(
@@ -394,7 +784,7 @@ function getLastSimpleAnnotationInPrefix(prefix: string): MutabilityAnnotation |
     if (!match) {
       break;
     }
-    const inner = match[1].trim();
+    const inner = match[1];
     if (inner === "mu" || inner === "um") {
       best = inner;
     }
@@ -422,6 +812,40 @@ function reportExpectedNone(
   context.report({
     node,
     messageId: MESSAGE_IDS.expectedNoAnnotation
+  });
+}
+
+function reportMissingPackExpectation(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  node: TSESTree.Node,
+  expectations: PackExpectation[]
+): void {
+  const missing = expectations.find((entry) => entry.expectation !== "none");
+  if (!missing) {
+    return;
+  }
+
+  context.report({
+    node,
+    messageId: MESSAGE_IDS.expectedPackPropertyAnnotation,
+    data: { expected: missing.expectation, key: missing.key }
+  });
+}
+
+function reportMissingTupleExpectation(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  node: TSESTree.Node,
+  expectations: TupleExpectation[]
+): void {
+  const missing = expectations.find((entry) => entry.expectation !== "none");
+  if (!missing) {
+    return;
+  }
+
+  context.report({
+    node,
+    messageId: MESSAGE_IDS.expectedTupleIndexAnnotation,
+    data: { expected: missing.expectation, index: `${missing.index + 1}` }
   });
 }
 
