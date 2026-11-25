@@ -156,16 +156,13 @@ export class ResettableC {
 }
 
 export class StorageA {
-  store(/*mu:that*//*um*/user: User) { }
+  store(/*um*/user: User) { }
 }
 
 export class StorageB {
   store(user: User) { }
 }
 
-export class StorageC {
-  store(/*mu*/user: User) { }
-}
 
 export class NameReaderA {
   readName(user: User, count: number) {
@@ -311,3 +308,7 @@ export const $app = ion([] as User[], {
     this.value.push(user)
   }
 })
+
+export const userSingleton = {
+  name: 'sir robin'
+}

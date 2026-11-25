@@ -241,21 +241,12 @@ function case_invocAnnot_callbackParameters() {
   fooRead(() => true);
   fooRead(function () { return true; });
   fooRead(function (/*mu:this!*/) { return true; });
-  fooRead((/*mu:that!*/) => true);
+  fooRead((/*mu:this!*/) => true);
 
   fooThis(function (/*mu:this*/) {});
   fooThis(() => {});
-  fooThis((/*mu:that!*/) => {});
-  fooThis(function (/*mu:this/that!*/) {});
-
-  fooThat((/*mu:that*/) => {});
-  fooThat(() => {});
-  fooThat(function (/*mu:this!*/) {});
-  fooThat(function (/*mu:this!/that*/) {});
-
-  fooThisThat((/*mu:this/that*/) => {});
-  fooThisThat(function (/*mu:this*/) {});
-  fooThisThat(function (/*mu:that*/) {});
+  fooThis((/*mu:this!*/) => {});
+  fooThis(function (/*mu:this!*/) {});
 }
 
 function fooReset(
@@ -276,14 +267,6 @@ function fooRead(
 
 function fooThis(
   incrementCb: (/*mu:this*/) => void,
-) { void incrementCb; }
-
-function fooThat(
-  incrementCb: (/*mu:that*/) => void,
-) { void incrementCb; }
-
-function fooThisThat(
-  incrementCb: (/*mu:this/that*/) => void,
 ) { void incrementCb; }
 `
     },
@@ -321,6 +304,55 @@ function fooStore(pack: {
 function fooReadName(pack: {
   readName: (user: User, count: number) => string,
 }) { void pack; }
+`
+    },
+    {
+      filename: "case_invocAnnot_objMethods.ts",
+      code: `
+${prelude}
+function reset(/*mu*/user: User, count: number) {}
+function store(/*um*/user: User) {}
+function readName(user: User, count: number) { return user.name; }
+
+function run() {
+  const resettableA = { reset };
+  const resettableB = { reset: (user: User, count: number) => { void user; void count; } };
+  const resettableC = { reset: (/*um*/user: User, count: number) => { void user; void count; } };
+
+  fooReset(resettableA);
+  fooReset(resettableB);
+  fooReset(resettableC);
+
+  const storageA = { store };
+  const storageB = { store: (user: User) => { void user; } };
+
+  fooStore(storageA);
+  fooStore(storageB);
+
+  const nameReaderA = { readName };
+  const nameReaderB = { readName: (user: User, count: number) => \`\${user.name}\${count}\` };
+  const nestedNameReaderB = { nest: { readName: (user: User, count: number) => \`\${user.name}\${count}\` } };
+
+  fooReadName(nameReaderA);
+  fooReadName(nameReaderB);
+  fooReadNameNested(nestedNameReaderB);
+}
+
+function fooReset(obj: {
+  reset: (/*mu*/user: User, count: number) => void,
+}) { void obj; }
+
+function fooStore(obj: {
+  store: (/*um*/user: User) => void,
+}) { void obj; }
+
+function fooReadName(obj: {
+  readName: (user: User, count: number) => string,
+}) { void obj; }
+
+function fooReadNameNested(obj: {
+  nest: { readName: (user: User, count: number) => string },
+}) { void obj; }
 `
     },
     {
@@ -873,14 +905,7 @@ function case_invocAnnot_callbackParameters() {
   fooReadName((/*um*/user, count) => \`\${user.name}\${count}\`);
   fooReadName((/*mu*/user, count) => \`\${user.name}\${count}\`);
   fooRead(function (/*mu:this*/) { return true; });
-  fooRead((/*mu:that*/) => true);
-  fooRead(function (/*mu:this/that*/) { return true; });
-
-  fooThis((/*mu:that*/) => {});
-  fooThis(function (/*mu:this/that*/) {});
-
-  fooThat(function (/*mu:this*/) {});
-  fooThat(function (/*mu:this/that*/) {});
+  fooRead((/*mu:this*/) => true);
 }
 
 function fooStore(
@@ -897,10 +922,6 @@ function fooRead(
 
 function fooThis(
   incrementCb: (/*mu:this*/) => void,
-) { void incrementCb; }
-
-function fooThat(
-  incrementCb: (/*mu:that*/) => void,
 ) { void incrementCb; }
 `,
       errors: [
@@ -926,12 +947,7 @@ function fooThat(
           endColumn: 26
         },
         { messageId: "expectedNoAnnotation" },
-        { messageId: "expectedNoAnnotation" },
-        { messageId: "expectedNoAnnotation" },
-        { messageId: "incompatibleMutabilityAnnotation" },
-        { messageId: "incompatibleMutabilityAnnotation" },
-        { messageId: "incompatibleMutabilityAnnotation" },
-        { messageId: "incompatibleMutabilityAnnotation" }
+        { messageId: "expectedNoAnnotation" }
       ]
     },
     {
@@ -956,6 +972,60 @@ function fooReadName(pack: {
         { messageId: "incompatibleMutabilityAnnotation" },
         { messageId: "expectedNoAnnotation" },
         { messageId: "expectedNoAnnotation" }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_objMethods.ts",
+      code: `
+${prelude}
+function run() {
+  const boo = { doThis(/*mu*/num: User) { void num; } };
+  foobar(boo);
+
+  const bar = { nest: { doThis(/*mu*/num: User) { void num; } } };
+  foobarNested(bar);
+
+  const readerC = { read: function (/*mu:this*/) { return true; } };
+  fooRead(readerC);
+}
+
+function foobar(obj: {
+  doThis: (num: User) => void,
+}) { void obj; }
+
+function foobarNested(obj: {
+  nest: { doThis: (num: User) => void },
+}) { void obj; }
+
+function fooRead(obj: {
+  read: () => boolean,
+}) { void obj; }
+`,
+      errors: [
+        {
+          message:
+            "Annotations of property 'doThis' are incompatible. Type '(/*mu*/num: User) => void' is not assignable to type '(num: User) => void'.",
+          line: 7,
+          column: 10,
+          endLine: 7,
+          endColumn: 13
+        },
+        {
+          message:
+            "Annotations of property 'nest.doThis' are incompatible. Type '(/*mu*/num: User) => void' is not assignable to type '(num: User) => void'.",
+          line: 10,
+          column: 16,
+          endLine: 10,
+          endColumn: 19
+        },
+        {
+          message:
+            "Annotations of property 'read' are incompatible. Type '(/*mu:this*/) => boolean' is not assignable to type '() => boolean'.",
+          line: 13,
+          column: 11,
+          endLine: 13,
+          endColumn: 18
+        }
       ]
     },
     {

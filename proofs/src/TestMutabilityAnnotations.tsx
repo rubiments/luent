@@ -1,4 +1,4 @@
-import { singleton, App, AppExplicit, readNameExport, resetExport, storeExport, createFunctions, createReset, createReadName, createStore, createResetExplicit, createStoreExplicit, $app, ResettableA, ResettableB, ResettableC, StorageA, StorageB, StorageC, NameReaderA, NameReaderB, NameReaderC, NameReaderD, ReaderA, ReaderB, ReaderC, ReaderD, ReaderE, CountA, CountB, CountC, CountD, CountE, CounterA, CounterB, CounterC, CounterD, AppA, AppB, AppC, AppD } from "./TestMutabilityAnnotationExport"
+import { singleton, App, AppExplicit, readNameExport, resetExport, storeExport, createFunctions, createReset, createReadName, createStore, createResetExplicit, createStoreExplicit, $app, ResettableA, ResettableB, ResettableC, StorageA, StorageB, NameReaderA, NameReaderB, NameReaderC, NameReaderD, ReaderA, ReaderB, ReaderC, ReaderD, ReaderE, CountA, CountB, CountC, CountD, CountE, CounterA, CounterB, CounterC, CounterD, AppA, AppB, AppC, AppD } from "./TestMutabilityAnnotationExport"
 import * as mutabilityExport from "./TestMutabilityAnnotationExport"
 import { readNameNocheck, resetNocheck, storeNocheck } from "./TestMutabilityAnnotationNocheck"
 import { readNameDts, resetDts, storeDts } from "./TestMutabilityAnnotationDts"
@@ -969,9 +969,9 @@ function case_invocAnnot_fn_apply_this() {
   app.readName.apply(appA, [/*um*/user, 1]) // ⚠️ warning(user): Expected no mutability annotation for this argument.
 
 
-  app.store.apply(appA, [/*um*/user]) // ✅
-  app.store.apply(appA, [/*mu*/user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
-  app.store.apply(appA, [user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
+  app.store.apply(/*mu*/appA, [/*um*/user]) // ✅
+  app.store.apply(/*mu*/appA, [/*mu*/user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
+  app.store.apply(/*mu*/appA, [user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
 
 
   const increment = app.increment
@@ -996,9 +996,9 @@ function case_invocAnnot_fn_apply_this() {
   readName.apply(appA, [/*um*/user, 1]) // ⚠️ warning(user): Expected no mutability annotation for this argument.
 
 
-  store.apply(appA, [/*um*/user]) // ✅
-  store.apply(appA, [/*mu*/user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
-  store.apply(appA, [user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
+  store.apply(/*mu*/appA, [/*um*/user]) // ✅
+  store.apply(/*mu*/appA, [/*mu*/user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
+  store.apply(/*mu*/appA, [user]) // ⚠️ warning(user): Expected mutability annotation /*um*/ for this argument.
 
 }
 
@@ -1197,7 +1197,7 @@ function case_invocAnnot_callbackParameters() {
   fooStore((/*mu!*/user) => { }) // ✅ escape hatch
 
   function fooStore(
-    store: (/*mu:that*//*um*/user: User) => void,
+    store: (/*um*/user: User) => void,
   ) { }
 
 
@@ -1219,11 +1219,7 @@ function case_invocAnnot_callbackParameters() {
   fooRead(read) // ✅
   fooRead(() => true) // ✅
   fooRead(function (/*mu:this*/) { return true }) // ⚠️ warning(/*mu:this*/): Expected no mutability annotation for this argument.
-  fooRead((/*mu:that*/) => true) // ⚠️ warning(/*mu:that*/): Expected no mutability annotation for this argument.
-  fooRead(function (/*mu:this/that*/) { return true }) // ⚠️ warning(/*mu:this/that*/): Expected no mutability annotation for this argument.
   fooRead(function (/*mu:this!*/) { return true }) // ✅ escape hatch
-  fooRead((/*mu:that!*/) => true) // ✅ escape hatch
-  fooRead(function (/*mu:this!/that!*/) { return true }) // ✅ escape hatch
 
   function fooRead(
     read: () => boolean,
@@ -1236,39 +1232,10 @@ function case_invocAnnot_callbackParameters() {
   fooThis(mutateThis) // ✅
   fooThis(function (/*mu:this*/) { }) // ✅
   fooThis(() => { }) // ✅
-  fooThis((/*mu:that*/) => { }) // ⚠️ warning(/*mu:that*/): Incompatible mutability annotation for this argument.
-  fooThis(function (/*mu:this/that*/) { }) // ⚠️ warning(that): Incompatible mutability annotation for this argument.
-  fooThis((/*mu:that!*/) => { }) // ✅ escape hatch
-  fooThis(function (/*mu:this/that!*/) { }) // ✅ escape hatch
 
   function fooThis(
     increment: (/*mu:this*/) => void,
   ) { }
-
-
-
-  fooThat((/*mu:that*/) => { }) // ✅
-  fooThat(() => { }) // ✅
-  fooThat(function (/*mu:this*/) { }) // ⚠️ warning(/*mu:this*/): Incompatible mutability annotation for this argument.
-  fooThat(function (/*mu:this/that*/) { }) // ⚠️ warning(this): Incompatible mutability annotation for this argument.
-  fooThat(function (/*mu:this!*/) { }) // ✅ escape hatch
-  fooThat(function (/*mu:this!/that*/) { }) // ✅ escape hatch
-
-  function fooThat(
-    increment: (/*mu:that*/) => void,
-  ) { }
-
-
-
-  fooThisThat((/*mu:this/that*/) => { }) // ✅
-  fooThisThat(() => { }) // ✅
-  fooThisThat(function (/*mu:this*/) { }) // ✅
-  fooThisThat(function (/*mu:that*/) { }) // ✅
-
-  function fooThisThat(
-    increment: (/*mu:this/that*/) => void,
-  ) { }
-
 }
 
 
@@ -1312,11 +1279,7 @@ function case_invocAnnot_callbackParameterPack() {
   fooRead({ read }) // ✅
   fooRead({ read: () => true }) // ✅
   fooRead({ read: function (/*mu:this*/) { return true } }) // ⚠️ warning(/*mu:this*/): Expected no mutability annotation for this argument.
-  fooRead({ read: (/*mu:that*/) => true }) // ⚠️ warning(/*mu:that*/): Expected no mutability annotation for this argument.
-  fooRead({ read: function (/*mu:this/that*/) { return true } }) // ⚠️ warning(/*mu:this/that*/): Expected no mutability annotation for this argument.
   fooRead({ read: function (/*mu:this!*/) { return true } }) // ✅ escape hatch
-  fooRead({ read: (/*mu:that!*/) => true }) // ✅ escape hatch
-  fooRead({ read: function (/*mu:this!/that!*/) { return true } }) // ✅ escape hatch
 
   function fooRead(pack: {
     read: () => boolean,
@@ -1329,44 +1292,41 @@ function case_invocAnnot_callbackParameterPack() {
   fooThis({ increment: mutateThis }) // ✅
   fooThis({ increment: function (/*mu:this*/) { } }) // ✅
   fooThis({ increment: () => { } }) // ✅
-  fooThis({ increment: (/*mu:that*/) => { } }) // ⚠️ warning(/*mu:that*/): Incompatible mutability annotation for this argument.
-  fooThis({ increment: function (/*mu:this/that*/) { } }) // ⚠️ warning(that): Incompatible mutability annotation for this argument.
-  fooThis({ increment: (/*mu:that!*/) => { } }) // ✅ escape hatch
-  fooThis({ increment: function (/*mu:this/that!*/) { } }) // ✅ escape hatch
 
   function fooThis(pack: {
     increment: (/*mu:this*/) => void,
   }) { }
 
-
-
-  fooThat({ increment: (/*mu:that*/) => { } }) // ✅
-  fooThat({ increment: () => { } }) // ✅
-  fooThat({ increment: function (/*mu:this*/) { } }) // ⚠️ warning(/*mu:this*/): Incompatible mutability annotation for this argument.
-  fooThat({ increment: function (/*mu:this/that*/) { } }) // ⚠️ warning(this): Incompatible mutability annotation for this argument.
-  fooThat({ increment: function (/*mu:this!*/) { } }) // ✅ escape hatch
-  fooThat({ increment: function (/*mu:this!/that*/) { } }) // ✅ escape hatch
-
-  function fooThat(pack: {
-    increment: (/*mu:that*/) => void,
-  }) { }
-
-
-
-  fooThisThat({ increment: (/*mu:this/that*/) => { } }) // ✅
-  fooThisThat({ increment: () => { } }) // ✅
-  fooThisThat({ increment: function (/*mu:this*/) { } }) // ✅
-  fooThisThat({ increment: function (/*mu:that*/) { } }) // ✅
-
-  function fooThisThat(pack: {
-    increment: (/*mu:this/that*/) => void,
-  }) { }
-
 }
 
+type Obj = {
+  reset: (/*mu*/user: User, count: number) => void,
+}
 
 // Case: Compile-time invocation annotation: object methods
 function case_invocAnnot_objMethods() {
+  const boo = { doThis(/*mu*/num: { value: number }) { } }
+
+  foobar(boo)
+  // ⚠️ warning(boo)
+  // Annotations of property 'doThis' are incompatible. 
+  // Type '(/*mu*/num: { value: number }) => void' is not assignable to type '(num: { value: number }) => void'.
+
+  function foobar(obj: { doThis(num: { value: number }): void }) {
+
+  }
+
+  const bar = { nest: { doThis(/*mu*/num: { value: number }) { } } }
+  foobarNested(bar)
+  // ⚠️ warning(bar)
+  // Annotations of property 'nest.doThis' are incompatible. 
+  // Type '(/*mu*/num: { value: number }) => void' is not assignable to type '(num: { value: number }) => void'.
+
+  function foobarNested(obj: { nest: { doThis(num: { value: number }): void } }) {
+
+  }
+
+
   const resettableA = { reset }
   const resettableB = { reset: (user: User, count: number) => { } }
   const resettableC = { reset: (/*um*/user: User, count: number) => { } }
@@ -1375,9 +1335,7 @@ function case_invocAnnot_objMethods() {
   fooReset(resettableB) // ✅
   fooReset(resettableC) // ✅
 
-  function fooReset(obj: {
-    reset: (/*mu*/user: User, count: number) => void,
-  }) { }
+  function fooReset(obj: Obj) { }
 
 
   const storageA = { store }
@@ -1386,13 +1344,15 @@ function case_invocAnnot_objMethods() {
 
   fooStore(storageA) // ✅
   fooStore(storageB) // ✅
-  fooStore(storageC) // ⚠️ warning(storageC): Incompatible mutability annotation for this argument.
+
+  fooStore(storageC)
+  // ⚠️ warning(storageC):
+  // Annotations of property 'store' are incompatible.
+  // Type '(/*mu*/user: User) => void' is not assignable to type '(/*um*/user: User) => void'
 
   function fooStore(obj: {
-    store: (/*mu:that*//*um*/user: User) => void,
+    store: (/*um*/user: User) => void,
   }) { }
-
-
 
   const nameReaderA = { readName }
   const nameReaderB = { readName: (user: User, count: number) => '' }
@@ -1401,8 +1361,17 @@ function case_invocAnnot_objMethods() {
 
   fooReadName(nameReaderA) // ✅
   fooReadName(nameReaderB) // ✅
-  fooReadName(nameReaderC)// ⚠️ warning(nameReaderC): Expected no mutability annotation for this argument.
-  fooReadName(nameReaderD)// ⚠️ warning(nameReaderD): Expected no mutability annotation for this argument.
+
+  fooReadName(nameReaderC)
+  // ⚠️ warning(nameReaderC):
+  // Annotations of property 'readName' are incompatible.
+  // Type '(/*um*/user: User, count: number) => string' is not assignable to type '(user: User, count: number) => string'
+
+  fooReadName(nameReaderD)
+  // ⚠️ warning(nameReaderD):
+  // Annotations of property 'readName' are incompatible.
+  // Type '(/*mu*/user: User, count: number) => string' is not assignable to type '(user: User, count: number) => string'
+
 
   function fooReadName(obj: {
     readName: (user: User, count: number) => string,
@@ -1414,71 +1383,35 @@ function case_invocAnnot_objMethods() {
   const readerA = { read }
   const readerB = { read: () => true }
   const readerC = { read: function (/*mu:this*/) { return true } }
-  const readerD = { read: (/*mu:that*/) => true }
-  const readerE = { read: function (/*mu:this/that*/) { return true } }
 
   fooRead(readerA) // ✅
   fooRead(readerB) // ✅
-  fooRead(readerC) // ⚠️ warning(readerC): Expected no mutability annotation for this argument.
-  fooRead(readerD) // ⚠️ warning(readerD): Expected no mutability annotation for this argument.
-  fooRead(readerE) // ⚠️ warning(readerE): Expected no mutability annotation for this argument.
+
+  fooRead(readerC)
+  // ⚠️ warning(readerC):
+  // Annotations of property 'read' are incompatible.
+  // Type (/*mu:this*/) => boolean is not assignable to type '() => boolean'
 
   function fooRead(obj: {
     read: () => boolean,
   }) { }
-
-
 
   function mutateThis(/*mu:this*/amount: number) { }
 
   const countA = { increment: mutateThis }
   const countB = { increment: function (/*mu:this*/amount: number) { } }
   const countC = { increment: (amount: number) => { } }
-  const countD = { increment: (/*mu:that*/amount: number) => { } }
-  const countE = { increment: function (/*mu:this/that*/amount: number) { } }
 
   fooThis(countA) // ✅
   fooThis(countB) // ✅
   fooThis(countC) // ✅
-  fooThis(countD) // ⚠️ warning(countD): Incompatible mutability annotation for this argument.
-  fooThis(countE) // ⚠️ warning(countE): Incompatible mutability annotation for this argument.
 
   function fooThis(obj: {
     increment: (/*mu:this*/amount: number) => void,
   }) { }
-
-
-
-  const counterA = { increment: (/*mu:that*/) => { } }
-  const counterB = { increment: () => { } }
-  const counterC = { increment: function (/*mu:this*/) { } }
-  const counterD = { increment: function (/*mu:this/that*/) { } }
-
-  fooThat(counterA) // ✅
-  fooThat(counterB) // ✅
-  fooThat(counterC) // ⚠️ warning(counterC): Incompatible mutability annotation for this argument.
-  fooThat(counterD) // ⚠️ warning(counterD): Incompatible mutability annotation for this argument.
-
-  function fooThat(obj: {
-    increment: (/*mu:that*/) => void,
-  }) { }
-
-
-
-  const appA = { increment: (/*mu:this/that*/) => { } }
-  const appB = { increment: () => { } }
-  const appC = { increment: function (/*mu:this*/) { } }
-  const appD = { increment: function (/*mu:that*/) { } }
-
-  fooThisThat(appA) // ✅
-  fooThisThat(appB) // ✅
-  fooThisThat(appC) // ✅
-  fooThisThat(appD) // ✅
-
-  function fooThisThat(obj: {
-    increment: (/*mu:this/that*/) => void,
-  }) { }
 }
+
+
 
 // Case: Compile-time invocation annotation: class methods as callbacks
 function case_invocAnnot_classMethodsAsCallbacks() {
@@ -1497,27 +1430,32 @@ function case_invocAnnot_classMethodsAsCallbacks() {
 
   const storageA = new StorageA()
   const storageB = new StorageB()
-  const storageC = new StorageC()
 
   fooStore(storageA) // ✅
   fooStore(storageB) // ✅
-  fooStore(storageC) // ⚠️ warning(storageC): Incompatible mutability annotation for this argument.
 
   function fooStore(obj: {
-    store: (/*mu:that*//*um*/user: User) => void,
+    store: (/*um*/user: User) => void,
   }) { }
 
 
 
   const nameReaderA = new NameReaderA()
-  const nameReaderB = new NameReaderB()
   const nameReaderC = new NameReaderC()
   const nameReaderD = new NameReaderD()
 
   fooReadName(nameReaderA) // ✅
-  fooReadName(nameReaderB) // ✅
-  fooReadName(nameReaderC)// ⚠️ warning(nameReaderC): Expected no mutability annotation for this argument.
-  fooReadName(nameReaderD)// ⚠️ warning(nameReaderD): Expected no mutability annotation for this argument.
+
+  fooReadName(nameReaderC)
+  // ⚠️ warning(nameReaderC):
+  // Annotations of property 'readName' are incompatible.
+  // Type '(/*um*/user: User, count: number) => string' is not assignable to type '(user: User, count: number) => string'
+
+  fooReadName(nameReaderD)
+  // ⚠️ warning(nameReaderD):
+  // Annotations of property 'readName' are incompatible.
+  // Type '(/*mu*/user: User, count: number) => string' is not assignable to type '(user: User, count: number) => string'
+
 
   function fooReadName(obj: {
     readName: (user: User, count: number) => string,
@@ -1525,16 +1463,13 @@ function case_invocAnnot_classMethodsAsCallbacks() {
 
 
   const readerA = new ReaderA()
-  const readerB = new ReaderB()
   const readerC = new ReaderC()
-  const readerD = new ReaderD()
-  const readerE = new ReaderE()
 
   fooRead(readerA) // ✅
-  fooRead(readerB) // ✅
-  fooRead(readerC) // ⚠️ warning(readerC): Expected no mutability annotation for this argument.
-  fooRead(readerD) // ⚠️ warning(readerD): Expected no mutability annotation for this argument.
-  fooRead(readerE) // ⚠️ warning(readerE): Expected no mutability annotation for this argument.
+  fooRead(readerC)
+  // ⚠️ warning(readerC):
+  // Annotations of property 'read' are incompatible.
+  // Type (/*mu:this*/) => boolean is not assignable to type '() => boolean'
 
   function fooRead(obj: {
     read: () => boolean,
@@ -1543,111 +1478,65 @@ function case_invocAnnot_classMethodsAsCallbacks() {
 
 
   const countA = new CountA()
-  const countB = new CountB()
   const countC = new CountC()
-  const countD = new CountD()
-  const countE = new CountE()
 
   fooThis(countA) // ✅
-  fooThis(countB) // ✅
   fooThis(countC) // ✅
-  fooThis(countD) // ⚠️ warning(countD): Incompatible mutability annotation for this argument.
-  fooThis(countE) // ⚠️ warning(countE): Incompatible mutability annotation for this argument.
 
   function fooThis(obj: {
     increment: (/*mu:this*/amount: number) => void,
   }) { }
 
-
-
-  const counterA = new CounterA()
-  const counterB = new CounterB()
-  const counterC = new CounterC()
-  const counterD = new CounterD()
-
-  fooThat(counterA) // ✅
-  fooThat(counterB) // ✅
-  fooThat(counterC) // ⚠️ warning(counterC): Incompatible mutability annotation for this argument.
-  fooThat(counterD) // ⚠️ warning(counterD): Incompatible mutability annotation for this argument.
-
-  function fooThat(obj: {
-    increment: (/*mu:that*/) => void,
-  }) { }
-
-
-
-  const appA = new AppA()
-  const appB = new AppB()
-  const appC = new AppC()
-  const appD = new AppD()
-
-  fooThisThat(appA) // ✅
-  fooThisThat(appB) // ✅
-  fooThisThat(appC) // ✅
-  fooThisThat(appD) // ✅
-
-  function fooThisThat(obj: {
-    increment: (/*mu:this/that*/) => void,
-  }) { }
 }
 
 
-// // Case: Compile-time invocation annotation: callback return
-// function case_invocAnnot_callbackReturn() {
+// Case: Compile-time invocation annotation: callback return
+function case_invocAnnot_callbackReturn() {
 
-//   const user = { name: 'robin', location: { street: 'well' } }
-//   const users: User[] = []
+  const user = { name: 'robin', location: { street: 'well' } }
+  const users: User[] = []
 
-//   const filter = () => users.filter(user => user.name === 'kermit')
-//   const filterNew = () => [{ name: 'robin', location: { street: 'well' } }]
+  const filter = () => users.filter(user => user.name === 'kermit')
+  const createUsers = () => [{ name: 'robin', location: { street: 'well' } }]
 
-//   fooReturns(
-//     () => v(user), // ✅
-//     filter // ✅
-//   )
+  fooReturns(
+    () => v(user), // ✅
+  )
 
-//   fooReturns(
-//     //@ts-expect-error
-//     () => user,
+  fooReturns(
+    //@ts-expect-error
+    () => user
+  )
 
-//     //@ts-expect-error
-//     filterNew
-//   )
+  function fooReturns(
+    getUser: () => v<User>
+  ) {
+  }
 
-//   function foo(user: () => v<User>[]) {
+  
+  fooComplex(filter)
 
-//   }
+  fooComplex(
+    //@ts-expect-error
+    createUsers
+  )
 
-//   //@ts-expect-error
-//   foo(filterNew)
+  function fooComplex(filter: () => v<User>[]) {
 
-//   function fooReturns(
-//     getUser: () => v<User>,
-//     filter: () => v<User>[]
-//   ) {
-//   }
+  }
 
-//   fooReturnNew(
-//     () => user,
-//     () => [{ name: 'robin', location: { street: 'well' } }]
-//   )
+  fooReturnNew(
+    () => user
+  )
 
-//   function fooReturnNew(
-//     makeUser: () => User,
-//     filter: () => User[]
-//   ) { }
-// }
+  fooReturnNew(
+    () => v(user) // ⚠️ warning(v(user)):  
+  )
+
+  function fooReturnNew(
+    makeUser: () => User
+  ) { }
+}
 
 
-// function case_invocAnnot_that() {
-//     const incB = app.increment.bind(appB)
-//   const increment = app.increment
-//   const incBound = increment.bind(appB) // mu:that
-
-//   function foo(increment: (/*mu:that*/) => void) {
-//     increment()
-//   }
-
-//   foo(incBound)  // ✅
-// }
 

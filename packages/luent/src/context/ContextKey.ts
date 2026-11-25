@@ -1,8 +1,8 @@
 import { isFunction } from "@luently/utils";
 
-export function MU_<K extends ContextEntryKey | string>(key: K): ContextEntryKey<K extends ContextEntryKey<infer T> ? T : unknown> {
+export function MU<K extends ContextEntryKey | string>(key: K): ContextEntryKey<K extends ContextEntryKey<infer T> ? T : unknown> {
   const contextKey = toContextKey(key)
-  const name = 'MU_' + contextKey;
+  const name = 'MU' + contextKey;
   const fnKey = function (value: unknown) {
     return [name, value]
   };
@@ -11,7 +11,7 @@ export function MU_<K extends ContextEntryKey | string>(key: K): ContextEntryKey
   return fnKey as ContextEntryKey<K extends ContextEntryKey<infer T> ? T : unknown>
 }
 
-export type ContextEntryKey<T = any> = ((value: T) => [ContextEntryKey<T>, T]) & { defaultValue: any, optional: boolean }
+export type ContextEntryKey<T = any> = ((value: T) => [ContextEntryKey<T>, T]) & { defaultValue: any, optional: boolean } & { '~context-key': true }
 
 type FnKey = ContextEntryKey & { contextKey: string | ContextEntryKey }
 
@@ -24,7 +24,7 @@ export function mergeKeys(...keys: ContextEntryKey[]) {
 }
 
 export function isMuKey(key: unknown) {
-  return isFunction(key) && key.name.startsWith('MU_')
+  return isFunction(key) && key.name.startsWith('MU')
 }
 
 export function toContextKey(key: ContextEntryKey | string): string | Function {

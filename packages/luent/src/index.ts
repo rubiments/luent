@@ -111,7 +111,8 @@ export {
 export { Context } from './context/Context'
 export {
   ContextKey,
-  mergeKeys
+  mergeKeys,
+  MU
 } from './context/ContextKey'
 export { listen } from './events/listen'
 export { Await, Meanwhile, Twiddle } from './boundaries/Await'

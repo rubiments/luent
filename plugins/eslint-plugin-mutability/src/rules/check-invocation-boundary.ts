@@ -29,16 +29,14 @@ type TupleExpectation = {
   expectation: Expectation;
 };
 
-type ThisThatKey = "this" | "that";
-
-type ThisThatAnnotation = {
+type ThisAnnotation = {
   escaped: boolean;
   range: [number, number];
 };
 
 type CallbackParameterInfo = {
   entries: Array<{ expectation: Expectation; node: TSESTree.Node | null }>;
-  thisThat: Partial<Record<ThisThatKey, ThisThatAnnotation>>;
+  thisAnnotation?: ThisAnnotation;
 };
 
 const MUTABILITY_COMMENT_RE = /^(mu|um)$/;
@@ -48,6 +46,7 @@ const MESSAGE_IDS = {
   expectedAnnotation: "expectedAnnotation",
   expectedNoAnnotation: "expectedNoAnnotation",
   incompatibleMutabilityAnnotation: "incompatibleMutabilityAnnotation",
+  incompatiblePropertyMutabilityAnnotation: "incompatiblePropertyMutabilityAnnotation",
   expectedPackPropertyAnnotation: "expectedPackPropertyAnnotation",
   expectedTupleIndexAnnotation: "expectedTupleIndexAnnotation"
 } as const;
@@ -69,6 +68,8 @@ export const checkInvocationBoundary = createRule({
         "Expected no mutability annotation for this argument.",
       incompatibleMutabilityAnnotation:
         "Incompatible mutability annotation for this argument.",
+      incompatiblePropertyMutabilityAnnotation:
+        "Annotations of property '{{propertyPath}}' are incompatible. Type '{{providedType}}' is not assignable to type '{{expectedType}}'.",
       expectedPackPropertyAnnotation:
         "Expected mutability annotation /*{{expected}}*/ for `{{key}}` property in this argument.",
       expectedTupleIndexAnnotation:
@@ -850,6 +851,20 @@ function reportIncompatibleMutabilityAnnotation(
   });
 }
 
+function reportIncompatiblePropertyMutabilityAnnotation(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  node: TSESTree.Node,
+  propertyPath: string,
+  providedType: string,
+  expectedType: string
+): void {
+  context.report({
+    node,
+    messageId: MESSAGE_IDS.incompatiblePropertyMutabilityAnnotation,
+    data: { propertyPath, providedType, expectedType }
+  });
+}
+
 function reportMissingPackExpectation(
   context: Readonly<TSESLint.RuleContext<MessageId, []>>,
   node: TSESTree.Node,
@@ -1031,11 +1046,11 @@ function validateCallbackParameterCompatibility(
     }
   }
 
-  validateThisThatCompatibility(
+  validateThisCompatibility(
     context,
     sourceCode,
-    expectedInfo.thisThat,
-    providedInfo.thisThat
+    expectedInfo.thisAnnotation,
+    providedInfo.thisAnnotation
   );
 }
 
@@ -1050,25 +1065,54 @@ function validateCallbackArgumentParameterPackAnnotations(
 ): void {
   if (
     !ts.isParameter(expectedParameterDeclaration) ||
-    !expectedParameterDeclaration.type ||
-    argument.type !== "ObjectExpression"
+    !expectedParameterDeclaration.type
   ) {
     return;
   }
 
-  const typeLiteral = unwrapTypeLiteralNode(expectedParameterDeclaration.type);
-  if (!typeLiteral) {
+  if (argument.type === "ObjectExpression") {
+    const typeLiteral = unwrapTypeLiteralNode(expectedParameterDeclaration.type);
+    if (!typeLiteral) {
+      return;
+    }
+
+    validateCallbackArgumentParameterPackTypeLiteral(
+      context,
+      sourceCode,
+      checker,
+      services,
+      typeLiteral,
+      argument,
+      fileCheckCache
+    );
     return;
   }
 
-  validateCallbackArgumentParameterPackTypeLiteral(
-    context,
-    sourceCode,
+  const expectedType = checker.getTypeAtLocation(expectedParameterDeclaration.type);
+  const providedNode = services.esTreeNodeToTSNodeMap.get(argument as never);
+  const providedType = checker.getTypeAtLocation(providedNode);
+  const mismatch = findCallbackPropertyMutabilityMismatch(
     checker,
     services,
-    typeLiteral,
+    sourceCode,
+    expectedType,
+    providedType,
+    expectedParameterDeclaration.type,
+    providedNode,
+    [],
+    fileCheckCache,
+    new Set<string>()
+  );
+  if (!mismatch) {
+    return;
+  }
+
+  reportIncompatiblePropertyMutabilityAnnotation(
+    context,
     argument,
-    fileCheckCache
+    mismatch.propertyPath,
+    mismatch.providedType,
+    mismatch.expectedType
   );
 }
 
@@ -1139,41 +1183,230 @@ function validateCallbackArgumentParameterPackTypeLiteral(
   }
 }
 
-function validateThisThatCompatibility(
+function validateThisCompatibility(
   context: Readonly<TSESLint.RuleContext<MessageId, []>>,
   sourceCode: Readonly<TSESLint.SourceCode>,
-  expected: Partial<Record<ThisThatKey, ThisThatAnnotation>>,
-  provided: Partial<Record<ThisThatKey, ThisThatAnnotation>>
+  expected: ThisAnnotation | undefined,
+  provided: ThisAnnotation | undefined
 ): void {
-  const hasExpectedThisThat = Boolean(expected.this || expected.that);
+  if (!provided || provided.escaped) {
+    return;
+  }
 
-  for (const key of ["this", "that"] as const) {
-    const providedAnnotation = provided[key];
-    if (!providedAnnotation || providedAnnotation.escaped) {
-      continue;
-    }
+  if (expected && !expected.escaped) {
+    return;
+  }
 
-    const expectedAnnotation = expected[key];
-    if (expectedAnnotation && !expectedAnnotation.escaped) {
-      continue;
-    }
-
-    if (hasExpectedThisThat) {
-      reportIncompatibleMutabilityAnnotationAtRange(
-        context,
-        sourceCode,
-        providedAnnotation.range
-      );
-      return;
-    }
-
-    reportExpectedNoneAtRange(
+  if (expected) {
+    reportIncompatibleMutabilityAnnotationAtRange(
       context,
       sourceCode,
-      providedAnnotation.range
+      provided.range
     );
     return;
   }
+
+  reportExpectedNoneAtRange(
+    context,
+    sourceCode,
+    provided.range
+  );
+}
+
+type CallbackPropertyMutabilityMismatch = {
+  propertyPath: string;
+  providedType: string;
+  expectedType: string;
+};
+
+function findCallbackPropertyMutabilityMismatch(
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  expectedType: ts.Type,
+  providedType: ts.Type,
+  expectedLocation: ts.Node,
+  providedLocation: ts.Node,
+  path: string[],
+  fileCheckCache: Map<string, boolean>,
+  visitedTypePairs: Set<string>
+): CallbackPropertyMutabilityMismatch | null {
+  if (!isObjectLike(expectedType, checker) || !isObjectLike(providedType, checker)) {
+    return null;
+  }
+
+  const visitKey = `${getTypeVisitKey(expectedType)}:${getTypeVisitKey(providedType)}:${path.join(".")}`;
+  if (visitedTypePairs.has(visitKey)) {
+    return null;
+  }
+  visitedTypePairs.add(visitKey);
+
+  for (const expectedProperty of checker.getPropertiesOfType(expectedType)) {
+    const propertyName = expectedProperty.getName();
+    const providedProperty = checker.getPropertyOfType(providedType, propertyName);
+    if (!providedProperty) {
+      continue;
+    }
+
+    const expectedPropertyDeclaration = getSymbolDeclaration(expectedProperty);
+    const providedPropertyDeclaration = getSymbolDeclaration(providedProperty);
+    const expectedPropertyType = checker.getTypeOfSymbolAtLocation(
+      expectedProperty,
+      expectedPropertyDeclaration ?? expectedLocation
+    );
+    const providedPropertyType = checker.getTypeOfSymbolAtLocation(
+      providedProperty,
+      providedPropertyDeclaration ?? providedLocation
+    );
+
+    const propertyPath = [...path, propertyName];
+    const expectedSignature = checker.getSignaturesOfType(
+      expectedPropertyType,
+      ts.SignatureKind.Call
+    )[0];
+    if (expectedSignature) {
+      const providedSignature = checker.getSignaturesOfType(
+        providedPropertyType,
+        ts.SignatureKind.Call
+      )[0];
+      if (!providedSignature) {
+        continue;
+      }
+
+      const expectedInfo = getCallbackParameterInfoFromSignature(
+        expectedSignature,
+        services,
+        sourceCode,
+        fileCheckCache
+      );
+      const providedInfo = getCallbackParameterInfoFromSignature(
+        providedSignature,
+        services,
+        sourceCode,
+        fileCheckCache
+      );
+      if (!expectedInfo || !providedInfo) {
+        continue;
+      }
+
+      if (hasCallbackParameterMutabilityMismatch(expectedInfo, providedInfo)) {
+        return {
+          propertyPath: propertyPath.join("."),
+          providedType: formatAnnotatedCallbackSignature(
+            checker,
+            providedSignature,
+            providedInfo
+          ),
+          expectedType: formatAnnotatedCallbackSignature(
+            checker,
+            expectedSignature,
+            expectedInfo
+          )
+        };
+      }
+      continue;
+    }
+
+    const nested = findCallbackPropertyMutabilityMismatch(
+      checker,
+      services,
+      sourceCode,
+      expectedPropertyType,
+      providedPropertyType,
+      expectedPropertyDeclaration ?? expectedLocation,
+      providedPropertyDeclaration ?? providedLocation,
+      propertyPath,
+      fileCheckCache,
+      visitedTypePairs
+    );
+    if (nested) {
+      return nested;
+    }
+  }
+
+  return null;
+}
+
+function hasCallbackParameterMutabilityMismatch(
+  expectedInfo: CallbackParameterInfo,
+  providedInfo: CallbackParameterInfo
+): boolean {
+  const count = Math.min(expectedInfo.entries.length, providedInfo.entries.length);
+  for (let i = 0; i < count; i += 1) {
+    const expected = expectedInfo.entries[i];
+    const provided = providedInfo.entries[i];
+    if (!provided || !expected || provided.expectation === "none") {
+      continue;
+    }
+    if (expected.expectation === "none") {
+      return true;
+    }
+    if (expected.expectation === "um" && provided.expectation === "mu") {
+      return true;
+    }
+  }
+
+  const providedThis = providedInfo.thisAnnotation;
+  if (!providedThis || providedThis.escaped) {
+    return false;
+  }
+
+  const expectedThis = expectedInfo.thisAnnotation;
+  return !expectedThis || expectedThis.escaped;
+}
+
+function getSymbolDeclaration(symbol: ts.Symbol): ts.Declaration | undefined {
+  return symbol.valueDeclaration ?? symbol.declarations?.[0];
+}
+
+function getTypeVisitKey(type: ts.Type): string {
+  const withId = type as ts.Type & { id?: number };
+  if (typeof withId.id === "number") {
+    return `${withId.id}`;
+  }
+  const escapedName = type.symbol?.escapedName;
+  return `${type.flags}:${escapedName ? String(escapedName) : "anon"}`;
+}
+
+function formatAnnotatedCallbackSignature(
+  checker: ts.TypeChecker,
+  signature: ts.Signature,
+  info: CallbackParameterInfo
+): string {
+  const parameters = signature.getParameters();
+  const declaration = signature.getDeclaration();
+  const fallbackLocation = declaration ?? parameters[0]?.valueDeclaration;
+  const parts: string[] = [];
+
+  if (info.thisAnnotation) {
+    const thisToken = info.thisAnnotation.escaped ? "this!" : "this";
+    parts.push(`/*mu:${thisToken}*/`);
+  }
+
+  for (let i = 0; i < parameters.length; i += 1) {
+    const symbol = parameters[i];
+    if (!symbol) {
+      continue;
+    }
+    const symbolDeclaration = symbol.valueDeclaration ?? symbol.declarations?.[0];
+    const location = symbolDeclaration ?? fallbackLocation;
+    if (!location) {
+      continue;
+    }
+
+    const parameterType = checker.getTypeOfSymbolAtLocation(symbol, location);
+    const parameterTypeText = checker.typeToString(parameterType, location);
+    const annotation = info.entries[i]?.expectation;
+    const annotationPrefix =
+      annotation === "mu" || annotation === "um"
+        ? `/*${annotation}*/`
+        : "";
+    parts.push(`${annotationPrefix}${symbol.getName()}: ${parameterTypeText}`);
+  }
+
+  const returnType = checker.getReturnTypeOfSignature(signature);
+  const returnTypeText = checker.typeToString(returnType, declaration);
+  return `(${parts.join(", ")}) => ${returnTypeText}`;
 }
 
 function getCallbackParameterInfo(
@@ -1190,6 +1423,20 @@ function getCallbackParameterInfo(
     return null;
   }
 
+  return getCallbackParameterInfoFromSignature(
+    signature,
+    services,
+    sourceCode,
+    fileCheckCache
+  );
+}
+
+function getCallbackParameterInfoFromSignature(
+  signature: ts.Signature,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  fileCheckCache: Map<string, boolean>
+): CallbackParameterInfo | null {
   const entries: Array<{ expectation: Expectation; node: TSESTree.Node | null }> = [];
   for (const symbol of signature.getParameters()) {
     const declaration = symbol.valueDeclaration ?? symbol.declarations?.[0];
@@ -1214,16 +1461,16 @@ function getCallbackParameterInfo(
   }
 
   const declaration = signature.getDeclaration();
-  const thisThat = declaration
-    ? getThisThatAnnotationFromDeclarationHeader(declaration)
-    : {};
+  const thisAnnotation = declaration
+    ? getThisAnnotationFromDeclarationHeader(declaration)
+    : undefined;
 
-  return { entries, thisThat };
+  return { entries, thisAnnotation };
 }
 
-function getThisThatAnnotationFromDeclarationHeader(
+function getThisAnnotationFromDeclarationHeader(
   declaration: ts.SignatureDeclaration
-): Partial<Record<ThisThatKey, ThisThatAnnotation>> {
+): ThisAnnotation | undefined {
   const sourceFile = declaration.getSourceFile();
   const headerStart = declaration.getStart(sourceFile);
   const headerEnd =
@@ -1233,7 +1480,7 @@ function getThisThatAnnotationFromDeclarationHeader(
 
   const header = sourceFile.text.slice(headerStart, headerEnd);
   const commentRe = /\/\*([\s\S]*?)\*\//g;
-  const thisThat: Partial<Record<ThisThatKey, ThisThatAnnotation>> = {};
+  let thisAnnotation: ThisAnnotation | undefined;
   let match: RegExpExecArray | null = null;
 
   while (true) {
@@ -1247,34 +1494,27 @@ function getThisThatAnnotationFromDeclarationHeader(
       continue;
     }
 
-    const tokens = inner.slice(3);
-    const tokenRe = /(this!?|that!?)/g;
-    let tokenMatch: RegExpExecArray | null = null;
-    while (true) {
-      tokenMatch = tokenRe.exec(tokens);
-      if (!tokenMatch) {
-        break;
-      }
-
-      const raw = tokenMatch[1];
-      const key = raw.startsWith("this") ? "this" : "that";
-      const escaped = raw.endsWith("!");
-      const start =
-        headerStart +
-        match.index +
-        2 +
-        3 +
-        tokenMatch.index;
-      const end = start + key.length;
-
-      thisThat[key] = {
-        escaped,
-        range: [start, end]
-      };
+    const token = inner.slice(3).trim();
+    if (token !== "this" && token !== "this!") {
+      continue;
     }
+
+    const escaped = token.endsWith("!");
+    const tokenOffset = inner.indexOf(token);
+    const start =
+      headerStart +
+      match.index +
+      2 +
+      tokenOffset;
+    const end = start + "this".length;
+
+    thisAnnotation = {
+      escaped,
+      range: [start, end]
+    };
   }
 
-  return thisThat;
+  return thisAnnotation;
 }
 
 function reportExpectedNoneAtRange(
