@@ -33,54 +33,73 @@ type Ro = { readonly '~mutability'?: 'ro' | 'mo' | 'mu' }
 type Mo = { readonly '~mutability'?: 'mo' | 'mu' }
 type Mu = { readonly '~mutability'?: 'mu' }
 
-type MuIon<T> = Ion<T> & Mu & { value: T }
+type MutableIon<T> = Ion<T> & Mu & { value: T }
 type MoIon<T> = Ion<T> & Mo
 
 function Ru(setup: FromTag<{
-  count: Ro & Ion<number>
+  count: Ion<number>
 }>) {
   const { $count } = setup
   return <></>
 }
 
 function Mubi(setup: FromTag<{
-  'mu:count': MuIon<number>
+  'mu:count': MutableIon<number>
 }>) {
   const { mu: { $count } } = setup;
   return <></>
 }
 
-function mu<T>(obj: T): Mu&T {return obj as Mu&T}
 
-function foo($count: MuIon<number>) {
-  const list = mu(ionic(['']))
+function foo($count: MutableIon<number>) {
+  const list = ionic([''])
 
 }
 
 let something: null | string = null;
 
 function getSomething() {
-  if (something === null) 
+  if (something === null)
     return thrown(new SyntaxError('oops!'))
   return something;
 }
 
-function thrown<T>(error: Ro& T): { '~thrown': T } {
+function thrown<T>(error: T): { '~thrown': T } {
   throw error;
 }
 
 function doSomething() {
   const something = getSomething()
-  if (hasErred(something)) return erred(something);
-  console.log(/*~um*/something)
+  if (erred(something)) return never(something);
+  console.log(something)
   return something;
 }
 
-function hasErred(value: any): value is { '~thrown': any } {
+
+const fooBar = func(() => {
+  const a = doSomething()
+  if (erred(a)) return never(a)
+  return a;
+})
+  .catch(error => {
+
+  })
+
+function func(cb: Function) {
+  return {
+    catch(handlerError: (error: Error) => any) {
+
+    }
+  }
+}
+
+
+function erred(value: any): value is { '~thrown': any; error: any } {
   return false;
 }
 
-function erred<T>(error: Ro& T): T{return error}
+
+function never<T>(error: T): T { return error }
 
 
 
@@ -116,7 +135,7 @@ opt({ mu: { user }, count })
 opt({ user, count })
 
 
-function reset(user: Ro& User, count: number): void
+function reset(user: Ro & User, count: number): void
 function reset(user: User, count: number) {
 
 }
@@ -130,8 +149,8 @@ type Admin = {
   location: Mu & { address: string }
 }
 
-function setup(obj: { user: Mu& User, count: number }) { }
-function setupAdmin(admin: { name: string, location: Mu& { address: string } }) { }
+function setup(obj: { user: Mu & User, count: number }) { }
+function setupAdmin(admin: { name: string, location: Mu & { address: string } }) { }
 function setupThird(obj: { user: User, count: number }) { }
 
 function opt(obj: { mu: { user: User } } | { user: User, count: number }) { }

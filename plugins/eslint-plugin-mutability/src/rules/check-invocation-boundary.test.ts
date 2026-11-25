@@ -219,6 +219,111 @@ function run(
 `
     },
     {
+      filename: "case_invocAnnot_callbackParameters.ts",
+      code: `
+${prelude}
+function reset(/*mu*/user: User, count: number) {}
+function store(/*um*/user: User) {}
+function readName(user: User, count: number) { return user.name; }
+
+function case_invocAnnot_callbackParameters() {
+  fooReset(reset);
+  fooReset((user, count) => { void user; void count; });
+  fooReset((/*um*/user, count) => { void user; void count; });
+
+  fooStore(store);
+  fooStore((user) => { void user; });
+  fooStore((/*um*/user) => { void user; });
+
+  fooReadName(readName);
+  fooReadName((user, count) => \`\${user.name}\${count}\`);
+
+  fooRead(() => true);
+  fooRead(function () { return true; });
+  fooRead(function (/*mu:this!*/) { return true; });
+  fooRead((/*mu:that!*/) => true);
+
+  fooThis(function (/*mu:this*/) {});
+  fooThis(() => {});
+  fooThis((/*mu:that!*/) => {});
+  fooThis(function (/*mu:this/that!*/) {});
+
+  fooThat((/*mu:that*/) => {});
+  fooThat(() => {});
+  fooThat(function (/*mu:this!*/) {});
+  fooThat(function (/*mu:this!/that*/) {});
+
+  fooThisThat((/*mu:this/that*/) => {});
+  fooThisThat(function (/*mu:this*/) {});
+  fooThisThat(function (/*mu:that*/) {});
+}
+
+function fooReset(
+  resetCb: (/*mu*/user: User, count: number) => void,
+) { void resetCb; }
+
+function fooStore(
+  storeCb: (/*um*/user: User) => void,
+) { void storeCb; }
+
+function fooReadName(
+  readNameCb: (user: User, count: number) => string,
+) { void readNameCb; }
+
+function fooRead(
+  readCb: () => boolean,
+) { void readCb; }
+
+function fooThis(
+  incrementCb: (/*mu:this*/) => void,
+) { void incrementCb; }
+
+function fooThat(
+  incrementCb: (/*mu:that*/) => void,
+) { void incrementCb; }
+
+function fooThisThat(
+  incrementCb: (/*mu:this/that*/) => void,
+) { void incrementCb; }
+`
+    },
+    {
+      filename: "case_invocAnnot_callbackParameterPack.ts",
+      code: `
+${prelude}
+function reset(/*mu*/user: User, count: number) {}
+function store(/*um*/user: User) {}
+function readName(user: User, count: number) { return user.name; }
+
+function case_invocAnnot_callbackParameterPack() {
+  fooReset({ reset });
+  fooReset({ reset: (user, count) => { void user; void count; } });
+  fooReset({ reset: (/*um*/user, count) => { void user; void count; } });
+
+  fooStore({ store });
+  fooStore({ store: (user) => { void user; } });
+  fooStore({ store: (/*mu!*/user) => { void user; } });
+
+  fooReadName({ readName });
+  fooReadName({ readName: (user, count) => \`\${user.name}\${count}\` });
+  fooReadName({ readName: (/*um!*/user, count) => \`\${user.name}\${count}\` });
+  fooReadName({ readName: (/*mu!*/user, count) => \`\${user.name}\${count}\` });
+}
+
+function fooReset(pack: {
+  reset: (/*mu*/user: User, count: number) => void,
+}) { void pack; }
+
+function fooStore(pack: {
+  store: (/*um*/user: User) => void,
+}) { void pack; }
+
+function fooReadName(pack: {
+  readName: (user: User, count: number) => string,
+}) { void pack; }
+`
+    },
+    {
       filename: "case_invocAnnot_higherorder.ts",
       code: `
 ${prelude}
@@ -756,6 +861,101 @@ function run(
         { messageId: "expectedAnnotation", data: { expected: "mu" } },
         { messageId: "expectedNoAnnotation" },
         { messageId: "expectedAnnotation", data: { expected: "um" } }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_callbackParameters.ts",
+      code: `
+type User = { name: string; location: { street: string } };
+
+function case_invocAnnot_callbackParameters() {
+  fooStore((/*mu*/user) => { void user; });
+  fooReadName((/*um*/user, count) => \`\${user.name}\${count}\`);
+  fooReadName((/*mu*/user, count) => \`\${user.name}\${count}\`);
+  fooRead(function (/*mu:this*/) { return true; });
+  fooRead((/*mu:that*/) => true);
+  fooRead(function (/*mu:this/that*/) { return true; });
+
+  fooThis((/*mu:that*/) => {});
+  fooThis(function (/*mu:this/that*/) {});
+
+  fooThat(function (/*mu:this*/) {});
+  fooThat(function (/*mu:this/that*/) {});
+}
+
+function fooStore(
+  storeCb: (/*um*/user: User) => void,
+) { void storeCb; }
+
+function fooReadName(
+  readNameCb: (user: User, count: number) => string,
+) { void readNameCb; }
+
+function fooRead(
+  readCb: () => boolean,
+) { void readCb; }
+
+function fooThis(
+  incrementCb: (/*mu:this*/) => void,
+) { void incrementCb; }
+
+function fooThat(
+  incrementCb: (/*mu:that*/) => void,
+) { void incrementCb; }
+`,
+      errors: [
+        {
+          messageId: "incompatibleMutabilityAnnotation",
+          line: 5,
+          column: 19,
+          endLine: 5,
+          endColumn: 23
+        },
+        {
+          messageId: "expectedNoAnnotation",
+          line: 6,
+          column: 22,
+          endLine: 6,
+          endColumn: 26
+        },
+        {
+          messageId: "expectedNoAnnotation",
+          line: 7,
+          column: 22,
+          endLine: 7,
+          endColumn: 26
+        },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "incompatibleMutabilityAnnotation" },
+        { messageId: "incompatibleMutabilityAnnotation" },
+        { messageId: "incompatibleMutabilityAnnotation" },
+        { messageId: "incompatibleMutabilityAnnotation" }
+      ]
+    },
+    {
+      filename: "invalid_case_invocAnnot_callbackParameterPack.ts",
+      code: `
+${prelude}
+function case_invocAnnot_callbackParameterPack() {
+  fooStore({ store: (/*mu*/user) => { void user; } });
+  fooReadName({ readName: (/*um*/user, count) => \`\${user.name}\${count}\` });
+  fooReadName({ readName: (/*mu*/user, count) => \`\${user.name}\${count}\` });
+}
+
+function fooStore(pack: {
+  store: (/*um*/user: User) => void,
+}) { void pack; }
+
+function fooReadName(pack: {
+  readName: (user: User, count: number) => string,
+}) { void pack; }
+`,
+      errors: [
+        { messageId: "incompatibleMutabilityAnnotation" },
+        { messageId: "expectedNoAnnotation" },
+        { messageId: "expectedNoAnnotation" }
       ]
     },
     {

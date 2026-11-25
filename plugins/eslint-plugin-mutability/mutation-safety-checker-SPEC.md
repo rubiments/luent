@@ -123,8 +123,7 @@ Allowed forms:
 - `/*um*/`
 - `/*mu:this*/`
 - `/*mu:that*/`
-- `/*mu:th*/`
-- `/*mu:thth*/`
+- `/*mu:this/that*/`
 
 Rules:
 
@@ -313,8 +312,7 @@ Rules:
 
 - `/*mu:this*/`: receiver (`this`) is mutable.
 - `/*mu:that*/`: captured outer target is mutable.
-- `/*mu:th*/`: either receiver or captured target may be mutable.
-- `/*mu:thth*/`: both receiver and captured target are mutable.
+- `/*mu:that/that*/`: both receiver and captured target are mutable.
 
 ---
 

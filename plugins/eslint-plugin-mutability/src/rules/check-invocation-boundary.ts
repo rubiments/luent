@@ -29,12 +29,25 @@ type TupleExpectation = {
   expectation: Expectation;
 };
 
+type ThisThatKey = "this" | "that";
+
+type ThisThatAnnotation = {
+  escaped: boolean;
+  range: [number, number];
+};
+
+type CallbackParameterInfo = {
+  entries: Array<{ expectation: Expectation; node: TSESTree.Node | null }>;
+  thisThat: Partial<Record<ThisThatKey, ThisThatAnnotation>>;
+};
+
 const MUTABILITY_COMMENT_RE = /^(mu|um)$/;
 const THIS_MUTABILITY_COMMENT_RE = /\/\*(mu|um):this\*\//g;
 
 const MESSAGE_IDS = {
   expectedAnnotation: "expectedAnnotation",
   expectedNoAnnotation: "expectedNoAnnotation",
+  incompatibleMutabilityAnnotation: "incompatibleMutabilityAnnotation",
   expectedPackPropertyAnnotation: "expectedPackPropertyAnnotation",
   expectedTupleIndexAnnotation: "expectedTupleIndexAnnotation"
 } as const;
@@ -54,6 +67,8 @@ export const checkInvocationBoundary = createRule({
         "Expected mutability annotation /*{{expected}}*/ for this argument.",
       expectedNoAnnotation:
         "Expected no mutability annotation for this argument.",
+      incompatibleMutabilityAnnotation:
+        "Incompatible mutability annotation for this argument.",
       expectedPackPropertyAnnotation:
         "Expected mutability annotation /*{{expected}}*/ for `{{key}}` property in this argument.",
       expectedTupleIndexAnnotation:
@@ -84,6 +99,16 @@ export const checkInvocationBoundary = createRule({
         }
 
         const expectation = getParameterExpectation(declaration, services, sourceCode);
+        validateCallbackArgumentParameterAnnotations(
+          context,
+          sourceCode,
+          checker,
+          services,
+          declaration,
+          argument,
+          fileCheckCache
+        );
+
         if (expectation !== "none") {
           validateArgument(
             context,
@@ -815,6 +840,16 @@ function reportExpectedNone(
   });
 }
 
+function reportIncompatibleMutabilityAnnotation(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  node: TSESTree.Node
+): void {
+  context.report({
+    node,
+    messageId: MESSAGE_IDS.incompatibleMutabilityAnnotation
+  });
+}
+
 function reportMissingPackExpectation(
   context: Readonly<TSESLint.RuleContext<MessageId, []>>,
   node: TSESTree.Node,
@@ -891,6 +926,383 @@ function isObjectLike(type: ts.Type, checker: ts.TypeChecker): boolean {
 
   const apparent = checker.getApparentType(type);
   return (apparent.flags & ts.TypeFlags.Object) !== 0;
+}
+
+function validateCallbackArgumentParameterAnnotations(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices,
+  expectedParameterDeclaration: ts.Declaration,
+  argument: TSESTree.CallExpressionArgument,
+  fileCheckCache: Map<string, boolean>
+): void {
+  validateCallbackArgumentAgainstExpectedNode(
+    context,
+    sourceCode,
+    checker,
+    services,
+    expectedParameterDeclaration,
+    argument,
+    fileCheckCache
+  );
+
+  validateCallbackArgumentParameterPackAnnotations(
+    context,
+    sourceCode,
+    checker,
+    services,
+    expectedParameterDeclaration,
+    argument,
+    fileCheckCache
+  );
+}
+
+function validateCallbackArgumentAgainstExpectedNode(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices,
+  expectedNode: ts.Node,
+  argument: TSESTree.Node,
+  fileCheckCache: Map<string, boolean>
+): void {
+  const expectedInfo = getCallbackParameterInfo(
+    checker,
+    services,
+    sourceCode,
+    expectedNode,
+    fileCheckCache
+  );
+  if (!expectedInfo) {
+    return;
+  }
+
+  const argumentTsNode = services.esTreeNodeToTSNodeMap.get(argument as never);
+  const providedInfo = getCallbackParameterInfo(
+    checker,
+    services,
+    sourceCode,
+    argumentTsNode,
+    fileCheckCache
+  );
+  if (!providedInfo) {
+    return;
+  }
+
+  validateCallbackParameterCompatibility(
+    context,
+    sourceCode,
+    argument,
+    expectedInfo,
+    providedInfo
+  );
+}
+
+function validateCallbackParameterCompatibility(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  fallbackNode: TSESTree.Node,
+  expectedInfo: CallbackParameterInfo,
+  providedInfo: CallbackParameterInfo
+): void {
+  const count = Math.min(expectedInfo.entries.length, providedInfo.entries.length);
+  for (let i = 0; i < count; i += 1) {
+    const expected = expectedInfo.entries[i];
+    const provided = providedInfo.entries[i];
+    if (!provided || !expected) {
+      continue;
+    }
+
+    if (provided.expectation === "none") {
+      continue;
+    }
+
+    if (expected.expectation === "none") {
+      reportExpectedNone(context, provided.node ?? fallbackNode);
+      continue;
+    }
+
+    if (
+      expected.expectation === "um" &&
+      provided.expectation === "mu"
+    ) {
+      reportIncompatibleMutabilityAnnotation(context, provided.node ?? fallbackNode);
+    }
+  }
+
+  validateThisThatCompatibility(
+    context,
+    sourceCode,
+    expectedInfo.thisThat,
+    providedInfo.thisThat
+  );
+}
+
+function validateCallbackArgumentParameterPackAnnotations(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices,
+  expectedParameterDeclaration: ts.Declaration,
+  argument: TSESTree.Node,
+  fileCheckCache: Map<string, boolean>
+): void {
+  if (
+    !ts.isParameter(expectedParameterDeclaration) ||
+    !expectedParameterDeclaration.type ||
+    argument.type !== "ObjectExpression"
+  ) {
+    return;
+  }
+
+  const typeLiteral = unwrapTypeLiteralNode(expectedParameterDeclaration.type);
+  if (!typeLiteral) {
+    return;
+  }
+
+  validateCallbackArgumentParameterPackTypeLiteral(
+    context,
+    sourceCode,
+    checker,
+    services,
+    typeLiteral,
+    argument,
+    fileCheckCache
+  );
+}
+
+function validateCallbackArgumentParameterPackTypeLiteral(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices,
+  typeLiteral: ts.TypeLiteralNode,
+  argument: TSESTree.ObjectExpression,
+  fileCheckCache: Map<string, boolean>
+): void {
+  const propertiesByKey = new Map<string, TSESTree.Property>();
+  for (const property of argument.properties) {
+    if (property.type !== "Property") {
+      continue;
+    }
+    const key = getObjectPropertyName(property);
+    if (!key) {
+      continue;
+    }
+    propertiesByKey.set(key, property);
+  }
+
+  for (const member of typeLiteral.members) {
+    if (!ts.isPropertySignature(member) || !member.type) {
+      continue;
+    }
+
+    const key = getTsPropertyName(member.name);
+    if (!key) {
+      continue;
+    }
+
+    const property = propertiesByKey.get(key);
+    if (!property) {
+      continue;
+    }
+
+    validateCallbackArgumentAgainstExpectedNode(
+      context,
+      sourceCode,
+      checker,
+      services,
+      member.type,
+      property.value,
+      fileCheckCache
+    );
+
+    if (property.value.type !== "ObjectExpression") {
+      continue;
+    }
+
+    const nestedTypeLiteral = unwrapTypeLiteralNode(member.type);
+    if (!nestedTypeLiteral) {
+      continue;
+    }
+
+    validateCallbackArgumentParameterPackTypeLiteral(
+      context,
+      sourceCode,
+      checker,
+      services,
+      nestedTypeLiteral,
+      property.value,
+      fileCheckCache
+    );
+  }
+}
+
+function validateThisThatCompatibility(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  expected: Partial<Record<ThisThatKey, ThisThatAnnotation>>,
+  provided: Partial<Record<ThisThatKey, ThisThatAnnotation>>
+): void {
+  const hasExpectedThisThat = Boolean(expected.this || expected.that);
+
+  for (const key of ["this", "that"] as const) {
+    const providedAnnotation = provided[key];
+    if (!providedAnnotation || providedAnnotation.escaped) {
+      continue;
+    }
+
+    const expectedAnnotation = expected[key];
+    if (expectedAnnotation && !expectedAnnotation.escaped) {
+      continue;
+    }
+
+    if (hasExpectedThisThat) {
+      reportIncompatibleMutabilityAnnotationAtRange(
+        context,
+        sourceCode,
+        providedAnnotation.range
+      );
+      return;
+    }
+
+    reportExpectedNoneAtRange(
+      context,
+      sourceCode,
+      providedAnnotation.range
+    );
+    return;
+  }
+}
+
+function getCallbackParameterInfo(
+  checker: ts.TypeChecker,
+  services: ESLintUtils.ParserServices,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  node: ts.Node,
+  fileCheckCache: Map<string, boolean>
+): CallbackParameterInfo | null {
+  const type = checker.getTypeAtLocation(node);
+  const signatures = checker.getSignaturesOfType(type, ts.SignatureKind.Call);
+  const signature = signatures[0];
+  if (!signature) {
+    return null;
+  }
+
+  const entries: Array<{ expectation: Expectation; node: TSESTree.Node | null }> = [];
+  for (const symbol of signature.getParameters()) {
+    const declaration = symbol.valueDeclaration ?? symbol.declarations?.[0];
+    if (!declaration || !ts.isParameter(declaration)) {
+      entries.push({ expectation: "none", node: null });
+      continue;
+    }
+
+    if (!isCheckedFile(declaration.getSourceFile(), fileCheckCache)) {
+      entries.push({ expectation: "none", node: null });
+      continue;
+    }
+
+    const estreeNode = services.tsNodeToESTreeNodeMap.has(declaration.name)
+      ? services.tsNodeToESTreeNodeMap.get(declaration.name as never)
+      : null;
+
+    entries.push({
+      expectation: getParameterExpectation(declaration, services, sourceCode),
+      node: estreeNode
+    });
+  }
+
+  const declaration = signature.getDeclaration();
+  const thisThat = declaration
+    ? getThisThatAnnotationFromDeclarationHeader(declaration)
+    : {};
+
+  return { entries, thisThat };
+}
+
+function getThisThatAnnotationFromDeclarationHeader(
+  declaration: ts.SignatureDeclaration
+): Partial<Record<ThisThatKey, ThisThatAnnotation>> {
+  const sourceFile = declaration.getSourceFile();
+  const headerStart = declaration.getStart(sourceFile);
+  const headerEnd =
+    "body" in declaration && declaration.body
+      ? declaration.body.getStart(sourceFile)
+      : declaration.end;
+
+  const header = sourceFile.text.slice(headerStart, headerEnd);
+  const commentRe = /\/\*([\s\S]*?)\*\//g;
+  const thisThat: Partial<Record<ThisThatKey, ThisThatAnnotation>> = {};
+  let match: RegExpExecArray | null = null;
+
+  while (true) {
+    match = commentRe.exec(header);
+    if (!match) {
+      break;
+    }
+
+    const inner = match[1];
+    if (!inner.startsWith("mu:")) {
+      continue;
+    }
+
+    const tokens = inner.slice(3);
+    const tokenRe = /(this!?|that!?)/g;
+    let tokenMatch: RegExpExecArray | null = null;
+    while (true) {
+      tokenMatch = tokenRe.exec(tokens);
+      if (!tokenMatch) {
+        break;
+      }
+
+      const raw = tokenMatch[1];
+      const key = raw.startsWith("this") ? "this" : "that";
+      const escaped = raw.endsWith("!");
+      const start =
+        headerStart +
+        match.index +
+        2 +
+        3 +
+        tokenMatch.index;
+      const end = start + key.length;
+
+      thisThat[key] = {
+        escaped,
+        range: [start, end]
+      };
+    }
+  }
+
+  return thisThat;
+}
+
+function reportExpectedNoneAtRange(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  range: [number, number]
+): void {
+  context.report({
+    loc: {
+      start: sourceCode.getLocFromIndex(range[0]),
+      end: sourceCode.getLocFromIndex(range[1])
+    },
+    messageId: MESSAGE_IDS.expectedNoAnnotation
+  });
+}
+
+function reportIncompatibleMutabilityAnnotationAtRange(
+  context: Readonly<TSESLint.RuleContext<MessageId, []>>,
+  sourceCode: Readonly<TSESLint.SourceCode>,
+  range: [number, number]
+): void {
+  context.report({
+    loc: {
+      start: sourceCode.getLocFromIndex(range[0]),
+      end: sourceCode.getLocFromIndex(range[1])
+    },
+    messageId: MESSAGE_IDS.incompatibleMutabilityAnnotation
+  });
 }
 
 function isCheckedFile(

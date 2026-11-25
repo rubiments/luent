@@ -143,6 +143,136 @@ export class AppExplicit {
   }
 }
 
+export class ResettableA {
+  reset(/*mu*/user: User, count: number) { }
+}
+
+export class ResettableB {
+  reset(user: User, count: number) { }
+}
+
+export class ResettableC {
+  reset(/*um*/user: User, count: number) { }
+}
+
+export class StorageA {
+  store(/*mu:that*//*um*/user: User) { }
+}
+
+export class StorageB {
+  store(user: User) { }
+}
+
+export class StorageC {
+  store(/*mu*/user: User) { }
+}
+
+export class NameReaderA {
+  readName(user: User, count: number) {
+    return user.name
+  }
+}
+
+export class NameReaderB {
+  readName(user: User, count: number) {
+    return user.name
+  }
+}
+
+export class NameReaderC {
+  readName(/*um*/user: User, count: number) {
+    return user.name
+  }
+}
+
+export class NameReaderD {
+  readName(/*mu*/user: User, count: number) {
+    return user.name
+  }
+}
+
+export class ReaderA {
+  read() {
+    return true
+  }
+}
+
+export class ReaderB {
+  read() {
+    return true
+  }
+}
+
+export class ReaderC {
+  read(/*mu:this*/) {
+    return true
+  }
+}
+
+export class ReaderD {
+  read(/*mu:that*/) {
+    return true
+  }
+}
+
+export class ReaderE {
+  read(/*mu:this/that*/) {
+    return true
+  }
+}
+
+export class CountA {
+  increment(/*mu:this*/amount: number) { }
+}
+
+export class CountB {
+  increment(/*mu:this*/amount: number) { }
+}
+
+export class CountC {
+  increment(amount: number) { }
+}
+
+export class CountD {
+  increment(/*mu:that*/amount: number) { }
+}
+
+export class CountE {
+  increment(/*mu:this/that*/amount: number) { }
+}
+
+export class CounterA {
+  increment(/*mu:that*/) { }
+}
+
+export class CounterB {
+  increment() { }
+}
+
+export class CounterC {
+  increment(/*mu:this*/) { }
+}
+
+export class CounterD {
+  increment(/*mu:this/that*/) { }
+}
+
+export class AppA {
+  increment(/*mu:this/that*/) { }
+}
+
+export class AppB {
+  increment() { }
+}
+
+export class AppC {
+  increment(/*mu:this*/) { }
+}
+
+export class AppD {
+  increment(/*mu:that*/) { }
+}
+
 export const singleton = {
   users: [] as User[],
   reset(/*mu*/user: User, count: number) {
